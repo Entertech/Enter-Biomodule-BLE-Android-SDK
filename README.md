@@ -204,10 +204,10 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 **示例代码**
 
 ```kotlin
-	var heartRateListener = fun(bytes: ByteArray) {
-        Logger.d("heart rate data is " + Arrays.toString(bytes))
-    }
-	flowtimeBleManager.addRawDataListener(heartRateListener)
+var heartRateListener = fun(bytes: ByteArray) {
+    Logger.d("heart rate data is " + Arrays.toString(bytes))
+}
+flowtimeBleManager.addRawDataListener(heartRateListener)
 ```
 
 **参数说明**
