@@ -14,11 +14,11 @@ import com.orhanobut.logger.Logger
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var bleDeviceManager: FlowtimeBleManager
+    private lateinit var flowtimeBleManager: FlowtimeBleManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        bleDeviceManager = FlowtimeBleManager.getInstance(this)
+        flowtimeBleManager = FlowtimeBleManager.getInstance(this)
         initPermission()
     }
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onConnect(view: View) {
-        bleDeviceManager.scanNearDeviceAndConnect(0, fun() {
+        flowtimeBleManager.scanNearDeviceAndConnect( fun() {
             Logger.d("扫描成功")
         }, fun(mac: String) {
             Logger.d("连接成功$mac")
@@ -77,33 +77,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onDisconnet(view: View) {
-        bleDeviceManager.disConnect()
+        flowtimeBleManager.disConnect()
     }
 
 
     fun onAddConnectedListener(view: View) {
-        bleDeviceManager.addConnectListener(connectedListener)
+        flowtimeBleManager.addConnectListener(connectedListener)
     }
 
     fun onRemoveConnectedListener(view: View) {
-        bleDeviceManager.removeConnectListener(connectedListener)
+        flowtimeBleManager.removeConnectListener(connectedListener)
     }
 
     fun onAddDisconnectedListener(view: View) {
-        bleDeviceManager.addDisConnectListener(disConnectedListener)
+        flowtimeBleManager.addDisConnectListener(disConnectedListener)
     }
 
     fun onRemoveDisconnectedListener(view: View) {
-        bleDeviceManager.removeDisConnectListener(disConnectedListener)
+        flowtimeBleManager.removeDisConnectListener(disConnectedListener)
     }
 
 
-    fun onCollectStart(view: View) {
-        bleDeviceManager.startHeartAndBrainCollection()
+    fun onCollectHeartStart(view: View) {
+        flowtimeBleManager.startHeartRateCollection()
     }
 
-    fun onCollectStop(view: View) {
-        bleDeviceManager.stopHeartAndBrainCollection()
+    fun onCollectHeartStop(view: View) {
+        flowtimeBleManager.stopHeartRateCollection()
+    }
+
+    fun onCollectBrainStart(view: View) {
+        flowtimeBleManager.startBrainCollection()
+    }
+
+    fun onCollectBrainStop(view: View) {
+        flowtimeBleManager.stopBrainCollection()
     }
 
     var rawListener = fun(bytes: ByteArray) {
@@ -115,31 +123,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onAddRawListener(view: View) {
-        bleDeviceManager.addRawDataListener(rawListener)
+        flowtimeBleManager.addRawDataListener(rawListener)
     }
 
     fun onRemoveRawListener(view: View) {
-        bleDeviceManager.removeRawDataListener(rawListener)
+        flowtimeBleManager.removeRawDataListener(rawListener)
     }
 
     fun onAddHeartRateListener(view: View) {
-        bleDeviceManager.addRawDataListener(heartRateListener)
+        flowtimeBleManager.addHeartRateListener(heartRateListener)
     }
 
     fun onRemoveHeartRateListener(view: View) {
-        bleDeviceManager.removeRawDataListener(heartRateListener)
+        flowtimeBleManager.removeHeartRateListener(heartRateListener)
     }
 
     fun onAddContactListener(view: View) {
-        bleDeviceManager.addContactListener(contactListener)
+        flowtimeBleManager.addContactListener(contactListener)
     }
 
     fun onRemoveContactListener(view: View) {
-        bleDeviceManager.removeContactListener(contactListener)
+        flowtimeBleManager.removeContactListener(contactListener)
     }
 
     fun onBattery(view: View) {
-        bleDeviceManager.readBattery(fun(battery: NapBattery) {
+        flowtimeBleManager.readBattery(fun(battery: NapBattery) {
             Logger.d("battery = " + battery)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "电量:" + battery, Toast.LENGTH_SHORT).show()
@@ -150,8 +158,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onGetState(view: View) {
-        Logger.d(bleDeviceManager.isConnected())
-        Toast.makeText(this, if (bleDeviceManager.isConnected()) {
+        Logger.d(flowtimeBleManager.isConnected())
+        Toast.makeText(this, if (flowtimeBleManager.isConnected()) {
             "已连接"
         } else {
             "未连接"
@@ -163,15 +171,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onAddBtteryListener(view: View) {
-        bleDeviceManager.addBatteryListener(batteryListener)
+        flowtimeBleManager.addBatteryListener(batteryListener)
     }
 
     fun onRemoveBtteryListener(view: View) {
-        bleDeviceManager.removeBatteryListener(batteryListener)
+        flowtimeBleManager.removeBatteryListener(batteryListener)
     }
 
     fun onReadHardware(view: View) {
-        bleDeviceManager.readDeviceHardware(fun(hardware: String) {
+        flowtimeBleManager.readDeviceHardware(fun(hardware: String) {
             Logger.d("hardware is " + hardware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "硬件版本：${hardware}", Toast.LENGTH_SHORT).show()
@@ -182,7 +190,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onReadFirmware(view: View) {
-        bleDeviceManager.readDeviceFirmware(fun(firmware: String) {
+        flowtimeBleManager.readDeviceFirmware(fun(firmware: String) {
             Logger.d("firmware is " + firmware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "固件版本：${firmware}", Toast.LENGTH_SHORT).show()
@@ -193,7 +201,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onReadDeviceSerial(view: View) {
-        bleDeviceManager.readDeviceSerial(fun(serial: String) {
+        flowtimeBleManager.readDeviceSerial(fun(serial: String) {
             Logger.d("serial is " + serial)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "序列号：${serial}", Toast.LENGTH_SHORT).show()
@@ -204,7 +212,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun oReadDeviceManufacturer(view: View) {
-        bleDeviceManager.readDeviceManufacturer(fun(manufacturer: String) {
+        flowtimeBleManager.readDeviceManufacturer(fun(manufacturer: String) {
             Logger.d("manufacturer is " + manufacturer)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "制造商：${manufacturer}", Toast.LENGTH_SHORT).show()
@@ -216,10 +224,12 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onDestroy() {
-        bleDeviceManager.removeRawDataListener(rawListener)
-        bleDeviceManager.removeContactListener(contactListener)
-        bleDeviceManager.removeBatteryListener(batteryListener)
-        bleDeviceManager.stopCollection()
+        flowtimeBleManager.removeRawDataListener(rawListener)
+        flowtimeBleManager.removeContactListener(contactListener)
+        flowtimeBleManager.removeBatteryListener(batteryListener)
+        flowtimeBleManager.removeHeartRateListener(heartRateListener)
+        flowtimeBleManager.stopHeartRateCollection()
+        flowtimeBleManager.stopBrainCollection()
         super.onDestroy()
     }
 

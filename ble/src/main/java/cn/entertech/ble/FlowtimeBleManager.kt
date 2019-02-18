@@ -196,8 +196,8 @@ class FlowtimeBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(userId: Long, successScan: (() -> Unit)?, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanNearDeviceAndConnect(userId, successScan, fun(mac: String) {
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanNearDeviceAndConnect(successScan, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -206,8 +206,8 @@ class FlowtimeBleManager private constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(userId: Long, mac: String, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanMacAndConnect(userId, mac, fun(mac: String) {
+    fun scanMacAndConnect(mac: String, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanMacAndConnect( mac, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -281,14 +281,14 @@ class FlowtimeBleManager private constructor(context: Context) {
     /**
      * start collect brain data
      */
-    fun startCollection() {
+    fun startBrainCollection() {
         rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT)
     }
 
     /**
      * stop collect brain data
      */
-    fun stopCollection() {
+    fun stopBrainCollection() {
         rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT)
     }
 

@@ -90,7 +90,7 @@ class RxBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(userId: Long, successScan: (() -> Unit)?,
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?,
                                  successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
 
         BleUtil.removePairDevice()
@@ -119,7 +119,7 @@ class RxBleManager private constructor(context: Context) {
                                     if (null == scanResult) {
                                         failure?.invoke("scan error 1")
                                     } else {
-                                        connect(userId, nearScanResult!!, true, successConnect, failure)
+                                        connect(nearScanResult!!, true, successConnect, failure)
                                     }
                                 }
                             }
@@ -134,7 +134,7 @@ class RxBleManager private constructor(context: Context) {
     /**
      * connect device
      */
-    fun connect(userId: Long, scanResult: ScanResult, auto: Boolean = true, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+    fun connect(scanResult: ScanResult, auto: Boolean = true, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
         rxBleDevice = rxBleClient.getBleDevice(scanResult.bleDevice.macAddress)
 
         subscription = rxBleDevice!!.establishConnection(false)
@@ -163,7 +163,7 @@ class RxBleManager private constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(userId: Long, mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = 5000, auto: Boolean = true) {
+    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = 5000, auto: Boolean = true) {
         BleUtil.removePairDevice()
         var isScanSuccess = false
         isConnecting = true
@@ -184,7 +184,7 @@ class RxBleManager private constructor(context: Context) {
                                             isConnecting = false
                                         } else {
                                             scanSubscription.dispose()
-                                            connect(userId, scanResult, true, success, failure)
+                                            connect(scanResult, true, success, failure)
                                         }
                                     }
                                 }
@@ -262,6 +262,7 @@ class RxBleManager private constructor(context: Context) {
      */
     fun notifyHeartRate(success: (ByteArray) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
         return notify(NapBleCharacter.HEART_RATE.uuid, fun(bytes: ByteArray) {
+            Log.d("###","heart rate is "+bytes)
             success.invoke(bytes)
         }, failure)
     }

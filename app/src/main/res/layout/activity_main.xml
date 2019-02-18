@@ -40,15 +40,36 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="开始采集"
-                android:onClick="onCollectStart"/>
+                android:text="开始脑波数据采集"
+                android:onClick="onCollectBrainStart"/>
 
             <Button
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="停止采集"
-                android:onClick="onCollectStop"/>
+                android:text="停止脑波数据采集"
+                android:onClick="onCollectBrainStop"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="开始心率数据采集"
+                android:onClick="onCollectHeartStart"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="停止心率数据采集"
+                android:onClick="onCollectHeartStop"/>
 
         </LinearLayout>
 
