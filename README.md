@@ -18,18 +18,24 @@ SDK中Demo与API接口采用Kotlin语言编写，希望你对Kotlin有一定的�
 
 ## 集成
 
-集成的方式很简单，只需要将Demo中蓝牙jar包拷入自己的工程中就可以了。
 
-将Demo中app/libs目录下的蓝牙jar文件拷贝到自己项目的libs文件夹下，如果没有，需要新建一个文件夹。拷贝完后需要在你项目的build.gradle文件中添加如下依赖：
+### gradle自动依赖
+在所需的module中的build.gradle文件下添加以下依赖即可：
+```groovy
+implementation 'cn.entertech:flowtimeble:1.0.0-alpha'
+```
+### jar包集成
+如果你在自动依赖遇到问题也可以手动添加依赖
+
+集成的方式很简单，只需要将Demo中app/libs目录下的蓝牙jar文件拷贝到自己项目的libs文件夹下，如果没有，需要新建一个文件夹。拷贝完后需要在你项目的build.gradle文件中添加如下依赖：
 
 ```groovy
 implementation fileTree(include: ['*.jar'], dir: 'libs')
-implementation files('libs/enter-flowtime-sdk-v1.0.0.jar')
+implementation files('libs/enter-flowtime-ble-v1.0.0-alpha.jar')
 ```
-
 ### 注意事项
 
-另外build.gradle文件中需要添加额外的依赖：
+另外build.gradle文件中还需要添加额外的依赖：
 
 ```groovy
 compile 'com.polidea.rxandroidble2:rxandroidble:1.8.0''
@@ -204,8 +210,8 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 **示例代码**
 
 ```kotlin
-var heartRateListener = fun(bytes: ByteArray) {
-    Logger.d("heart rate data is " + Arrays.toString(bytes))
+var heartRateListener = fun(heartRate: Int) {
+    Logger.d("heart rate data is " + heartRate)
 }
 flowtimeBleManager.addRawDataListener(heartRateListener)
 ```
@@ -214,7 +220,7 @@ flowtimeBleManager.addRawDataListener(heartRateListener)
 
 | 参数              | 类型                | 说明             |
 | ----------------- | ------------------- | ---------------- |
-| heartRateListener | （ByteArray）->Unit | 心率数据获取回调 |
+| heartRateListener | （Int）->Unit | 心率数据获取回调 |
 
 #### 移除心率监听
 
@@ -232,7 +238,7 @@ flowtimeBleManager.removeHeartRateListener(heartRateListener)
 
 | 参数              | 类型                | 说明         |
 | ----------------- | ------------------- | ------------ |
-| heartRateListener | （ByteArray）->Unit | 心率数据回调 |
+| heartRateListener | （Int）->Unit | 心率数据回调 |
 
 #### 添加佩戴信号监听
 

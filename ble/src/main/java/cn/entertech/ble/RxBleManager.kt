@@ -260,10 +260,14 @@ class RxBleManager private constructor(context: Context) {
     /**
      * notify heart rate
      */
-    fun notifyHeartRate(success: (ByteArray) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+    fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
         return notify(NapBleCharacter.HEART_RATE.uuid, fun(bytes: ByteArray) {
-            Log.d("###","heart rate is "+bytes)
-            success.invoke(bytes)
+            Log.d("###", "heart rate is " + bytes)
+            if (bytes.isNotEmpty()) {
+                success.invoke(bytes[0].toInt())
+            } else {
+                success.invoke(0)
+            }
         }, failure)
     }
 

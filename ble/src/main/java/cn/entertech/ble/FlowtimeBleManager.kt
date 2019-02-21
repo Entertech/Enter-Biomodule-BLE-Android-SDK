@@ -15,7 +15,7 @@ class FlowtimeBleManager private constructor(context: Context) {
     val rawDataListeners = mutableListOf<(ByteArray) -> Unit>()
     val contactListeners = mutableListOf<(ContactState) -> Unit>()
     val batteryListeners = mutableListOf<(NapBattery) -> Unit>()
-    val heartRateListeners = mutableListOf<(ByteArray) -> Unit>()
+    val heartRateListeners = mutableListOf<(Int) -> Unit>()
     var brainWaveDisposable: Disposable? = null
     var batteryDisposable: Disposable? = null
     var heartRateDisposable: Disposable? = null
@@ -130,11 +130,11 @@ class FlowtimeBleManager private constructor(context: Context) {
      * notify heart rate
      */
     fun notifyHeartRate() {
-        heartRateDisposable = rxBleManager.notifyHeartRate(fun(bytes: ByteArray) {
+        heartRateDisposable = rxBleManager.notifyHeartRate(fun(heartRate: Int) {
             handler.post {
-                bytes.let {
+                heartRate.let {
                     heartRateListeners.forEach { listener ->
-                        listener.invoke(bytes)
+                        listener.invoke(heartRate)
                     }
                 }
             }
@@ -267,14 +267,14 @@ class FlowtimeBleManager private constructor(context: Context) {
     /**
      * add device heart rate listener
      */
-    fun addHeartRateListener(listener: (ByteArray) -> Unit) {
+    fun addHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.add(listener)
     }
 
     /**
      * remove device heart rate listener
      */
-    fun removeHeartRateListener(listener: (ByteArray) -> Unit) {
+    fun removeHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.remove(listener)
     }
 

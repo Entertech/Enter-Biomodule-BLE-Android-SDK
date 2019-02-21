@@ -113,13 +113,19 @@ class MainActivity : AppCompatActivity() {
     fun onCollectBrainStop(view: View) {
         flowtimeBleManager.stopBrainCollection()
     }
+    fun onCollectBrainAndHeartStart(view: View) {
+        flowtimeBleManager.startHeartAndBrainCollection()
+    }
+    fun onCollectBrainAndHeartStop(view: View) {
+        flowtimeBleManager.stopHeartAndBrainCollection()
+    }
 
     var rawListener = fun(bytes: ByteArray) {
         Logger.d("brain data is " + Arrays.toString(bytes))
     }
 
-    var heartRateListener = fun(bytes: ByteArray) {
-        Logger.d("heart rate data is " + Arrays.toString(bytes))
+    var heartRateListener = fun(heartRate: Int) {
+        Logger.d("heart rate data is " + heartRate)
     }
 
     fun onAddRawListener(view: View) {
@@ -230,6 +236,7 @@ class MainActivity : AppCompatActivity() {
         flowtimeBleManager.removeHeartRateListener(heartRateListener)
         flowtimeBleManager.stopHeartRateCollection()
         flowtimeBleManager.stopBrainCollection()
+        flowtimeBleManager.stopHeartAndBrainCollection()
         super.onDestroy()
     }
 
