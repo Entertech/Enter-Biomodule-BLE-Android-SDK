@@ -9,7 +9,7 @@ enum class ContactState {
 
 fun toEnum(value: Byte): ContactState {
     when(value) {
-        24.toByte() -> return ContactState.BAD
+        120.toByte() -> return ContactState.BAD
         0.toByte() -> return ContactState.GOOD
         else -> return ContactState.POOR
     }
