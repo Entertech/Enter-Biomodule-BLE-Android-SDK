@@ -7,7 +7,7 @@ Flowtime 蓝牙模块Android SDK
 
 SDK包含以下文件：
 
-<img src="/Users/Enter/Documents/易休相关/开发文档/SDK文档/易休SDK接口文档/Flowtime/WechatIMG9.jpeg" width="50%" height="500px">
+<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/1.jpeg" width="50%" height="500px">
 
  1. Android Studio 工程Demo
  2. 蓝牙功能模块源代码
