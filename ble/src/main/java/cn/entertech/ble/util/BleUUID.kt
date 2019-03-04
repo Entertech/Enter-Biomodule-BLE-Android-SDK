@@ -7,7 +7,7 @@ import java.util.*
  */
 
 enum class NapBleDevice(val uuid: String) {
-    NAPTIME("0000FF00-1212-abcd-1523-785feabcd123")
+    NAPTIME("0000FF10-1212-abcd-1523-785feabcd123")
 }
 
 enum class NapBleService(val uuid: String) {

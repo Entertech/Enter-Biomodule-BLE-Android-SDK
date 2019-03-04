@@ -38,5 +38,5 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
     implementation 'com.orhanobut:logger:1.15'
-    implementation 'cn.entertech:flowtimeble:1.0.1'
+    implementation 'cn.entertech:flowtimeble:1.0.2'
 }
