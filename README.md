@@ -222,7 +222,7 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 > var companion = flowtimeBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
 > var flowtimeBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
 > //实例化脑波数据监听回调
-> RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback(messageList,wr);
+> RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback();
 > flowtimeBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
 > ```
 
