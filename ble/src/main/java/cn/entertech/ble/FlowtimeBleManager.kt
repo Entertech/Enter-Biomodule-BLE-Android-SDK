@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.util.NapBattery
 import cn.entertech.ble.util.BatteryUtil
+import cn.entertech.ble.util.ByteArrayBean
 import cn.entertech.ble.util.NapBleCharacter
 import io.reactivex.disposables.Disposable
 
@@ -13,6 +14,7 @@ class FlowtimeBleManager private constructor(context: Context) {
     private lateinit var handler: Handler
     private lateinit var handlerThread: HandlerThread
     val rawDataListeners = mutableListOf<(ByteArray) -> Unit>()
+    val rawDataListeners4CSharp = mutableListOf<(ByteArrayBean) -> Unit>()
     val contactListeners = mutableListOf<(ContactState) -> Unit>()
     val batteryListeners = mutableListOf<(NapBattery) -> Unit>()
     val heartRateListeners = mutableListOf<(Int) -> Unit>()
@@ -98,8 +100,10 @@ class FlowtimeBleManager private constructor(context: Context) {
                     rawDataListeners.forEach { listener ->
                         listener.invoke(it)
                     }
+                    rawDataListeners4CSharp.forEach { listener ->
+                        listener.invoke(ByteArrayBean(bytes))
+                    }
                 }
-
             }
         }
     }
@@ -207,7 +211,7 @@ class FlowtimeBleManager private constructor(context: Context) {
      * connect device by mac address
      */
     fun scanMacAndConnect(mac: String, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanMacAndConnect( mac, fun(mac: String) {
+        rxBleManager.scanMacAndConnect(mac, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -228,6 +232,18 @@ class FlowtimeBleManager private constructor(context: Context) {
     fun addRawDataListener(listener: (ByteArray) -> Unit) {
         rawDataListeners.add(listener)
     }
+
+    /**
+     * add raw brain data listener
+     */
+    fun addRawDataListener4CSharp(listener: (ByteArrayBean) -> Unit) {
+        rawDataListeners4CSharp.add(listener)
+    }
+
+    fun removeRawDataListener4CSharp(listener: (ByteArrayBean) -> Unit) {
+        rawDataListeners4CSharp.remove(listener)
+    }
+
 
     /**
      * remove raw brain data listener
