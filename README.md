@@ -204,6 +204,29 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 | --------------- | ------------------- | ------------ |
 | rawDataListener | （ByteArray）->Unit | 原始脑波回调 |
 
+> ### C#调用说明
+>
+> 该SDK大部分方法都能被C#调用，但是涉及到数组的传递时，C#会调用失败，如这里的脑波数据传递。因此如需在C#设置脑波数据监听，可采用如下方式：
+>
+> ```c#
+> //c#端定义脑波监听类
+> class RawBrainDataCallback : AndroidJavaProxy {
+> 	public RawBrainDataCallback():base("kotlin.jvm.functions.Function1"){
+> 	}
+> 	public void invoke(AndroidJavaObject jo){
+> 		AndroidJavaObject bufferObject = jo.Get<AndroidJavaObject>("Buffer");
+> 		byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());//这里的buffer数据便是返回的脑波数组
+>     }
+> }
+> AndroidJavaClass flowtimeBleManagerJc = new AndroidJavaClass("cn.entertech.ble.FlowtimeBleManager");
+> var companion = flowtimeBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
+> var flowtimeBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
+> //实例化脑波数据监听回调
+> RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback(messageList,wr);
+> flowtimeBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
+> ```
+
+
 #### 添加心率监听
 
 **方法说明**
