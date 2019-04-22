@@ -7,7 +7,7 @@
 
 SDK包含以下文件：
 
-<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/1.jpeg" width="50%" height="500px">
+<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/1.jpeg" width="40%">
 
  1. Android Studio 工程Demo
  2. 蓝牙功能模块源代码
