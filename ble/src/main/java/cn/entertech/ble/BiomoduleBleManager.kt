@@ -9,7 +9,7 @@ import cn.entertech.ble.util.ByteArrayBean
 import cn.entertech.ble.util.NapBleCharacter
 import io.reactivex.disposables.Disposable
 
-class FlowtimeBleManager private constructor(context: Context) {
+class BiomoduleBleManager private constructor(context: Context) {
     val rxBleManager: RxBleManager
     private lateinit var handler: Handler
     private lateinit var handlerThread: HandlerThread
@@ -33,13 +33,13 @@ class FlowtimeBleManager private constructor(context: Context) {
 
     companion object {
         @Volatile
-        var mBleDeviceManager: FlowtimeBleManager? = null
+        var mBleDeviceManager: BiomoduleBleManager? = null
 
-        fun getInstance(context: Context): FlowtimeBleManager {
+        fun getInstance(context: Context): BiomoduleBleManager {
             if (mBleDeviceManager == null) {
-                synchronized(FlowtimeBleManager::class.java) {
+                synchronized(BiomoduleBleManager::class.java) {
                     if (mBleDeviceManager == null) {
-                        mBleDeviceManager = FlowtimeBleManager(context)
+                        mBleDeviceManager = BiomoduleBleManager(context)
                     }
                 }
             }

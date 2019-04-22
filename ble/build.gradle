@@ -49,9 +49,9 @@ publish {
     //jcenter上的路径
     groupId = 'cn.entertech'
     //项目名称
-    artifactId = 'flowtimeble'
+    artifactId = 'biomodule-ble'
     //版本号
-    publishVersion = '1.0.3'
+    publishVersion = '1.0.1'
     //描述，不重要
     desc = ''
     //网站，不重要
