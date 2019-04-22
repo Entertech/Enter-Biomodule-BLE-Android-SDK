@@ -1,7 +1,7 @@
 # Flowtime 蓝牙SDK
 # 简介
 
-Flowtime 蓝牙模块Android SDK
+本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
 
 ## 开发组件
 
