@@ -41,7 +41,7 @@ implementation files('libs/enter-biomodule-ble-v1.0.2.jar')
 另外build.gradle文件中还需要添加额外的依赖：
 
 ```groovy
-compile 'com.polidea.rxandroidble2:rxandroidble:1.8.0''
+compile 'com.polidea.rxandroidble2:rxandroidble:1.8.0'
 compile 'com.orhanobut:logger:1.15'
 ```
 
