@@ -7,18 +7,18 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
+import cn.entertech.ble.BiomoduleBleManager
 import cn.entertech.ble.ContactState
-import cn.entertech.ble.FlowtimeBleManager
 import cn.entertech.ble.util.NapBattery
 import com.orhanobut.logger.Logger
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var flowtimeBleManager: FlowtimeBleManager
+    private lateinit var biomoduleBleManager: BiomoduleBleManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        flowtimeBleManager = FlowtimeBleManager.getInstance(this)
+        biomoduleBleManager = BiomoduleBleManager.getInstance(this)
         initPermission()
     }
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onConnect(view: View) {
-        flowtimeBleManager.scanNearDeviceAndConnect( fun() {
+        biomoduleBleManager.scanNearDeviceAndConnect( fun() {
             Logger.d("扫描成功")
         }, fun(mac: String) {
             Logger.d("连接成功$mac")
@@ -77,47 +77,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onDisconnet(view: View) {
-        flowtimeBleManager.disConnect()
+        biomoduleBleManager.disConnect()
     }
 
 
     fun onAddConnectedListener(view: View) {
-        flowtimeBleManager.addConnectListener(connectedListener)
+        biomoduleBleManager.addConnectListener(connectedListener)
     }
 
     fun onRemoveConnectedListener(view: View) {
-        flowtimeBleManager.removeConnectListener(connectedListener)
+        biomoduleBleManager.removeConnectListener(connectedListener)
     }
 
     fun onAddDisconnectedListener(view: View) {
-        flowtimeBleManager.addDisConnectListener(disConnectedListener)
+        biomoduleBleManager.addDisConnectListener(disConnectedListener)
     }
 
     fun onRemoveDisconnectedListener(view: View) {
-        flowtimeBleManager.removeDisConnectListener(disConnectedListener)
+        biomoduleBleManager.removeDisConnectListener(disConnectedListener)
     }
 
 
     fun onCollectHeartStart(view: View) {
-        flowtimeBleManager.startHeartRateCollection()
+        biomoduleBleManager.startHeartRateCollection()
     }
 
     fun onCollectHeartStop(view: View) {
-        flowtimeBleManager.stopHeartRateCollection()
+        biomoduleBleManager.stopHeartRateCollection()
     }
 
     fun onCollectBrainStart(view: View) {
-        flowtimeBleManager.startBrainCollection()
+        biomoduleBleManager.startBrainCollection()
     }
 
     fun onCollectBrainStop(view: View) {
-        flowtimeBleManager.stopBrainCollection()
+        biomoduleBleManager.stopBrainCollection()
     }
     fun onCollectBrainAndHeartStart(view: View) {
-        flowtimeBleManager.startHeartAndBrainCollection()
+        biomoduleBleManager.startHeartAndBrainCollection()
     }
     fun onCollectBrainAndHeartStop(view: View) {
-        flowtimeBleManager.stopHeartAndBrainCollection()
+        biomoduleBleManager.stopHeartAndBrainCollection()
     }
 
     var rawListener = fun(bytes: ByteArray) {
@@ -129,31 +129,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onAddRawListener(view: View) {
-        flowtimeBleManager.addRawDataListener(rawListener)
+        biomoduleBleManager.addRawDataListener(rawListener)
     }
 
     fun onRemoveRawListener(view: View) {
-        flowtimeBleManager.removeRawDataListener(rawListener)
+        biomoduleBleManager.removeRawDataListener(rawListener)
     }
 
     fun onAddHeartRateListener(view: View) {
-        flowtimeBleManager.addHeartRateListener(heartRateListener)
+        biomoduleBleManager.addHeartRateListener(heartRateListener)
     }
 
     fun onRemoveHeartRateListener(view: View) {
-        flowtimeBleManager.removeHeartRateListener(heartRateListener)
+        biomoduleBleManager.removeHeartRateListener(heartRateListener)
     }
 
     fun onAddContactListener(view: View) {
-        flowtimeBleManager.addContactListener(contactListener)
+        biomoduleBleManager.addContactListener(contactListener)
     }
 
     fun onRemoveContactListener(view: View) {
-        flowtimeBleManager.removeContactListener(contactListener)
+        biomoduleBleManager.removeContactListener(contactListener)
     }
 
     fun onBattery(view: View) {
-        flowtimeBleManager.readBattery(fun(battery: NapBattery) {
+        biomoduleBleManager.readBattery(fun(battery: NapBattery) {
             Logger.d("battery = " + battery)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "电量:" + battery, Toast.LENGTH_SHORT).show()
@@ -164,8 +164,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onGetState(view: View) {
-        Logger.d(flowtimeBleManager.isConnected())
-        Toast.makeText(this, if (flowtimeBleManager.isConnected()) {
+        Logger.d(biomoduleBleManager.isConnected())
+        Toast.makeText(this, if (biomoduleBleManager.isConnected()) {
             "已连接"
         } else {
             "未连接"
@@ -177,15 +177,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onAddBtteryListener(view: View) {
-        flowtimeBleManager.addBatteryListener(batteryListener)
+        biomoduleBleManager.addBatteryListener(batteryListener)
     }
 
     fun onRemoveBtteryListener(view: View) {
-        flowtimeBleManager.removeBatteryListener(batteryListener)
+        biomoduleBleManager.removeBatteryListener(batteryListener)
     }
 
     fun onReadHardware(view: View) {
-        flowtimeBleManager.readDeviceHardware(fun(hardware: String) {
+        biomoduleBleManager.readDeviceHardware(fun(hardware: String) {
             Logger.d("hardware is " + hardware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "硬件版本：${hardware}", Toast.LENGTH_SHORT).show()
@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onReadFirmware(view: View) {
-        flowtimeBleManager.readDeviceFirmware(fun(firmware: String) {
+        biomoduleBleManager.readDeviceFirmware(fun(firmware: String) {
             Logger.d("firmware is " + firmware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "固件版本：${firmware}", Toast.LENGTH_SHORT).show()
@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onReadDeviceSerial(view: View) {
-        flowtimeBleManager.readDeviceSerial(fun(serial: String) {
+        biomoduleBleManager.readDeviceSerial(fun(serial: String) {
             Logger.d("serial is " + serial)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "序列号：${serial}", Toast.LENGTH_SHORT).show()
@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun oReadDeviceManufacturer(view: View) {
-        flowtimeBleManager.readDeviceManufacturer(fun(manufacturer: String) {
+        biomoduleBleManager.readDeviceManufacturer(fun(manufacturer: String) {
             Logger.d("manufacturer is " + manufacturer)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "制造商：${manufacturer}", Toast.LENGTH_SHORT).show()
@@ -230,13 +230,13 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onDestroy() {
-        flowtimeBleManager.removeRawDataListener(rawListener)
-        flowtimeBleManager.removeContactListener(contactListener)
-        flowtimeBleManager.removeBatteryListener(batteryListener)
-        flowtimeBleManager.removeHeartRateListener(heartRateListener)
-        flowtimeBleManager.stopHeartRateCollection()
-        flowtimeBleManager.stopBrainCollection()
-        flowtimeBleManager.stopHeartAndBrainCollection()
+        biomoduleBleManager.removeRawDataListener(rawListener)
+        biomoduleBleManager.removeContactListener(contactListener)
+        biomoduleBleManager.removeBatteryListener(batteryListener)
+        biomoduleBleManager.removeHeartRateListener(heartRateListener)
+        biomoduleBleManager.stopHeartRateCollection()
+        biomoduleBleManager.stopBrainCollection()
+        biomoduleBleManager.stopHeartAndBrainCollection()
         super.onDestroy()
     }
 

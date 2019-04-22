@@ -1,4 +1,4 @@
-# Flowtime 蓝牙SDK
+# Biomodule 蓝牙SDK
 # 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
@@ -34,7 +34,7 @@ implementation 'cn.entertech:flowtimeble:1.0.2'
 
 ```groovy
 implementation fileTree(include: ['*.jar'], dir: 'libs')
-implementation files('libs/enter-flowtime-ble-v1.0.2.jar')
+implementation files('libs/enter-biomodule-ble-v1.0.2.jar')
 ```
 ### 注意事项
 
@@ -64,7 +64,7 @@ compile 'com.orhanobut:logger:1.15'
 **示例代码**
 
 ```kotlin
-flowtimeBleManager = FlowtimeBleManager.getInstance(context)
+biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 ```
 
 ### 设备连接
@@ -78,7 +78,7 @@ flowtimeBleManager = FlowtimeBleManager.getInstance(context)
 **示例代码**
 
 ```kotlin
-  flowtimeBleManager.scanNearDeviceAndConnect(fun(){
+  biomoduleBleManager.scanNearDeviceAndConnect(fun(){
     Logger.d("扫描成功")
   }, fun(mac: String) {
     Logger.d("连接成功$mac")
@@ -104,7 +104,7 @@ flowtimeBleManager = FlowtimeBleManager.getInstance(context)
 **示例代码**
 
 ```kotlin
-  flowtimeBleManager.scanMacAndConnect(mac, fun(mac: String) {
+  biomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
     Logger.d("连接成功$mac")
   }){msg->
     Logger.d("连接失败")
@@ -128,7 +128,7 @@ flowtimeBleManager = FlowtimeBleManager.getInstance(context)
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.disConnect()
+biomoduleBleManager.disConnect()
 ```
 
 ### 获取设备连接状态
@@ -140,7 +140,7 @@ flowtimeBleManager.disConnect()
 **示例代码**
 
 ```kotlin
-boolean isConnected = flowtimeBleManager.isConnected()
+boolean isConnected = biomoduleBleManager.isConnected()
 ```
 
 **返回值说明**
@@ -165,7 +165,7 @@ boolean isConnected = flowtimeBleManager.isConnected()
   var rawDataListener = fun(data:ByteArray){
         Logger.d(Arrays.toString(data))
   }
-  flowtimeBleManager.addRawDataListener(rawDataListener)
+  biomoduleBleManager.addRawDataListener(rawDataListener)
 ```
 
 **参数说明**
@@ -195,7 +195,7 @@ boolean isConnected = flowtimeBleManager.isConnected()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.removeRawDataListener(rawDataListener)
+biomoduleBleManager.removeRawDataListener(rawDataListener)
 ```
 
 **参数说明**
@@ -218,12 +218,12 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 > 		byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());//这里的buffer数据便是返回的脑波数组
 >     }
 > }
-> AndroidJavaClass flowtimeBleManagerJc = new AndroidJavaClass("cn.entertech.ble.FlowtimeBleManager");
-> var companion = flowtimeBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
-> var flowtimeBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
+> AndroidJavaClass biomoduleBleManagerJc = new AndroidJavaClass("cn.entertech.ble.BiomoduleBleManager");
+> var companion = biomoduleBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
+> var biomoduleBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
 > //实例化脑波数据监听回调
 > RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback();
-> flowtimeBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
+> biomoduleBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
 > ```
 
 
@@ -239,7 +239,7 @@ flowtimeBleManager.removeRawDataListener(rawDataListener)
 var heartRateListener = fun(heartRate: Int) {
     Logger.d("heart rate data is " + heartRate)
 }
-flowtimeBleManager.addRawDataListener(heartRateListener)
+biomoduleBleManager.addRawDataListener(heartRateListener)
 ```
 
 **参数说明**
@@ -257,7 +257,7 @@ flowtimeBleManager.addRawDataListener(heartRateListener)
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.removeHeartRateListener(heartRateListener)
+biomoduleBleManager.removeHeartRateListener(heartRateListener)
 ```
 
 **参数说明**
@@ -278,7 +278,7 @@ flowtimeBleManager.removeHeartRateListener(heartRateListener)
 contactListener = fun(state: ContactState) {
    napManager.setTouchState(ContactState.GOOD == state);//将从硬件层获取的佩戴信号传入算法
 }
-flowtimeBleManager.addContactListener(contactListener)
+biomoduleBleManager.addContactListener(contactListener)
     
 ```
 
@@ -297,7 +297,7 @@ flowtimeBleManager.addContactListener(contactListener)
 **代码示例**
 
 ```kotlin
-flowtimeBleManager.removeContactListener(contactListener)
+biomoduleBleManager.removeContactListener(contactListener)
 ```
 
 **参数说明**
@@ -318,7 +318,7 @@ flowtimeBleManager.removeContactListener(contactListener)
 var batteryListener = fun(byte: Byte) {
    Logger.d("battery = $byte")
 }  
-flowtimeBleManager.addBatteryListener(batteryListener)
+biomoduleBleManager.addBatteryListener(batteryListener)
 ```
 
 **参数说明**
@@ -336,7 +336,7 @@ flowtimeBleManager.addBatteryListener(batteryListener)
 **代码示例**
 
 ```kotlin
-flowtimeBleManager.removeBatteryListener(batteryListener)
+biomoduleBleManager.removeBatteryListener(batteryListener)
 ```
 
 **参数说明**
@@ -356,7 +356,7 @@ flowtimeBleManager.removeBatteryListener(batteryListener)
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.startBrainCollection()
+biomoduleBleManager.startBrainCollection()
 ```
 
 #### 停止脑波数据采集
@@ -368,7 +368,7 @@ flowtimeBleManager.startBrainCollection()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.stopBrainCollection()
+biomoduleBleManager.stopBrainCollection()
 ```
 
 #### 开始心率数据采集
@@ -380,7 +380,7 @@ flowtimeBleManager.stopBrainCollection()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.startHeartRateCollection()
+biomoduleBleManager.startHeartRateCollection()
 ```
 
 #### 停止心率数据采集
@@ -392,7 +392,7 @@ flowtimeBleManager.startHeartRateCollection()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.stopHeartRateCollection()
+biomoduleBleManager.stopHeartRateCollection()
 ```
 
 #### 开始脑波和心率数据同时采集
@@ -404,7 +404,7 @@ flowtimeBleManager.stopHeartRateCollection()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.startHeartAndBrainCollection()
+biomoduleBleManager.startHeartAndBrainCollection()
 ```
 
 #### 停止脑波和心率数据采集
@@ -416,7 +416,7 @@ flowtimeBleManager.startHeartAndBrainCollection()
 **示例代码**
 
 ```kotlin
-flowtimeBleManager.stopHeartAndBrainCollection()
+biomoduleBleManager.stopHeartAndBrainCollection()
 ```
 
 
