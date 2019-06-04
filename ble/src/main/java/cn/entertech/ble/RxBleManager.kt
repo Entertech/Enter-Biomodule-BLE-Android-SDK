@@ -39,8 +39,8 @@ class RxBleManager private constructor(context: Context) {
     private lateinit var scanNearSubscription: Disposable
     private lateinit var scanSubscription: Disposable
     private val SCAN_TIMEOUT: Long = 10000
-    private val DURATION_OF_SORT: Long = 5000
-    private val CONNECT_TASK_DELAY: Long = 2000
+    private val DURATION_OF_SORT: Long = 3000
+    private val CONNECT_TASK_DELAY: Long = 1000
 
     init {
         rxBleClient = RxBleClient.create(context)
@@ -142,6 +142,9 @@ class RxBleManager private constructor(context: Context) {
                     this.rxBleConnection = rxBleConnection
                     Logger.d("conn succ")
                     success?.invoke(scanResult.bleDevice.macAddress)
+                    connectListeners.forEach {
+                        it.invoke(scanResult.bleDevice.macAddress)
+                    }
                 }, { throwable ->
                     isConnecting = false
                     disConnectListeners.forEach {

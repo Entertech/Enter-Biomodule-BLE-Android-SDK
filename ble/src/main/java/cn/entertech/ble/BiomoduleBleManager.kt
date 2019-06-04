@@ -8,16 +8,17 @@ import cn.entertech.ble.util.BatteryUtil
 import cn.entertech.ble.util.ByteArrayBean
 import cn.entertech.ble.util.NapBleCharacter
 import io.reactivex.disposables.Disposable
+import java.util.concurrent.CopyOnWriteArrayList
 
 class BiomoduleBleManager private constructor(context: Context) {
     val rxBleManager: RxBleManager
-    private lateinit var handler: Handler
-    private lateinit var handlerThread: HandlerThread
-    val rawDataListeners = mutableListOf<(ByteArray) -> Unit>()
-    val rawDataListeners4CSharp = mutableListOf<(ByteArrayBean) -> Unit>()
-    val contactListeners = mutableListOf<(ContactState) -> Unit>()
-    val batteryListeners = mutableListOf<(NapBattery) -> Unit>()
-    val heartRateListeners = mutableListOf<(Int) -> Unit>()
+    private var handler: Handler
+    private var handlerThread: HandlerThread
+    val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
+    val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
+    val contactListeners = CopyOnWriteArrayList<(ContactState) -> Unit>()
+    val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
+    val heartRateListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     var brainWaveDisposable: Disposable? = null
     var batteryDisposable: Disposable? = null
     var heartRateDisposable: Disposable? = null

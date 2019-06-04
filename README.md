@@ -25,7 +25,7 @@ SDK中Demo与API接口采用Kotlin语言编写，希望你对Kotlin有一定的�
 ### gradle自动依赖
 在所需的module中的build.gradle文件下添加以下依赖即可：
 ```groovy
-implementation 'cn.entertech:flowtimeble:1.0.2'
+implementation 'cn.entertech:biomoduleble:1.0.4'
 ```
 ### jar包集成
 如果你在自动依赖遇到问题也可以手动添加依赖
