@@ -295,6 +295,14 @@ class BiomoduleBleManager private constructor(context: Context) {
         heartRateListeners.remove(listener)
     }
 
+    fun startContact(){
+        rxBleManager.command(RxBleManager.Command.START_CONTACT)
+    }
+
+    fun stopContact(){
+        rxBleManager.command(RxBleManager.Command.STOP_CONTACT)
+    }
+
     /**
      * start collect brain data
      */

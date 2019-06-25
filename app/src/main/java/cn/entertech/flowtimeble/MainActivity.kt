@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onConnect(view: View) {
-        biomoduleBleManager.scanNearDeviceAndConnect( fun() {
+        biomoduleBleManager.scanNearDeviceAndConnect(fun() {
             Logger.d("扫描成功")
         }, fun(mac: String) {
             Logger.d("连接成功$mac")
@@ -97,6 +97,13 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.removeDisConnectListener(disConnectedListener)
     }
 
+    fun onStopContact(view: View) {
+        biomoduleBleManager.stopContact()
+    }
+
+    fun onStartContact(view: View) {
+        biomoduleBleManager.startContact()
+    }
 
     fun onCollectHeartStart(view: View) {
         biomoduleBleManager.startHeartRateCollection()
@@ -113,15 +120,18 @@ class MainActivity : AppCompatActivity() {
     fun onCollectBrainStop(view: View) {
         biomoduleBleManager.stopBrainCollection()
     }
+
     fun onCollectBrainAndHeartStart(view: View) {
         biomoduleBleManager.startHeartAndBrainCollection()
     }
+
     fun onCollectBrainAndHeartStop(view: View) {
         biomoduleBleManager.stopHeartAndBrainCollection()
     }
 
     var rawListener = fun(bytes: ByteArray) {
-        Logger.d("brain data is " + Arrays.toString(bytes))
+        Logger.d("brain data hex " +  HexDump.toHexString(bytes))
+//        Logger.d("brain data is " + Arrays.toString(bytes))
     }
 
     var heartRateListener = fun(heartRate: Int) {
