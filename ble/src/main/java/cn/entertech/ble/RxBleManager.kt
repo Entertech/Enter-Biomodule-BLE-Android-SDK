@@ -216,6 +216,8 @@ class RxBleManager private constructor(context: Context) {
         STOP_HEART_RATE_COLLECT(ByteArray(1) { 0x04 }),
         START_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x05 }),
         STOP_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x06 }),
+        START_CONTACT(ByteArray(1) { 0x07 }),
+        STOP_CONTACT(ByteArray(1) { 0x08 }),
         DISCONNECTED(ByteArray(1) { 0x49 })
     }
 
