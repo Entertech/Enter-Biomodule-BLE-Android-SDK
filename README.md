@@ -1,4 +1,4 @@
-# Biomodule 蓝牙SDK
+# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.0.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.0.6/link)
 # 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
@@ -25,7 +25,7 @@ SDK中Demo与API接口采用Kotlin语言编写，希望你对Kotlin有一定的�
 ### gradle自动依赖
 在所需的module中的build.gradle文件下添加以下依赖即可：
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.0.4'
+implementation 'cn.entertech:biomoduleble:1.0.6'
 ```
 ### jar包集成
 如果你在自动依赖遇到问题也可以手动添加依赖
