@@ -34,7 +34,7 @@ implementation 'cn.entertech:biomoduleble:1.0.7'
 
 ```groovy
 implementation fileTree(include: ['*.jar'], dir: 'libs')
-implementation files('libs/enter-biomodule-ble-v1.0.2.jar')
+implementation files('libs/enter-biomodule-ble-v1.0.7.jar')
 ```
 ### 注意事项
 
