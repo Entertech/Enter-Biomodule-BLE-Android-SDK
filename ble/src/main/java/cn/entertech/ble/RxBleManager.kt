@@ -90,7 +90,7 @@ class RxBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?,
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
                                  successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
 
         BleUtil.removePairDevice()
@@ -126,6 +126,7 @@ class RxBleManager private constructor(context: Context) {
                         }
                     }
                 }, {
+            failScan?.invoke(it as Exception)
             it.printStackTrace()
         })
     }

@@ -9,6 +9,7 @@ import cn.entertech.ble.util.ByteArrayBean
 import cn.entertech.ble.util.NapBleCharacter
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.Exception
 
 class BiomoduleBleManager private constructor(context: Context) {
     val rxBleManager: RxBleManager
@@ -201,8 +202,8 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanNearDeviceAndConnect(successScan, fun(mac: String) {
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -295,11 +296,11 @@ class BiomoduleBleManager private constructor(context: Context) {
         heartRateListeners.remove(listener)
     }
 
-    fun startContact(){
+    fun startContact() {
         rxBleManager.command(RxBleManager.Command.START_CONTACT)
     }
 
-    fun stopContact(){
+    fun stopContact() {
         rxBleManager.command(RxBleManager.Command.STOP_CONTACT)
     }
 

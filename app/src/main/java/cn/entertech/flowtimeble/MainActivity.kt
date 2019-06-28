@@ -63,6 +63,8 @@ class MainActivity : AppCompatActivity() {
     fun onConnect(view: View) {
         biomoduleBleManager.scanNearDeviceAndConnect(fun() {
             Logger.d("扫描成功")
+        }, fun(e: Exception) {
+            Logger.d("扫描失败：$e")
         }, fun(mac: String) {
             Logger.d("连接成功$mac")
             runOnUiThread {
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     var rawListener = fun(bytes: ByteArray) {
-        Logger.d("brain data hex " +  HexDump.toHexString(bytes))
+        Logger.d("brain data hex " + HexDump.toHexString(bytes))
 //        Logger.d("brain data is " + Arrays.toString(bytes))
     }
 
