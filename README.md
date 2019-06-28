@@ -1,4 +1,4 @@
-# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.0.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.0.6/link)
+# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.0.7)](https://bintray.com/hzentertech/maven/biomoduleble/1.0.7/link)
 # 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
