@@ -78,13 +78,15 @@ biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 **示例代码**
 
 ```kotlin
-  biomoduleBleManager.scanNearDeviceAndConnect(fun(){
-    Logger.d("扫描成功")
-  }, fun(mac: String) {
-    Logger.d("连接成功$mac")
-  }){msg->
-    Logger.d("连接失败")
-  }
+   biomoduleBleManager.scanNearDeviceAndConnect(fun() {
+            Logger.d("扫描成功")
+        }, fun(e: Exception) {
+            Logger.d("扫描失败：$e")
+        }, fun(mac: String) {
+            Logger.d("连接成功$mac")
+        }) { msg ->
+            Logger.d("连接失败")
+        }
 ```
 
 **参数说明**
@@ -92,6 +94,7 @@ biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 | 参数                   | 类型            | 说明         |
 | ---------------------- | --------------- | ------------ |
 | scanSuccessCallBack    | () -> Unit      | 扫描成功回调 |
+| scanFailCallBack    | (Exception) -> Unit      | 扫描失败回调 |
 | connectSuccessCallBack | (String) ->Unit | 连接成功回调 |
 | failedCallBack         | (String)->Unit  | 失败回调     |
 
