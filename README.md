@@ -429,7 +429,7 @@ biomoduleBleManager.stopHeartAndBrainCollection()
 支持DFU（Device Firmware Update），即设备远程固件升级。由于本SDK底层依赖Android-DFU-Library库，因此如有需要DFU，需在你的build.gradle文件中添加如下依赖：
 
 ```groovy
-compile 'no.nordicsemi.android:dfu:1.7.0'
+implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
 ```
 
 #### DFU的使用
