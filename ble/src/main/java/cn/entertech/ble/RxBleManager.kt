@@ -6,6 +6,7 @@ import android.os.HandlerThread
 import android.os.ParcelUuid
 import android.util.Log
 import cn.entertech.ble.util.*
+import cn.entertech.ble.util.CharUtil.converUnchart
 import com.orhanobut.logger.Logger
 import com.polidea.rxandroidble2.RxBleClient
 import com.polidea.rxandroidble2.RxBleConnection
@@ -268,9 +269,8 @@ class RxBleManager private constructor(context: Context) {
      */
     fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
         return notify(NapBleCharacter.HEART_RATE.uuid, fun(bytes: ByteArray) {
-            Log.d("###", "heart rate is " + bytes)
             if (bytes.isNotEmpty()) {
-                success.invoke(bytes[0].toInt())
+                success.invoke(converUnchart(bytes[0]))
             } else {
                 success.invoke(0)
             }
