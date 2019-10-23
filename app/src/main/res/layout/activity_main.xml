@@ -313,6 +313,13 @@
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/btn_device_ui"
+                android:onClick="onDeviceUI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="设备UI入口" />
+
 
         </LinearLayout>
     </ScrollView>

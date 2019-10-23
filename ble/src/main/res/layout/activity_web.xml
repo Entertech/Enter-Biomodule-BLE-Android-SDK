@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+        >
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorThemeBlue"
+            >
+
+        <ImageView
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onBack"
+                android:paddingLeft="@dimen/activity_margin"
+                android:paddingRight="@dimen/activity_margin"
+                android:paddingTop="@dimen/activity_margin_half"
+                android:paddingBottom="@dimen/activity_margin_half"
+                android:src="@mipmap/ic_premium_close"
+                />
+
+        <TextView
+                android:id="@+id/web_title"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="56dp"
+                android:paddingTop="@dimen/activity_margin_half"
+                android:paddingBottom="@dimen/activity_margin_half"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:text="Message"
+                />
+
+    </RelativeLayout>
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+            <!--<org.xwalk.core.XWalkView-->
+            <!--android:id="@+id/web_xwalk"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:orientation="vertical" />-->
+
+            <WebView
+                    android:id="@+id/web_webview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+        </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/web_progress"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_margin_half"
+                android:padding="0dp"
+                android:visibility="invisible"
+                style="?android:attr/progressBarStyleHorizontal"
+                />
+
+
+        <LinearLayout
+                android:id="@+id/web_nonetwork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_gravity="center|top"
+                android:visibility="gone"
+                android:orientation="vertical"
+                >
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingLeft="@dimen/activity_margin"
+                    />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:textSize="18sp"
+                    android:textColor="#96a6d0"
+                    android:layout_gravity="center"
+                    android:text=">Network Unavailable"
+                    />
+
+            <Button
+                    android:layout_marginTop="32dp"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reload"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:onClick="onReload"
+                    android:background="@drawable/shape_button"
+                    />
+        </LinearLayout>
+    </FrameLayout>
+
+
+</LinearLayout>

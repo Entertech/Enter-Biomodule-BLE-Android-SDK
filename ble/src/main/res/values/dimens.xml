@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="activity_margin_half">8dp</dimen>
+    <dimen name="margin_vertical">24dp</dimen>
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="text_size_start">40sp</dimen>
+    <dimen name="text_size_min">11sp</dimen>
+    <dimen name="margin_status_top">30dp</dimen>
+    <dimen name="image_size">24dp</dimen>
+    <dimen name="card_title_height">56dp</dimen>
+</resources>

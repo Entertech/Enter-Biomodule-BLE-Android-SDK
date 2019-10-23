@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <!--<color name="colorPrimaryDark">#f5f5f5</color>-->
+    <color name="colorPrimaryDark">#fff</color>
+    <color name="colorAccent">#4b5dcc</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="colorThemeBlue">#4b5dcc</color>
+    <color name="colorThemeGray">#999999</color>
+    <color name="white">#fff</color>
+
+    <color name="colorBtnClick">#cccccc</color>
+    <color name="colorLine">#bcbbc1</color>
+    <!--device-->
+    <color name="itemTextColor">#de000000</color>
+    <color name="itemTextSecondaryColor">#9e9e9e</color>
+    <color name="lineColor">#d8d8d8</color>
+    <color name="pageBgColor">#f8f8f8</color>
+    <color name="deviceConnecting">#555b7f</color>
+    <color name="deviceConnected">#4b5dcc</color>
+    <color name="deviceDisconnect">#fb9c98</color>
+    <color name="colorDeviceUpdateText">#fefffe</color>
+    <color name="colorWarning">#ff4852</color>
+
+
+</resources>

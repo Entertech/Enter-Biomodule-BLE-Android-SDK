@@ -1,3 +1,97 @@
 <resources>
     <string name="app_name">Ble</string>
+
+    <string name="device_time_left">%1$d hours left</string>
+    <string name="device_name">Device name</string>
+    <string name="device_hardware">Hardware version</string>
+    <string name="device_firmware">Firmware version</string>
+    <string name="device_mac">Bluetooth address</string>
+    <string name="device_know">Instructions</string>
+    <string name="device_connect_guide">Can not connect device?</string>
+    <string name="device_unbind">Delete device</string>
+    <string name="device_disconnect">Disconnect</string>
+    <string name="device_reconnect">Try reconnect</string>
+    <string name="device_searching">Searching device...</string>
+    <string name="device_searching_tip">Make sure the device is near the phone.</string>
+    <string name="device_connecting">Connecting...</string>
+    <string name="device_connecting_tip">Make sure the device is near the phone.</string>
+    <string name="device_connect_succ">Connected. Start!</string>
+    <string name="device_connect_succ_tip">Know more for better use.</string>
+    <string name="device_connect_succ_button">Ready to use!</string>
+    <string name="device_connect_fail">Connection failed. \n Searching devices again⋯</string>
+    <string name="device_connect_fail_tip">Make sure the device is near the phone.</string>
+    <string name="device_connect_fail_button">Connect again</string>
+    <string name="device_open">Press the button until the light flashes constantly and rapidly.</string>
+    <string name="device_open_tip">If the light is not on after a long press, please charge the device first.</string>
+    <string name="device_open_can_not">Can’t connect the device?</string>
+    <string name="device_open_button">Next</string>
+    <string name="device_delete">Delete the device</string>
+    <string name="device_delete_1">InnerPeace can only connect with one device at a time. If you need to connect with
+        other devices, please delete this one first.
+    </string>
+    <string name="device_delete_2">After deleted, it will not be connected automatically. But you can connect it again
+        by adding devices.
+    </string>
+    <string name="device_delete_confirm">Confirm deleting.</string>
+    <string name="device_can_not_connect_title">Can\'t connect the device?</string>
+    <string name="device_can_not_connect_2">Make sure the device is near the phone. If there are other Bluetooth smart
+        devices around, please take them away.
+    </string>
+    <string name="device_can_not_connect_3">Check the Bluetooth state in the system settings and make sure that
+        Bluetooth is turned on.
+    </string>
+    <string name="device_can_not_connect_4">If Bluetooth is already on, please turn it off and on again.</string>
+    <string name="device_can_not_connect_6">After completing the above operation, return to continue searching for the
+        device.
+    </string>
+    <string name="device_can_not_open_title">Can\'t connect the device?</string>
+    <string name="device_can_not_open_2">Make sure the device is near the phone. If there are other Bluetooth smart
+        devices around, please take them away.
+    </string>
+    <string name="device_can_not_open_3">Check the Bluetooth state in the system settings and make sure that Bluetooth
+        is turned on.
+    </string>
+    <string name="device_can_not_open_4">If Bluetooth is already on, please turn it off and on again.</string>
+    <string name="device_can_not_open_6">After completing the above operation, return to press “Try to connect again”.
+    </string>
+    <string name="device_battery_tip_title">Device battery reminder</string>
+    <string name="device_battery_tip_tip">Know more about battery status for better battery management.</string>
+    <string name="device_battery_tip_button">Next to know more.</string>
+    <string name="device_permission">打开蓝牙以连接设备</string>
+    <string name="device_permission_location">启用位置访问权限</string>
+    <string name="device_permission_location_tip">安卓 6.0 以上版本为了保护用户隐私，在低功耗蓝牙连接，获取设备唯一标识符时，需要申请位置访问权限。
+
+    </string>
+    <string name="device_permission_ble">打开系统蓝牙</string>
+
+    <string name="connecting">正在连接...</string>
+    <string name="no_device_found">未找到设备</string>
+    <string name="try_connect">重新连接</string>
+    <string name="hardware_version">硬件版本</string>
+    <string name="firmware_version">固件版本</string>
+    <string name="bluetooth_address">蓝牙地址</string>
+    <string name="know_more_about_flowtime_headband">Know more about Flowtime headband</string>
+    <string name="can_t_connect_to_the_device">无法连接设备？</string>
+
+    <string name="turn_deveice_on">设备连接</string>
+
+
+    <string name="update_completed">升级成功</string>
+    <string name="update_complete_tip">设备将会重启并自动和你手机连接。\n请保持设备在你手机附近</string>
+    <string name="update">开始升级</string>
+    <string name="device_update_title">固件升级</string>
+    <string name="update_tip_title">固件升级</string>
+    <string name="updating">升级中...</string>
+    <string name="updating_tip">固件升级需要一些时间，请保持设备在手机附近</string>
+    <string name="update_completed_tip">设备将会重启并自动和你手机连接。\n请保持设备在你手机附近</string>
+    <string name="update_failed">升级失败</string>
+    <string name="update_failed_tip">请返回重新连接设备后再次尝试。</string>
+    <string name="delete_device_tip">如果要连接其他设备请先删除已连接的设备</string>
+    <string name="delete_device_title">删除设备</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="device_can_not_connect_url">https://www.notion.so/I-can-t-connect-the-headband-with-the-app-1ae10dc7fe1049c4953fc879f9042730</string>
+    <string name="device_connect_tip">长按设备按键直至灯亮。如果设备指示灯没有亮，先给设备充电，10分钟之后再尝试</string>
+    <string name="next">下一步</string>
+    <string name="device_status">设备状态</string>
 </resources>
