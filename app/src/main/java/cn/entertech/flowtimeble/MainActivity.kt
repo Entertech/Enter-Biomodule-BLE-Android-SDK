@@ -1,15 +1,18 @@
 package cn.entertech.flowtimeble
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
-import cn.entertech.ble.BiomoduleBleManager
 import cn.entertech.ble.ContactState
-import cn.entertech.ble.util.NapBattery
+import cn.entertech.ble.single.BiomoduleBleManager
+import cn.entertech.ble.ui.DeviceUIConfig
+import cn.entertech.ble.ui.activity.DeviceManagerActivity
+import cn.entertech.ble.utils.NapBattery
 import com.orhanobut.logger.Logger
 import java.util.*
 
@@ -19,7 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
-        initPermission()
+//        initPermission()
+        DeviceUIConfig.getInstance(this).init(true, true, 2)
+        DeviceUIConfig.getInstance(this).updateFirmware(true, "1.2.0", "1.2.1", "sfs")
     }
 
 
@@ -43,6 +48,10 @@ class MainActivity : AppCompatActivity() {
             }
             ActivityCompat.requestPermissions(this@MainActivity, permissions, 1)
         }
+    }
+
+    fun onDeviceUI(view: View) {
+        startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
     }
 
     var contactListener = fun(contactState: ContactState) {

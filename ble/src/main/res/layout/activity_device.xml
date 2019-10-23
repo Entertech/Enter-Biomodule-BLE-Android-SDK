@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:layoutDirection="ltr"
+    android:orientation="vertical">
+    <include layout="@layout/layout_common_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:background="#fb9c98"
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="192dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/cover_disconnected"
+                android:visibility="gone"
+                android:background="#80000000">
+
+            </RelativeLayout>
+            <cn.entertech.ble.ui.widget.BatteryCircle
+                android:id="@+id/device_battery"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/activity_margin" />
+
+            <RelativeLayout
+                android:id="@+id/device_connecting_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!--<com.airbnb.lottie.LottieAnimationView-->
+                <!--android:layout_width="112dp"-->
+                <!--android:layout_height="112dp"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_gravity="center"-->
+                <!--app:lottie_autoPlay="true"-->
+                <!--app:lottie_fileName="Connecting.json"-->
+                <!--app:lottie_loop="true" />-->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="@dimen/activity_margin"
+                    android:text="@string/connecting"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/device_disconnect_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.5"
+                    android:gravity="center"
+                    android:text="@string/no_device_found"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/shape_device_reconnect"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:onClick="onReConnect"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/try_connect"
+                        android:textColor="#171726"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/activity_margin_half"
+                        android:gravity="center" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/device_guide_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorWarning"
+                    android:onClick="onConnectGuide"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_margin"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/can_t_connect_to_the_device"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/ic_arrow_right_white" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/device_hardware_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/touch_ripple"
+                    android:onClick="onHardware"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/hardware_version"
+                        android:textColor="@color/itemTextColor"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/device_hardware"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:text=""
+                        android:textColor="@color/itemTextSecondaryColor"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/lineColor" />
+
+                <RelativeLayout
+                    android:id="@+id/device_firmware_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/touch_ripple"
+                    android:onClick="onFirmware"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_margin">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/firmware_version"
+                        android:textColor="@color/itemTextColor"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_firmware_update_flag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/shape_firmware_update_flag_bg"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/activity_margin_half"
+                            android:paddingRight="@dimen/activity_margin_half"
+                            android:text="new"
+                            android:textColor="#f9fafc"
+                            android:textStyle="italic"
+                            android:visibility="gone" />
+
+
+                        <TextView
+                            android:id="@+id/device_firmware"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/activity_margin_half"
+                            android:text=""
+                            android:textColor="@color/itemTextSecondaryColor"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/activity_margin_half"
+                            android:src="@mipmap/ic_in_me"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/lineColor" />
+
+                <RelativeLayout
+                    android:id="@+id/device_mac_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/touch_ripple"
+                    android:onClick="onMac"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/bluetooth_address"
+                        android:textColor="@color/itemTextColor"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/device_mac"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:text=""
+                        android:textColor="@color/itemTextSecondaryColor"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/lineColor" />
+
+
+                <RelativeLayout
+                    android:id="@+id/device_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/touch_ripple"
+                    android:onClick="onNaptimeState"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="查看已连接的设备"
+                        android:textColor="@color/itemTextColor"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/ic_in_me" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/lineColor" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_margin"
+                    android:layout_marginTop="@dimen/dp_4"
+                    android:text="点击后已连接的设备指示灯将会闪烁2次"
+                    android:textColor="#a3a3a3"
+                    android:textSize="11sp" />
+
+
+                <View
+                    android:id="@+id/line_delete_device_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginTop="@dimen/margin_vertical"
+                    android:background="@color/lineColor"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:background="@drawable/touch_ripple"
+                    android:id="@+id/tv_delete_device"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="删除"
+                    android:textSize="16sp"
+                    android:textColor="#ff4852"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/line_delete_device_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/lineColor"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+
+</LinearLayout>
