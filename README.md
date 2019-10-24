@@ -1,4 +1,4 @@
-# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.0.9)](https://bintray.com/hzentertech/maven/biomoduleble/1.0.9/link)
+# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.1.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.1.0/link)
 # 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
@@ -25,7 +25,7 @@ SDK中Demo与API接口采用Kotlin语言编写，希望你对Kotlin有一定的�
 ### gradle自动依赖
 在所需的module中的build.gradle文件下添加以下依赖即可：
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.0.8'
+implementation 'cn.entertech:biomoduleble:1.1.0'
 ```
 ### jar包集成
 如果你在自动依赖遇到问题也可以手动添加依赖
@@ -552,7 +552,6 @@ starter.start(this, DfuService::class.java)
 ```kotlin
 DfuServiceInitiator.createDfuNotificationChannel(context);
 ```
-
 ### 多设备连接
 
 新增MultipleBiomoduleBleManager类，可以支持多设备的连接。MultipleBiomoduleBleManager与BiomoduleBleManager功能接口相同，唯一区别是实例化方式不同，BiomoduleBleManager采用单例模式，而MultipleBiomoduleBleManager可以任意实例化，每一个MultipleBiomoduleBleManager对应管理一个ble设备，但是连接设备的个数会受手机终端限制，不同终端限制数量会不同，需根据具体情况分析。
@@ -568,9 +567,43 @@ var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
 
 ### 设备管理界面 SDK（按需接入）
 
-如果对设备管理界面没有特殊要求可以直接我们提供的设备管理界面SDK，可以设置DeviceUIConfig这个类，进行相关属性的配置。
+#### gradle自动依赖
+
+在module的build.gradle文件中加入以下依赖：
+
+```groovy
+implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
+implementation 'com.orhanobut:logger:1.15'
+implementation 'cn.entertech:biomoduleble:1.1.0'
+implementation 'cn.entertech:biomodulebleui:1.0.0'
+implementation "com.android.support:recyclerview-v7:28.0.0"
+implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
+```
+
+在项目根目录的build.gradle文件下添加以下依赖地址
+
+```groovy
+allprojects {
+    repositories {
+        maven {
+            url "https://dl.bintray.com/hzentertech/maven"
+        }
+    }
+}
+```
+
+#### 权限申请
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
 
 #### 初始化
+
+如果对设备管理界面没有特殊要求可以直接我们提供的设备管理界面SDK，可以设置DeviceUIConfig这个类，进行相关属性的配置。
 
 **代码示例**
 
