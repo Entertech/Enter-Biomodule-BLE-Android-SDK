@@ -33,7 +33,7 @@ class DeviceTurnOnActivity : BaseActivity() {
     }
 
     fun toDeviceConnect(view: View) {
-        var index = intent.getIntExtra(INTENT_BLE_MANAGER_INDEX, -1)
+        var index = intent.getIntExtra(INTENT_BLE_MANAGER_INDEX, 0)
         startActivity(Intent(this, DeviceActivity::class.java).putExtra(INTENT_BLE_MANAGER_INDEX, index))
     }
 

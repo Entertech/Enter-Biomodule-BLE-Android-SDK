@@ -282,11 +282,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/touch_ripple"
-                    android:onClick="onNaptimeState"
                     android:orientation="horizontal"
                     android:padding="@dimen/activity_margin">
 
                     <TextView
+                        android:id="@+id/tv_device_search"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"

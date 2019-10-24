@@ -31,14 +31,14 @@ class DeviceActivity : BaseActivity() {
     private lateinit var mMultipleBiomoduleBleManager: MultipleBiomoduleBleManager
     lateinit var bleDisConnectedListener: (String) -> Unit
     lateinit var bleConnectedListener: (String) -> Unit
-    var mDeviceIndex: Int = -1
+    var mDeviceIndex: Int = 0
     lateinit var set: SettingManager
     lateinit var mDeviceUIConfig: DeviceUIConfig
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device)
-//        setStatusBarLight()
         initFullScreenDisplay()
+        setStatusBarLight()
         mDeviceUIConfig = DeviceUIConfig.getInstance(this)
         set = SettingManager.getInstance(this)
         mDeviceIndex = intent.getIntExtra(INTENT_BLE_MANAGER_INDEX, 0)
@@ -192,7 +192,7 @@ class DeviceActivity : BaseActivity() {
             Logger.d(msg)
             set.setStringValue("ble_hardware_$mDeviceIndex", msg)
             runOnUiThread {
-                findViewById<TextView>(R.id.device_hardware).text = SettingManager.getInstance(this).bleHardware
+                findViewById<TextView>(R.id.device_hardware).text = msg
             }
         }, failure)
 
@@ -201,7 +201,7 @@ class DeviceActivity : BaseActivity() {
             Logger.d(msg)
             set.setStringValue("ble_firmware_$mDeviceIndex", msg)
             runOnUiThread {
-                findViewById<TextView>(R.id.device_firmware).text = SettingManager.getInstance(this).bleFirmware
+                findViewById<TextView>(R.id.device_firmware).text = msg
                 var deviceUIConfig = DeviceUIConfig.getInstance(this)
                 var firmwareOldVersion = deviceUIConfig.firmwareOldVersion
                 var firmwareNewVersion = deviceUIConfig.firmwareNewVersion
@@ -247,6 +247,7 @@ class DeviceActivity : BaseActivity() {
         findViewById<View>(R.id.device_hardware_layout).alpha = 0.5f
         findViewById<View>(R.id.device_firmware_layout).alpha = 0.5f
         findViewById<View>(R.id.device_mac_layout).alpha = 0.5f
+        findViewById<View>(R.id.device_search).alpha = 0.5f
     }
 
     private fun toConnecting() {
