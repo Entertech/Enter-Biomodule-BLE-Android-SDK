@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_title_bg"
+    android:layout_width="match_parent"
+    android:layout_height="56dp">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:clickable="true"
+        android:src="@mipmap/ic_arrow_left_blue" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="6sp"
+        android:text=""
+        android:textColor="#232323"
+        android:textSize="18sp"
+        android:textStyle="normal" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:orientation="horizontal">
+
+
+        <RelativeLayout
+            android:id="@+id/rl_menu_ic"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:clickable="true"
+            android:visibility="visible">
+
+            <cn.entertech.bleuisdk.ui.widget.DeviceConnectView
+                android:id="@+id/dcv_conect_view"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone">
+
+            </cn.entertech.bleuisdk.ui.widget.DeviceConnectView>
+
+            <ImageView
+                android:id="@+id/iv_menu_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:background="@mipmap/ic_device_white" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_menu_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_4"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="end"
+            android:letterSpacing="0.01"
+            android:text="Edit"
+            android:textColor="#4b5dcc"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</RelativeLayout>

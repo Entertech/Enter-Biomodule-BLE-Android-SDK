@@ -10,9 +10,9 @@ import android.view.View
 import android.widget.Toast
 import cn.entertech.ble.ContactState
 import cn.entertech.ble.single.BiomoduleBleManager
-import cn.entertech.ble.ui.DeviceUIConfig
-import cn.entertech.ble.ui.activity.DeviceManagerActivity
 import cn.entertech.ble.utils.NapBattery
+import cn.entertech.bleuisdk.ui.DeviceUIConfig
+import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
 import com.orhanobut.logger.Logger
 import java.util.*
 
@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
         initPermission()
         DeviceUIConfig.getInstance(this).init(false, true, 2)
-//        DeviceUIConfig.getInstance(this).updateFirmware(true, "1.2.0", "1.2.1", "sfs")
     }
 
 
