@@ -552,3 +552,54 @@ starter.start(this, DfuService::class.java)
 ```kotlin
 DfuServiceInitiator.createDfuNotificationChannel(context);
 ```
+
+### 多设备连接
+
+新增MultipleBiomoduleBleManager类，可以支持多设备的连接。MultipleBiomoduleBleManager与BiomoduleBleManager功能接口相同，唯一区别是实例化方式不同，BiomoduleBleManager采用单例模式，而MultipleBiomoduleBleManager可以任意实例化，每一个MultipleBiomoduleBleManager对应管理一个ble设备，但是连接设备的个数会受手机终端限制，不同终端限制数量会不同，需根据具体情况分析。
+
+**代码示例**
+
+```kotlin
+//实例化ble管理类
+var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
+//接下来所有的接口调用方式均与BiomoduleBleManager类相同，这里不在赘述。
+...
+```
+
+### 设备管理界面 SDK（按需接入）
+
+如果对设备管理界面没有特殊要求可以直接我们提供的设备管理界面SDK，可以设置DeviceUIConfig这个类，进行相关属性的配置。
+
+#### 初始化
+
+**代码示例**
+
+```kotlin
+var deviceUIConfig = DeviceUIConfig.getInstance(this)
+deviceUIConfig.init(isDeviceBind, isMultipleDevice, deviceCount)
+```
+
+**参数说明**
+
+| 参数             | 类型    | 说明                                                     |
+| ---------------- | ------- | -------------------------------------------------------- |
+| isDeviceBind     | Boolean | 是否绑定设备，如果是则每次连接设备时会自动连接之前的设备 |
+| isMultipleDevice | Boolean | 是否支持多连接                                           |
+| deviceCount      | Int     | 设备连接个数，最多可设备4个                              |
+
+#### 固件更新
+
+**代码示例**
+
+```kotlin
+deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
+```
+
+**参数说明**
+
+| 参数       | 类型    | 说明                       |
+| ---------- | ------- | -------------------------- |
+| isUpdate   | Boolean | 是否开启固件更新           |
+| oldVersion | String  | 当前固件版本号 格式：a.b.c |
+| newVersion | String  | 新固件版本号 格式：a.b.c   |
+| path       | String  | 固件升级包的路径           |
