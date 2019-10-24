@@ -1,1 +1,1 @@
-include ':app', ':ble'
+include ':app', ':ble', ':bleuisdk'

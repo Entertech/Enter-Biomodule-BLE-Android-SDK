@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.entertech.bleuisdk">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <activity android:name=".ui.activity.DeviceManagerActivity" />
+        <activity android:name=".ui.activity.MultipleDeviceListActivity" />
+        <activity android:name=".ui.activity.DeviceActivity" />
+        <activity android:name=".ui.activity.DfuNotificationActivity" />
+        <activity android:name=".ui.activity.DeviceUpdateActivity" />
+        <activity android:name=".ui.activity.DeviceTurnOnActivity" />
+        <activity android:name=".ui.activity.WebActivity" />
+    </application>
+
+</manifest>
