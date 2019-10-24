@@ -22,9 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
-//        initPermission()
-        DeviceUIConfig.getInstance(this).init(true, true, 2)
-        DeviceUIConfig.getInstance(this).updateFirmware(true, "1.2.0", "1.2.1", "sfs")
+        initPermission()
+        DeviceUIConfig.getInstance(this).init(false, true, 2)
+//        DeviceUIConfig.getInstance(this).updateFirmware(true, "1.2.0", "1.2.1", "sfs")
     }
 
 

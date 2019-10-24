@@ -6,12 +6,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import cn.entertech.ble.R
 import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
+import cn.entertech.ble.ui.BaseActivity
 import cn.entertech.ble.ui.DeviceUIConfig
 import cn.entertech.ble.ui.adapter.MultipleDeviceListAdapter
 import com.polidea.rxandroidble2.RxBleDevice
 import kotlinx.android.synthetic.main.activity_multiple_device_list.*
+import kotlinx.android.synthetic.main.layout_common_title.*
 
-class MultipleDeviceListActivity : AppCompatActivity() {
+class MultipleDeviceListActivity : BaseActivity() {
     private var mListAdapter: MultipleDeviceListAdapter? = null
     private var mDeviceUIConfig: DeviceUIConfig? = null
     private var mDevices: List<RxBleDevice?> = ArrayList()
@@ -19,6 +21,8 @@ class MultipleDeviceListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_multiple_device_list)
+        initFullScreenDisplay()
+        setStatusBarLight()
         mDeviceUIConfig = DeviceUIConfig.getInstance(this)
         if (!mDeviceUIConfig!!.isInited) {
             Toast.makeText(this, "请先初始化UI配置", Toast.LENGTH_SHORT).show()
@@ -28,6 +32,7 @@ class MultipleDeviceListActivity : AppCompatActivity() {
     }
 
     fun initDeviceList() {
+        tv_title.text = "设备连接"
         deviceManagers = mDeviceUIConfig!!.managers
         mDevices = deviceManagers.map { it.getDevice() }
         mListAdapter = MultipleDeviceListAdapter(this,mDevices)
