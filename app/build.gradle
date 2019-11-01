@@ -33,8 +33,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    api project(':bleuisdk')
-    api project(':ble')
+//    api project(':bleuisdk')
+//    api project(':ble')
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
     implementation 'com.orhanobut:logger:1.15'
