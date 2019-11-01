@@ -575,7 +575,7 @@ var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
 implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 implementation 'com.orhanobut:logger:1.15'
 implementation 'cn.entertech:biomoduleble:1.1.0'
-implementation 'cn.entertech:biomodulebleui:1.0.0'
+implementation 'cn.entertech:biomodulebleui:1.0.1'
 implementation "com.android.support:recyclerview-v7:28.0.0"
 implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
 ```
@@ -619,6 +619,9 @@ deviceUIConfig.init(isDeviceBind, isMultipleDevice, deviceCount)
 | isDeviceBind     | Boolean | 是否绑定设备，如果是则每次连接设备时会自动连接之前的设备 |
 | isMultipleDevice | Boolean | 是否支持多连接                                           |
 | deviceCount      | Int     | 设备连接个数，最多可设备4个                              |
+
+#### 设备管理入口
+设备管理界面对外提供的入口：DeviceManagerActivity
 
 #### 固件更新
 
