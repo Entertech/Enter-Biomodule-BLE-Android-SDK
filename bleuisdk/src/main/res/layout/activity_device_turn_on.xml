@@ -23,7 +23,7 @@
             android:layout_marginLeft="@dimen/activity_margin_half"
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin_half"
-            android:background="#373a5b">
+            android:background="@color/deviceOpenTipBg">
 
             <ImageView
                 android:layout_width="276dp"
@@ -44,7 +44,7 @@
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="8sp"
             android:text="@string/device_connect_tip"
-            android:textColor="#0f161e"
+            android:textColor="@color/colorDeviceOpenTip"
             android:textSize="16sp"
             android:textStyle="normal" />
 

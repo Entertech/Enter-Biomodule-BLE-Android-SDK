@@ -325,8 +325,9 @@ class DeviceActivity : BaseActivity() {
     }
 
     fun onConnectGuide(view: View) {
-        startActivity(Intent(this, WebActivity::class.java).putExtra(INTENT_WEB_TITLE, getString(R.string.can_t_connect_to_the_device))
-                .putExtra(INTENT_WEB_URL, getString(R.string.device_can_not_connect_url)))
+//        startActivity(Intent(this, WebActivity::class.java).putExtra(INTENT_WEB_TITLE, getString(R.string.can_t_connect_to_the_device))
+//                .putExtra(INTENT_WEB_URL, getString(R.string.device_can_not_connect_url)))
+        startActivity(Intent(this, DeviceCanNotConnectActivity::class.java))
     }
 
     fun onReConnect(view: View) {

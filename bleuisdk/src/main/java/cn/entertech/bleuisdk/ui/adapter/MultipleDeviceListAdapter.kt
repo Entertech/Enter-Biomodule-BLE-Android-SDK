@@ -33,21 +33,21 @@ class MultipleDeviceListAdapter(var context: Context, devices: List<RxBleDevice?
 
     override fun onBindViewHolder(holder: DeviceHolder, position: Int) {
         val device = devices[position]
-        holder.deviceName?.text = "设备${position + 1}"
+        holder.deviceName?.text = "${context.getString(R.string.device)}${position + 1}"
         if (device == null) {
-            holder.connectStatus?.text = "未连接"
+            holder.connectStatus?.text = context.getString(R.string.device_disconnect)
         } else {
             if (device.connectionState == RxBleConnection.RxBleConnectionState.CONNECTED) {
-                holder.connectStatus?.text = "已连接"
+                holder.connectStatus?.text = context.getString(R.string.device_connected)
             } else {
-                holder.connectStatus?.text = "未连接"
+                holder.connectStatus?.text = context.getString(R.string.device_disconnect)
             }
         }
         holder.itemView.setOnClickListener {
             if (!SettingManager.getInstance(context).isConnectBefore) {
-                context.startActivity(Intent(context, DeviceTurnOnActivity::class.java).putExtra(INTENT_BLE_MANAGER_INDEX,position))
+                context.startActivity(Intent(context, DeviceTurnOnActivity::class.java).putExtra(INTENT_BLE_MANAGER_INDEX, position))
             } else {
-                context.startActivity(Intent(context, DeviceActivity::class.java).putExtra(INTENT_BLE_MANAGER_INDEX,position))
+                context.startActivity(Intent(context, DeviceActivity::class.java).putExtra(INTENT_BLE_MANAGER_INDEX, position))
             }
         }
     }

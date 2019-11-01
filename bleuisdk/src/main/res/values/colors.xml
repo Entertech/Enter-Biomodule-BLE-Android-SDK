@@ -22,6 +22,13 @@
     <color name="deviceDisconnect">#fb9c98</color>
     <color name="colorDeviceUpdateText">#fefffe</color>
     <color name="colorWarning">#ff4852</color>
+    <color name="colorDeviceCanNotFindTip">#333333</color>
+    <color name="colorDeviceCanNotFindTitle">#0f161e</color>
+    <color name="colorDeviceSearchTip">#a3a3a3</color>
+    <color name="colorDisconnectCoverBg">#80000000</color>
+    <color name="device_open_ble_tip">#666666</color>
+    <color name="deviceOpenTipBg">#373a5b</color>
+    <color name="colorDeviceOpenTip">#0f161e</color>
 
 
 </resources>

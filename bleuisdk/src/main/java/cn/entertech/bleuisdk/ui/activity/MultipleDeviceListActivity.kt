@@ -23,14 +23,14 @@ class MultipleDeviceListActivity : BaseActivity() {
         setStatusBarLight()
         mDeviceUIConfig = DeviceUIConfig.getInstance(this)
         if (!mDeviceUIConfig!!.isInited) {
-            Toast.makeText(this, "请先初始化UI配置", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.device_config_init_tip), Toast.LENGTH_SHORT).show()
             finish()
         }
         initDeviceList()
     }
 
     fun initDeviceList() {
-        tv_title.text = "设备连接"
+        tv_title.text = getString(R.string.device_connect)
         deviceManagers = mDeviceUIConfig!!.managers
         mDevices = deviceManagers.map { it.getDevice() }
         mListAdapter = MultipleDeviceListAdapter(this,mDevices)
