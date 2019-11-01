@@ -94,7 +94,7 @@
             android:onClick="startUpdate"
             android:text="@string/update"
             android:textAllCaps="false"
-            android:textColor="#6665ff"
+            android:textColor="@color/colorThemeBlue"
             android:textSize="16sp"
             android:textStyle="bold" />
 

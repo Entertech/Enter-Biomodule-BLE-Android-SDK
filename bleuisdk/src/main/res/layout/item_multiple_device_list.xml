@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/activity_margin"
-        android:text="设备1"
+        android:text="@string/device_name"
         android:textSize="17sp" />
 
     <ImageView
@@ -29,7 +29,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/dp_4"
         android:layout_toLeftOf="@+id/iv_arrow"
-        android:text="未连接"
+        android:text="@string/device_state"
         android:textColor="#8e8e93"
         android:textSize="17sp" />
 

@@ -69,7 +69,7 @@
             android:gravity="end"
             android:letterSpacing="0.01"
             android:text="Edit"
-            android:textColor="#4b5dcc"
+            android:textColor="@color/colorThemeBlue"
             android:textSize="16sp"
             android:textStyle="normal"
             android:visibility="gone" />

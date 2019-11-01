@@ -24,7 +24,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/cover_disconnected"
                 android:visibility="gone"
-                android:background="#80000000">
+                android:background="@color/colorDisconnectCoverBg">
 
             </RelativeLayout>
             <cn.entertech.bleuisdk.ui.widget.BatteryCircle
@@ -212,7 +212,7 @@
                             android:gravity="center"
                             android:paddingLeft="@dimen/activity_margin_half"
                             android:paddingRight="@dimen/activity_margin_half"
-                            android:text="new"
+                            android:text="@string/device_firmware_update_new"
                             android:textColor="#f9fafc"
                             android:textStyle="italic"
                             android:visibility="gone" />
@@ -290,7 +290,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:text="查看已连接的设备"
+                        android:text="@string/device_search_connected_device"
                         android:textColor="@color/itemTextColor"
                         android:textSize="16sp" />
 
@@ -312,8 +312,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/activity_margin"
                     android:layout_marginTop="@dimen/dp_4"
-                    android:text="点击后已连接的设备指示灯将会闪烁2次"
-                    android:textColor="#a3a3a3"
+                    android:text="@string/device_search_connected_tip"
+                    android:textColor="@color/colorDeviceSearchTip"
                     android:textSize="11sp" />
 
 
@@ -332,9 +332,9 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="删除"
+                    android:text="@string/device_delete"
                     android:textSize="16sp"
-                    android:textColor="#ff4852"
+                    android:textColor="@color/colorWarning"
                     android:visibility="gone"/>
 
                 <View
