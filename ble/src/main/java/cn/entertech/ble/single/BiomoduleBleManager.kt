@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.ContactState
+import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.toEnum
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.ble.utils.BatteryUtil
@@ -29,7 +30,7 @@ class BiomoduleBleManager private constructor(context: Context) {
 
 
     init {
-        rxBleManager = RxBleManager.getInstance(context)
+        rxBleManager = RxBleManager(context)
         handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
@@ -228,6 +229,13 @@ class BiomoduleBleManager private constructor(context: Context) {
         rxBleManager.command(RxBleManager.Command.DISCONNECTED) {
             rxBleManager.disConnect()
         }
+    }
+
+    /**
+     * find connected device
+     */
+    fun findConnectedDevice() {
+        rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE)
     }
 
     /**

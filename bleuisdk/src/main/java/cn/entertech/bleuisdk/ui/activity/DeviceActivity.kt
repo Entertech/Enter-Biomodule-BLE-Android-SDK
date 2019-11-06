@@ -347,6 +347,9 @@ class DeviceActivity : BaseActivity() {
 //        startActivity(Intent(this, DeviceDeleteActivity::class.java))
     }
 
+    fun onFindConnectedDevice(view: View) {
+        mMultipleBiomoduleBleManager.findConnectedDevice()
+    }
 
     override fun onDestroy() {
         removeDisConnectedListener()

@@ -1,4 +1,4 @@
-package cn.entertech.ble.single
+package cn.entertech.ble
 
 import android.content.Context
 import android.os.Handler
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by EnterTech on 2017/10/30.
  */
-class RxBleManager private constructor(context: Context) {
+class RxBleManager constructor(context: Context) {
 
     private var rxBleClient: RxBleClient
     private var rxBleDevice: RxBleDevice? = null
@@ -56,23 +56,23 @@ class RxBleManager private constructor(context: Context) {
             throw error
         }
     }
-
-    companion object {
-        @Volatile
-        private var instance: RxBleManager? = null
-
-        fun getInstance(context: Context): RxBleManager {
-            if (instance == null) {
-                synchronized(RxBleManager::class) {
-                    if (instance == null) {
-                        instance = RxBleManager(context.applicationContext)
-                    }
-                }
-            }
-
-            return instance!!
-        }
-    }
+//
+//    companion object {
+//        @Volatile
+//        private var instance: RxBleManager? = null
+//
+//        fun getInstance(context: Context): RxBleManager {
+//            if (instance == null) {
+//                synchronized(RxBleManager::class) {
+//                    if (instance == null) {
+//                        instance = RxBleManager(context.applicationContext)
+//                    }
+//                }
+//            }
+//
+//            return instance!!
+//        }
+//    }
 
 
     /**
@@ -87,6 +87,9 @@ class RxBleManager private constructor(context: Context) {
     }
 
 
+    fun getDevice():RxBleDevice?{
+        return rxBleDevice
+    }
     /**
      * connect close device
      */
@@ -219,7 +222,8 @@ class RxBleManager private constructor(context: Context) {
         STOP_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x06 }),
         START_CONTACT(ByteArray(1) { 0x07 }),
         STOP_CONTACT(ByteArray(1) { 0x08 }),
-        DISCONNECTED(ByteArray(1) { 0x49 })
+        DISCONNECTED(ByteArray(1) { 0x49 }),
+        FIND_CONNECTED_DEVICE(ByteArray(1) { 0x79 })
     }
 
     /**

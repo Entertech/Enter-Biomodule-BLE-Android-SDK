@@ -32,7 +32,9 @@ class MainActivity : AppCompatActivity() {
      */
     fun initPermission() {
         val needPermission = arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         val needRequestPermissions = ArrayList<String>()
         for (i in needPermission.indices) {
@@ -246,6 +248,10 @@ class MainActivity : AppCompatActivity() {
         }, fun(error: String) {
             Logger.d("error is " + error)
         })
+    }
+
+    fun onFindConnectedDevice(view:View){
+//        biomoduleBleManager.findConnectedDevice()
     }
 
 

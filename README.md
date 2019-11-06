@@ -1,4 +1,4 @@
-# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.1.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.1.0/link)
+# Biomodule 蓝牙SDK  [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.2.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.2.0/link)
 # 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过此 SDK 可以在 Android app 里快速实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令。
@@ -565,19 +565,14 @@ var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
 ...
 ```
 
-### 设备管理界面 SDK（按需接入）
+### 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.2)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.2/link)
 
 #### gradle自动依赖
 
 在module的build.gradle文件中加入以下依赖：
 
 ```groovy
-implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
-implementation 'com.orhanobut:logger:1.15'
-implementation 'cn.entertech:biomoduleble:1.1.0'
-implementation 'cn.entertech:biomodulebleui:1.0.1'
-implementation "com.android.support:recyclerview-v7:28.0.0"
-implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
+implementation 'cn.entertech:biomodulebleui:1.0.2'
 ```
 
 在项目根目录的build.gradle文件下添加以下依赖地址
