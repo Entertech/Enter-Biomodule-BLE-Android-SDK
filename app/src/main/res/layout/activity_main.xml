@@ -313,6 +313,12 @@
 
             </LinearLayout>
 
+
+            <Button
+                android:onClick="onFindConnectedDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="查找已连接设备" />
             <Button
                 android:id="@+id/btn_device_ui"
                 android:onClick="onDeviceUI"

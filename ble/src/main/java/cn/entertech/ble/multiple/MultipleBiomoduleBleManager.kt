@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.ContactState
+import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.toEnum
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.ble.utils.BatteryUtil
@@ -15,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.Exception
 
 class MultipleBiomoduleBleManager constructor(context: Context) {
-    val rxBleManager: MultipleRxBleManager
+    val rxBleManager: RxBleManager
     private var handler: Handler
     private var handlerThread: HandlerThread
     val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
@@ -30,7 +31,7 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
 
 
     init {
-        rxBleManager = MultipleRxBleManager(context)
+        rxBleManager = RxBleManager(context)
         handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
@@ -230,7 +231,7 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
      * disconnect device
      */
     fun disConnect() {
-        rxBleManager.command(MultipleRxBleManager.Command.DISCONNECTED) {
+        rxBleManager.command(RxBleManager.Command.DISCONNECTED) {
             rxBleManager.disConnect()
         }
     }
@@ -304,53 +305,60 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
     }
 
     fun startContact() {
-        rxBleManager.command(MultipleRxBleManager.Command.START_CONTACT)
+        rxBleManager.command(RxBleManager.Command.START_CONTACT)
     }
 
     fun stopContact() {
-        rxBleManager.command(MultipleRxBleManager.Command.STOP_CONTACT)
+        rxBleManager.command(RxBleManager.Command.STOP_CONTACT)
     }
 
     /**
      * start collect brain data
      */
     fun startBrainCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.START_BRAIN_COLLECT)
+        rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT)
     }
 
     /**
      * stop collect brain data
      */
     fun stopBrainCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.STOP_BRAIN_COLLECT)
+        rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT)
     }
 
     /**
      * start collect heart rate data
      */
     fun startHeartRateCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.START_HEART_RATE_COLLECT)
+        rxBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT)
     }
 
     /**
      * stop collect heart rate data
      */
     fun stopHeartRateCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.STOP_HEART_RATE_COLLECT)
+        rxBleManager.command(RxBleManager.Command.STOP_HEART_RATE_COLLECT)
     }
 
     /**
      * start collect all data
      */
     fun startHeartAndBrainCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.START_HEART_AND_BRAIN_COLLECT)
+        rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT)
     }
 
     /**
      * stop collect all data
      */
     fun stopHeartAndBrainCollection() {
-        rxBleManager.command(MultipleRxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT)
+        rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT)
+    }
+
+    /**
+     * find connected device
+     */
+    fun findConnectedDevice() {
+        rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE)
     }
 
     //read battery（readDeviceInfo）

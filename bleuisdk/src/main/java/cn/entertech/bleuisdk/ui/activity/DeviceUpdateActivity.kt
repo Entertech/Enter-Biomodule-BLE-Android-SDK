@@ -9,6 +9,7 @@ import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.ui.service.DfuService
+import cn.entertech.bleuisdk.utils.Constant
 import cn.entertech.bleuisdk.utils.SettingManager
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_device_update.*
@@ -109,12 +110,13 @@ class DeviceUpdateActivity : BaseActivity() {
     }
 
     fun updating() {
+        var deviceIndex =intent.getIntExtra(Constant.INTENT_BLE_MANAGER_INDEX,0)
         btn_update.visibility = View.INVISIBLE
         ic_update.visibility = View.GONE
 //        anim_update_loading.visibility = View.VISIBLE
         tv_update_state.text = getString(R.string.updating)
         tv_update_tip.text = getString(R.string.updating_tip)
-        var bleMac = SettingManager.getInstance(this).bleMac
+        var bleMac = SettingManager.getInstance(this).getStringValue("ble_mac_$deviceIndex")
         var firmwarePath = intent.getStringExtra("firmwarePath")
         val starter = DfuServiceInitiator(bleMac)
             .setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
@@ -134,7 +136,7 @@ class DeviceUpdateActivity : BaseActivity() {
 //        anim_update_loading.visibility = View.GONE
         tv_update_state.text = getString(R.string.update_completed)
         tv_update_tip.text = getString(R.string.update_completed_tip)
-        reconnectDevice()
+//        reconnectDevice()
     }
 
     fun reconnectDevice() {

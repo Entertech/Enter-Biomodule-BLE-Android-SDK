@@ -279,6 +279,7 @@
 
                 <RelativeLayout
                     android:id="@+id/device_search"
+                    android:onClick="onFindConnectedDevice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/touch_ripple"
