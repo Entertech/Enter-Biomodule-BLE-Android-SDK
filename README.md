@@ -564,7 +564,7 @@ var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
 //接下来所有的接口调用方式均与BiomoduleBleManager类相同，这里不在赘述。
 ...
 ```
-
+[!更新日志](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/wiki/biomoduleble--%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
 ### 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.2)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.2/link)
 
 #### gradle自动依赖
@@ -634,3 +634,6 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 | oldVersion | String  | 当前固件版本号 格式：a.b.c |
 | newVersion | String  | 新固件版本号 格式：a.b.c   |
 | path       | String  | 固件升级包的路径           |
+
+
+[!更新日志](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/wiki/biomodulebleui--%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
