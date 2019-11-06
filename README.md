@@ -634,6 +634,7 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 | newVersion | String  | 新固件版本号 格式：a.b.c   |
 | path       | String  | 固件升级包的路径           |
 
+### 更新日志
 
 [biomoduleble 更新日志](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/wiki/biomoduleble--%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
 
