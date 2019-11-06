@@ -636,4 +636,5 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 
 
 [biomoduleble 更新日志](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/wiki/biomoduleble--%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
+
 [biomodulebleui 更新日志](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/wiki/biomodulebleui--%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
