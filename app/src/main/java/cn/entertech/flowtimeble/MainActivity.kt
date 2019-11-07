@@ -251,7 +251,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onFindConnectedDevice(view:View){
-//        biomoduleBleManager.findConnectedDevice()
+        biomoduleBleManager.findConnectedDevice()
     }
 
 
