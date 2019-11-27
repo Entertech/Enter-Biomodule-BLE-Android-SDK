@@ -271,6 +271,73 @@ biomoduleBleManager.removeBatteryListener(batteryListener)
 | --------------- | --------------- | -------- |
 | batteryListener | （Byte）-> Unit | 电量回调 |
 
+#### 添加电池电压监听
+
+**方法说明**
+
+添加电池电压监听，添加后会每隔30秒回调一次
+
+**代码示例**
+
+```kotlin
+var batteryVoltageListener = fun(voltage: Double) {
+   Logger.d("battery voltage = $voltage")
+}  
+biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
+```
+
+**参数说明**
+
+| 参数            | 类型            | 说明     |
+| --------------- | --------------- | -------- |
+| batteryVoltageListener | （Double）-> Unit | 电池电压回调 |
+
+#### 移除电池电压监听
+
+**方法说明**
+
+移除后，将不会收到电池电压回调
+
+**代码示例**
+
+```kotlin
+biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
+```
+
+**参数说明**
+
+| 参数            | 类型            | 说明     |
+| --------------- | --------------- | -------- |
+| batteryVoltageListener | （Double）-> Unit | 电池电压回调 |
+
+可以根据电池电压计算电池电量，
+
+默认电池规格（型号401015，容量 40mAh,额定电压3.7V）计算公式如下：
+
+```
+已知电压为x（单位：V）
+
+【1】剩余电量百分比q（单位：%；取值范围：0~100）表达式：
+
+q =  a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/c3)^2)    # 高斯拟合曲线
+
+q = max([min([q, 100]), 0])    # 取值范围限制在0~100
+
+其中参数值如下:
+           a1 =       99.84
+           b1 =       4.244
+           c1 =      0.3781
+           a2 =       21.38
+           b2 =       3.953
+           c2 =      0.1685
+           a3 =       15.21
+           b3 =       3.813
+           c3 =     0.09208
+【2】剩余使用时长t（单位：min）表达式：
+
+t = 4.52*q
+```
+
 ### 采集与停止
 
 #### 开始脑波数据采集

@@ -27,7 +27,7 @@ SDK包含以下文件：
 在所需的module中的build.gradle文件下添加以下依赖即可：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.1.0'
+implementation 'cn.entertech:biomoduleble:1.3.1'
 ```
 
 ### jar包集成
@@ -119,7 +119,8 @@ biomoduleBleManager.startBrainCollection()
 在module的build.gradle文件中加入以下依赖：
 
 ```groovy
-implementation 'cn.entertech:biomodulebleui:1.0.2'
+implementation 'cn.entertech:biomoduleble:1.3.1'  //ble基础功能
+implementation 'cn.entertech:biomodulebleui:1.0.4' //ble 设备管理界面
 ```
 
 在项目根目录的build.gradle文件下添加以下依赖地址
