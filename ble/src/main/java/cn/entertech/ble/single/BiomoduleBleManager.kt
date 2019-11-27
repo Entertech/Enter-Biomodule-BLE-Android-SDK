@@ -20,7 +20,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     private var handlerThread: HandlerThread
     val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
     val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
-    val contactListeners = CopyOnWriteArrayList<(ContactState) -> Unit>()
+    val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
     val heartRateListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     var brainWaveDisposable: Disposable? = null
@@ -173,7 +173,7 @@ class BiomoduleBleManager private constructor(context: Context) {
             handler.post {
                 byte.let {
                     contactListeners.forEach { listener ->
-                        listener.invoke(toEnum(it))
+                        listener.invoke(it)
                     }
                 }
             }
@@ -267,14 +267,14 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * add device contact listener
      */
-    fun addContactListener(listener: (ContactState) -> Unit) {
+    fun addContactListener(listener: (Int) -> Unit) {
         contactListeners.add(listener)
     }
 
     /**
      * remove device contact listener
      */
-    open fun removeContactListener(listener: (ContactState) -> Unit) {
+    open fun removeContactListener(listener: (Int) -> Unit) {
         contactListeners.remove(listener)
     }
 

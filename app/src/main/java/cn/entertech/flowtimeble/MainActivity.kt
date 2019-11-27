@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
-import cn.entertech.ble.ContactState
 import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
     }
 
-    var contactListener = fun(contactState: ContactState) {
+    var contactListener = fun(contactState: Int) {
         Logger.d("contace state is ${contactState}")
     }
 
@@ -253,7 +252,6 @@ class MainActivity : AppCompatActivity() {
     fun onFindConnectedDevice(view:View){
         biomoduleBleManager.findConnectedDevice()
     }
-
 
     override fun onDestroy() {
         biomoduleBleManager.removeRawDataListener(rawListener)
