@@ -14,7 +14,7 @@ SDK包含以下文件：
 2. 蓝牙功能模块源代码
 3. 蓝牙功能模块对应的jar包
 
-# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.2.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.2.0/link)
+# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.1)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.1/link)
 
 ## 说明
 
@@ -108,7 +108,7 @@ biomoduleBleManager.startBrainCollection()
 
 更多详细的蓝牙ble方法可以参考[Ble详细API说明](<https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/Ble%E8%AF%A6%E7%BB%86API%E8%AF%B4%E6%98%8E.md>)
 
-# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.2)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.2/link)
+# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.4)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.4/link)
 
 ## 说明
 

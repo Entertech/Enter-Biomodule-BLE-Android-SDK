@@ -22,6 +22,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
     val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
+    val batteryVoltageListeners = CopyOnWriteArrayList<(Double) -> Unit>()
     val heartRateListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     var brainWaveDisposable: Disposable? = null
     var batteryDisposable: Disposable? = null
@@ -129,6 +130,9 @@ class BiomoduleBleManager private constructor(context: Context) {
                 byte.let {
                     batteryListeners.forEach { listener ->
                         listener.invoke(BatteryUtil.getMinutesLeft(it))
+                    }
+                    batteryVoltageListeners.forEach { listener ->
+                        listener.invoke(BatteryUtil.getBatteryVoltage(it))
                     }
                 }
             }
@@ -291,6 +295,21 @@ class BiomoduleBleManager private constructor(context: Context) {
     fun removeBatteryListener(listener: (NapBattery) -> Unit) {
         batteryListeners.remove(listener)
     }
+
+    /**
+     * add device battery voltage listener
+     */
+    fun addBatteryVoltageListener(listener: (Double) -> Unit) {
+        batteryVoltageListeners.add(listener)
+    }
+
+    /**
+     * remove device battery voltage listener
+     */
+    fun removeBatteryVoltageListener(listener: (Double) -> Unit) {
+        batteryVoltageListeners.remove(listener)
+    }
+
 
     /**
      * add device heart rate listener

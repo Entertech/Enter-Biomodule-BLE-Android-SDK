@@ -268,6 +268,16 @@ class RxBleManager constructor(context: Context) {
 
 
     /**
+     * notify battery voltage
+     */
+    fun notifyBatteryVoltage(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+        return notify(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
+            success.invoke(bytes[0])
+        }, failure)
+    }
+
+
+    /**
      * notify heart rate
      */
     fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
