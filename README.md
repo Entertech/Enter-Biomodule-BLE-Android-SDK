@@ -166,6 +166,11 @@ deviceUIConfig.init(isDeviceBind, isMultipleDevice, deviceCount)
 
 设备管理界面对外提供的入口：DeviceManagerActivity
 
+**效果**
+
+<img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5.jpeg" width="200"/>
+
+
 ## 固件更新配置
 
 **代码示例**
@@ -183,9 +188,7 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 | newVersion | String  | 新固件版本号 格式：a.b.c   |
 | path       | String  | 固件升级包的路径           |
 
-## 界面效果
-
-<img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5.jpeg" width="200"/>
+**效果**
 
 <img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E5%9B%BA%E4%BB%B6%E5%8D%87%E7%BA%A71.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E5%9B%BA%E4%BB%B6%E5%8D%87%E7%BA%A72.jpeg" width="200"/><img src="https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/docimage/%E5%9B%BA%E4%BB%B6%E5%8D%87%E7%BA%A73.jpeg" width="200"/>
 

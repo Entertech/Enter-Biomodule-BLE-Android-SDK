@@ -34,8 +34,8 @@ class RxBleManager constructor(context: Context) {
     private var subscription: Disposable? = null
     private var rxBleConnection: RxBleConnection? = null
     private var isShakeHandPassed = false
-    private lateinit var handlerThread: HandlerThread
-    private lateinit var handler: Handler
+    private var handlerThread: HandlerThread
+    private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
     private lateinit var scanSubscription: Disposable
     private val SCAN_TIMEOUT: Long = 10000
@@ -402,10 +402,10 @@ class RxBleManager constructor(context: Context) {
     /**
      * notify contact
      */
-    fun notifyContact(onNotify: (Byte) -> Unit): Disposable? {
+    fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
         return notify(NapBleCharacter.CONTACT_DATE.uuid, fun(bytes: ByteArray) {
-//            Logger.d("check contact ${bytes[0]}")
-            onNotify.invoke(bytes[0])
+//            Logger.d("check contact ${converUnchart(bytes[0])}")
+            onNotify.invoke(converUnchart(bytes[0]))
         }, null)
     }
 

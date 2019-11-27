@@ -36,5 +36,5 @@ dependencies {
 //    api project(':bleuisdk')
 //    api project(':ble')
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'cn.entertech:biomodulebleui:1.0.2'
+    implementation 'cn.entertech:biomodulebleui:1.0.3'
 }
