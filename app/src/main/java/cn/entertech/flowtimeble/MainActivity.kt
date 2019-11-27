@@ -196,13 +196,22 @@ class MainActivity : AppCompatActivity() {
     val batteryListener = fun(napBattery: NapBattery) {
         Logger.d("battery = ${napBattery}")
     }
-
-    fun onAddBtteryListener(view: View) {
+    val batteryVoltageListener = fun(voltage: Double) {
+        Logger.d("battery voltage = ${voltage}")
+    }
+    fun onAddBatteryListener(view: View) {
         biomoduleBleManager.addBatteryListener(batteryListener)
     }
 
-    fun onRemoveBtteryListener(view: View) {
+    fun onRemoveBatteryListener(view: View) {
         biomoduleBleManager.removeBatteryListener(batteryListener)
+    }
+    fun onAddBatteryVoltageListener(view: View) {
+        biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
+    }
+
+    fun onRemoveBatteryVoltageListener(view: View) {
+        biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
     }
 
     fun onReadHardware(view: View) {

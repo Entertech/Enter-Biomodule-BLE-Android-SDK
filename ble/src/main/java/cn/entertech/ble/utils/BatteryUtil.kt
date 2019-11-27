@@ -32,6 +32,10 @@ object BatteryUtil {
             return NapBattery(hours, minutesLast, percent)
         }
     }
+
+    fun getBatteryVoltage(byte: Byte): Double {
+        return (byte / 100.0) * (4.1 - 3.1) + 3.1
+    }
 }
 
 data class NapBattery(val hours: Int, val minutes: Int, val percent: Int) {
