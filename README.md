@@ -6,13 +6,13 @@
 
 ## 开发组件
 
-SDK包含以下文件：
+SDK包含以下组件：
 
-<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/1.jpeg" width="40%">
+<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/flowtimeble_project.jpg" width="40%">
 
-1. Android Studio 工程Demo
-2. 蓝牙功能模块源代码
-3. 蓝牙功能模块对应的jar包
+1. [工程Demo]()
+2. [基础蓝牙模块SDK]()
+3. [设备管理UISDK]()
 
 # Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.1)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.1/link)
 
