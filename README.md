@@ -12,9 +12,9 @@
 
 SDK包含以下组件：
 
-<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/flowtimeble_project.jpg" width="40%">
-
 - [1.工程Demo](demo/README.md)
 - [2.基础蓝牙模块SDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/ble)
 - [3.设备管理UISDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/bleuisdk)
+
+<img src="https://github.com/EnterTech/Flowtime-BLE-SDK-Android/blob/master/docimage/flowtimeble_project.jpg" width="40%">
 
