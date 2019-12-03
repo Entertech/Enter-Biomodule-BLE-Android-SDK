@@ -8,7 +8,7 @@
 ## Demo
 该项目提供的demo集成上述两个SDK，具体可参考[工程Demo](demo/README.md)
 
-另外我们还提供了一个心流演示应用，其集成了集成蓝牙SDK，蓝牙设备管理SDK，情感云SDK等功能，详细请查看[心流演示应用](https://github.com/Entertech/Enter-Affective-Cloud-Demo-Android)
+另外我们还提供了一个心流演示应用，其集成了蓝牙SDK，蓝牙设备管理SDK，情感云SDK等功能，详细请查看[心流演示应用](https://github.com/Entertech/Enter-Affective-Cloud-Demo-Android)
 
 ## 开发组件
 
