@@ -10,7 +10,7 @@
 
 ## 开发组件
 
-SDK包含以下组件：
+工程包含以下组件：
 
 - [1.工程Demo](demo/README.md)
 - [2.基础蓝牙模块SDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/ble)
