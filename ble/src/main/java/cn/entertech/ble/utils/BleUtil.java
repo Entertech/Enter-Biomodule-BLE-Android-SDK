@@ -14,7 +14,9 @@ public class BleUtil {
             if (mBluetoothAdapter != null) {
                 Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
                 for (BluetoothDevice device : bondedDevices) {
-                    unpairDevice(device);
+                    if ("Flowtime".equals(device.getName())){
+                        unpairDevice(device);
+                    }
                 }
             }
         } catch (Exception e) {
