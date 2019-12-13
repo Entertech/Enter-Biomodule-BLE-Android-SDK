@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     var rawListener = fun(bytes: ByteArray) {
-        Logger.d("brain data hex " + HexDump.toHexString(bytes))
+        Logger.d("firmware fixing hex " + HexDump.toHexString(bytes))
 //        Logger.d("brain data is " + Arrays.toString(bytes))
     }
 
