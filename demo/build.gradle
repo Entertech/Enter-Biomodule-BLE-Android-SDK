@@ -36,6 +36,9 @@ dependencies {
 //    api project(':bleuisdk')
 //    api project(':ble')
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+//    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
+//    implementation 'com.orhanobut:logger:1.15'
     implementation 'cn.entertech:biomodulebleui:1.0.4'
-    implementation 'cn.entertech:biomoduleble:1.3.2'
+    implementation 'cn.entertech:biomoduleble:1.3.4'
 }

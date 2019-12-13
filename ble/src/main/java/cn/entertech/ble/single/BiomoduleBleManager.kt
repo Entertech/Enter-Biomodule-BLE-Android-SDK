@@ -6,10 +6,7 @@ import android.os.HandlerThread
 import cn.entertech.ble.ContactState
 import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.toEnum
-import cn.entertech.ble.utils.NapBattery
-import cn.entertech.ble.utils.BatteryUtil
-import cn.entertech.ble.utils.ByteArrayBean
-import cn.entertech.ble.utils.NapBleCharacter
+import cn.entertech.ble.utils.*
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.Exception
@@ -103,6 +100,7 @@ class BiomoduleBleManager private constructor(context: Context) {
         brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
             bytes.let {
                 handler.post {
+                    FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it)
                     rawDataListeners.forEach { listener ->
                         listener.invoke(it)
                     }
@@ -337,6 +335,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * start collect brain data
      */
     fun startBrainCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).startFix()
         rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT)
     }
 
@@ -344,6 +343,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * stop collect brain data
      */
     fun stopBrainCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).stopFix()
         rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT)
     }
 
@@ -351,6 +351,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * start collect heart rate data
      */
     fun startHeartRateCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).startFix()
         rxBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT)
     }
 
@@ -358,6 +359,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * stop collect heart rate data
      */
     fun stopHeartRateCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).stopFix()
         rxBleManager.command(RxBleManager.Command.STOP_HEART_RATE_COLLECT)
     }
 
@@ -365,6 +367,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * start collect all data
      */
     fun startHeartAndBrainCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).startFix()
         rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT)
     }
 
@@ -372,6 +375,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      * stop collect all data
      */
     fun stopHeartAndBrainCollection() {
+        FirmwareFixHelper.getInstance(rxBleManager).stopFix()
         rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT)
     }
 
