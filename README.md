@@ -1,5 +1,10 @@
 # Biomodule 蓝牙SDK 
 
+- [Biomodule 蓝牙SDK](#biomodule-%e8%93%9d%e7%89%99sdk)
+  - [简介](#%e7%ae%80%e4%bb%8b)
+  - [Demo](#demo)
+  - [开发组件](#%e5%bc%80%e5%8f%91%e7%bb%84%e4%bb%b6)
+
 ## 简介
 
 本 SDK 包含回车生物电采集模块的蓝牙连接和生物电采集控制。通过集成BLE基础SDK可以实现和我们的采集模块连接，并控制其进行数据的采集和停止等指令，
