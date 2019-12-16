@@ -1,7 +1,4 @@
 # Biomodule 蓝牙SDK 
-##目录
-
-[TOC]
 
 ## 简介
 
