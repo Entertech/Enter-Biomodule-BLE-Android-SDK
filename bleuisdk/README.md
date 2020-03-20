@@ -9,8 +9,8 @@
 在module的build.gradle文件中加入以下依赖：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.4'  //ble基础功能
-implementation 'cn.entertech:biomodulebleui:1.0.4' //ble 设备管理界面
+implementation 'cn.entertech:biomoduleble:1.3.5'  //ble基础功能
+implementation 'cn.entertech:biomodulebleui:1.0.5' //ble 设备管理界面
 ```
 
 在项目根目录的build.gradle文件下添加以下依赖地址
