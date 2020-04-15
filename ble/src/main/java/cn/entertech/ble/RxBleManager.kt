@@ -38,7 +38,7 @@ class RxBleManager constructor(context: Context) {
     private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
     private lateinit var scanSubscription: Disposable
-    private val SCAN_TIMEOUT: Long = 10000
+    private val SCAN_TIMEOUT: Long = 20000
     private val DURATION_OF_SORT: Long = 3000
     private val CONNECT_TASK_DELAY: Long = 1000
 
@@ -170,7 +170,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = 5000, auto: Boolean = true) {
+    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = SCAN_TIMEOUT, auto: Boolean = true) {
         BleUtil.removePairDevice()
         var isScanSuccess = false
         isConnecting = true
@@ -184,7 +184,7 @@ class RxBleManager constructor(context: Context) {
                         { scanResult ->
                             if (!isScanSuccess) {
                                 isScanSuccess = true
-                                Timer().schedule(2000) {
+                                Timer().schedule(CONNECT_TASK_DELAY) {
                                     handler.post {
                                         if (null == scanResult) {
                                             failure?.invoke("scan error 1")
