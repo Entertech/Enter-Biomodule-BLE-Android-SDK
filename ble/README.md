@@ -1,4 +1,4 @@
-# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.4)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.4/link)
+# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.6/link)
 
 ## 说明
 
@@ -11,7 +11,7 @@
 在所需的module中的build.gradle文件下添加以下依赖即可：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.5'
+implementation 'cn.entertech:biomoduleble:1.3.6'
 ```
 
 ### jar包集成
@@ -22,7 +22,7 @@ implementation 'cn.entertech:biomoduleble:1.3.5'
 
 ```groovy
 implementation fileTree(include: ['*.jar'], dir: 'libs')
-implementation files('libs/enter-biomodule-ble-v1.0.8.jar')
+implementation files('libs/enter-biomodule-ble-v1.3.6.jar')
 ```
 
 ### 注意事项
