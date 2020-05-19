@@ -201,19 +201,26 @@ class DeviceActivity : BaseActivity() {
             runOnUiThread {
                 findViewById<TextView>(R.id.device_firmware).text = msg
                 var deviceUIConfig = DeviceUIConfig.getInstance(this)
-                var firmwareOldVersion = deviceUIConfig.firmwareOldVersion
+                var firmwareOldVersion = msg
                 var firmwareNewVersion = deviceUIConfig.firmwareNewVersion
-                if (deviceUIConfig.isFirmwareUpdate && firmwareOldVersion != null && firmwareNewVersion != null
-                        && msg == firmwareOldVersion && isNewVersion(firmwareOldVersion, firmwareNewVersion)) {
+                if (deviceUIConfig.isForceUpdate) {
                     tv_firmware_update_flag.visibility = View.VISIBLE
                     device_firmware_layout.setOnClickListener {
                         startActivity(Intent(DeviceActivity@ this, DeviceUpdateActivity::class.java)
                                 .putExtra("firmwarePath", deviceUIConfig.firmwareUpdatePath))
                     }
                 } else {
-                    tv_firmware_update_flag.visibility = View.GONE
-                    device_firmware_layout.setOnClickListener {
+                    if (firmwareNewVersion != null && isNewVersion(firmwareOldVersion, firmwareNewVersion)) {
+                        tv_firmware_update_flag.visibility = View.VISIBLE
+                        device_firmware_layout.setOnClickListener {
+                            startActivity(Intent(DeviceActivity@ this, DeviceUpdateActivity::class.java)
+                                    .putExtra("firmwarePath", deviceUIConfig.firmwareUpdatePath))
+                        }
+                    } else {
+                        tv_firmware_update_flag.visibility = View.GONE
+                        device_firmware_layout.setOnClickListener {
 
+                        }
                     }
                 }
             }

@@ -9,8 +9,7 @@ class DeviceUIConfig(var context: Context) {
     var mainColor: Int = Color.parseColor("#0064ff")
     var firmwareUpdatePath: String? = null
     var firmwareNewVersion: String? = null
-    var firmwareOldVersion: String? = null
-    var isFirmwareUpdate: Boolean = false
+    var isForceUpdate: Boolean = false
     var managers = CopyOnWriteArrayList<MultipleBiomoduleBleManager>()
     var isDeviceBind: Boolean = false
     var isMultipleDevice: Boolean = false
@@ -52,9 +51,8 @@ class DeviceUIConfig(var context: Context) {
         }
     }
 
-    fun updateFirmware(isUpdate: Boolean, oldVersion: String, newVersion: String, path: String) {
-        this.isFirmwareUpdate = isUpdate
-        this.firmwareOldVersion = oldVersion
+    fun updateFirmware(newVersion: String, path: String,isForceUpdate:Boolean) {
+        this.isForceUpdate = isForceUpdate
         this.firmwareNewVersion = newVersion
         this.firmwareUpdatePath = path
     }

@@ -1,4 +1,4 @@
-# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.4)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.4/link)
+# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.6)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.6/link)
 
 ## 说明
 
@@ -10,7 +10,7 @@
 
 ```groovy
 implementation 'cn.entertech:biomoduleble:1.3.6'  //ble基础功能
-implementation 'cn.entertech:biomodulebleui:1.0.5' //ble 设备管理界面
+implementation 'cn.entertech:biomodulebleui:1.0.6' //ble 设备管理界面
 ```
 
 在项目根目录的build.gradle文件下添加以下依赖地址
@@ -74,10 +74,9 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 
 | 参数       | 类型    | 说明                       |
 | ---------- | ------- | -------------------------- |
-| isUpdate   | Boolean | 是否开启固件更新           |
-| oldVersion | String  | 当前固件版本号 格式：a.b.c |
 | newVersion | String  | 新固件版本号 格式：a.b.c   |
 | path       | String  | 固件升级包的路径           |
+| isForceUpdate   | Boolean | 是否强制更新，如果是否会根据版本号自动判断           |
 
 **效果**
 
