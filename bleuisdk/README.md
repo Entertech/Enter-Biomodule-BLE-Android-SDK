@@ -76,7 +76,7 @@ deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
 | ---------- | ------- | -------------------------- |
 | newVersion | String  | 新固件版本号 格式：a.b.c   |
 | path       | String  | 固件升级包的路径           |
-| isForceUpdate   | Boolean | 是否强制更新，如果是否会根据版本号自动判断           |
+| isForceUpdate   | Boolean | 是否强制更新，如果否会根据版本号自动判断           |
 
 **效果**
 
