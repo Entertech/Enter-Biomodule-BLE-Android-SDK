@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
         initPermission()
         DeviceUIConfig.getInstance(this).init(false, true, 2)
+        DeviceUIConfig.getInstance(this).updateFirmware("1.0.1","${Environment.getExternalStorageDirectory()}/firmware_1.0.0.zip",true)
     }
 
 
