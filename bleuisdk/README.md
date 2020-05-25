@@ -67,7 +67,7 @@ deviceUIConfig.init(isDeviceBind, isMultipleDevice, deviceCount)
 **代码示例**
 
 ```kotlin
-deviceUIConfig.updateFirmware(isUpdate,oldVersion,newVersion,path)
+deviceUIConfig.updateFirmware(newVersion,path,isForceUpdate)
 ```
 
 **参数说明**
