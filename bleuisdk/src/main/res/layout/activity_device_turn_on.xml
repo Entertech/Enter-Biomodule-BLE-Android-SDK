@@ -23,15 +23,18 @@
             android:layout_marginLeft="@dimen/activity_margin_half"
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin_half"
-            android:background="@color/deviceOpenTipBg">
+            android:background="#E0FCEE">
 
             <ImageView
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_width="276dp"
+                android:scaleType="fitStart"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="@dimen/activity_margin"
                 android:layout_marginBottom="@dimen/activity_margin"
-                android:src="@mipmap/pic_device_connect" />
+                android:src="@mipmap/pic_flowtime_introduce" />
         </RelativeLayout>
 
         <TextView
