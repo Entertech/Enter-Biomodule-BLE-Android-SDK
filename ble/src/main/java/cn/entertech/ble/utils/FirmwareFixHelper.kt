@@ -50,7 +50,6 @@ class FirmwareFixHelper constructor(var rxBleManager: RxBleManager) {
 
     private var mFixFirmware128Runnable = Runnable {
         fix()
-        isFixing128 = false
     }
 
     private fun isFirmware255(bytes: ByteArray): Boolean {
@@ -78,7 +77,14 @@ class FirmwareFixHelper constructor(var rxBleManager: RxBleManager) {
         return count128 == 6
     }
 
+    var isLastByte128 = false
+    var isCurrentByte128 = false
     fun fixFirmware(bytes: ByteArray) {
+        isCurrentByte128 = isFirmware128(bytes)
+        if (isLastByte128 && !isCurrentByte128) {
+            isFixing128 = false
+        }
+        isLastByte128 = isCurrentByte128
         if (!isFixing128 && isFirmware128(bytes)) {
             isFixing128 = true
             mMainHandler?.post(mFixFirmware128Runnable)

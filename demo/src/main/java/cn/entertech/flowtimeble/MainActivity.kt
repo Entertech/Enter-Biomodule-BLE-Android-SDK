@@ -3,10 +3,11 @@ package cn.entertech.flowtimeble
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.ActivityCompat
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
 import cn.entertech.ble.single.BiomoduleBleManager
@@ -23,8 +24,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
         initPermission()
-        DeviceUIConfig.getInstance(this).init(false, true, 2)
-        DeviceUIConfig.getInstance(this).updateFirmware("1.0.1","${Environment.getExternalStorageDirectory()}/firmware_1.0.0.zip",true)
+        DeviceUIConfig.getInstance(this).init(false, false, 1)
+        DeviceUIConfig.getInstance(this).updateFirmware("1.0.1","${Environment.getExternalStorageDirectory()}/dfutest_V1.2.0.zip",true)
     }
 
 
@@ -143,7 +144,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     var rawListener = fun(bytes: ByteArray) {
-        Logger.d("firmware fixing hex " + HexDump.toHexString(bytes))
+//        Logger.d("firmware fixing hex " + HexDump.toHexString(bytes))
+        Log.d("######","braindata: "+HexDump.toHexString(bytes))
 //        Logger.d("brain data is " + Arrays.toString(bytes))
     }
 

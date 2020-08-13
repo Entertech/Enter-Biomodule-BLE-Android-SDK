@@ -1,8 +1,8 @@
 package cn.entertech.bleuisdk.ui.activity
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.DeviceUIConfig

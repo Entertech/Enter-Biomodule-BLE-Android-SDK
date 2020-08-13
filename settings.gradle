@@ -1,1 +1,1 @@
-include ':demo', ':ble', ':bleuisdk'
+include ':demo', ':ble', ':bleuisdk',':dfu'

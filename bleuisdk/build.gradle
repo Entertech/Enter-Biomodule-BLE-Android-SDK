@@ -12,7 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
     }
 
@@ -36,8 +36,14 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
     implementation 'com.orhanobut:logger:1.15'
-    implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
+//    implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
+//    implementation 'no.nordicsemi.android:dfu:1.10.5'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+//    implementation 'cn.entertech:Android-DFU-Library-Flowtime:1.11.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.airbnb.android:lottie:3.4.0'
     api project(':ble')
+    api project(':dfu')
 }
 
 //添加
