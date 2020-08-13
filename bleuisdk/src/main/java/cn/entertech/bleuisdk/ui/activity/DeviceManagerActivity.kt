@@ -11,9 +11,9 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.location.LocationManager
-import android.support.v4.app.ActivityCompat
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.utils.SettingManager

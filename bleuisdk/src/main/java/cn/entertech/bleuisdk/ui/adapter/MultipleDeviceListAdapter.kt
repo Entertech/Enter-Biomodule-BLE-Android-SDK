@@ -2,11 +2,11 @@ package cn.entertech.bleuisdk.ui.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.activity.DeviceActivity
 import cn.entertech.bleuisdk.ui.activity.DeviceTurnOnActivity

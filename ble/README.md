@@ -1,4 +1,4 @@
-# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.6/link)
+# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.7/link)
 
 ## 说明
 
@@ -11,18 +11,7 @@
 在所需的module中的build.gradle文件下添加以下依赖即可：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.6'
-```
-
-### jar包集成
-
-如果你在自动依赖遇到问题也可以手动添加依赖
-
-集成的方式很简单，只需要将Demo中demo/libs目录下的蓝牙jar文件拷贝到自己项目的libs文件夹下，如果没有，需要新建一个文件夹。拷贝完后需要在你项目的build.gradle文件中添加如下依赖：
-
-```groovy
-implementation fileTree(include: ['*.jar'], dir: 'libs')
-implementation files('libs/enter-biomodule-ble-v1.3.6.jar')
+implementation 'cn.entertech:biomoduleble:1.3.7'
 ```
 
 ### 注意事项

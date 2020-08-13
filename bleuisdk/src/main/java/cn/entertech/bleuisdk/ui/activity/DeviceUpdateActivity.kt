@@ -126,6 +126,7 @@ class DeviceUpdateActivity : BaseActivity() {
 //        starter.setKeepBond(true)
 //        starter.setZip(R.raw.dfu)
         starter.setZip(firmwarePath)
+        starter.setForceScanningForNewAddressInLegacyDfu(true)
         starter.start(this, DfuService::class.java)
     }
 

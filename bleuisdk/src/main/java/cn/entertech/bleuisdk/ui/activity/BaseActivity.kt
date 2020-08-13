@@ -4,10 +4,9 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.WindowManager
-
+import androidx.appcompat.app.AppCompatActivity
 
 
 open class BaseActivity : AppCompatActivity() {
