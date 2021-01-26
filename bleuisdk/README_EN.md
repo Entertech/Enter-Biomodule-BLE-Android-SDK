@@ -1,4 +1,4 @@
-# Device management interface SDK (integrate on demand)[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.7)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.7/link)
+# Device Management Interface SDK (Integrate On Demand)[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.7)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.7/link)
 
 ## Description
 

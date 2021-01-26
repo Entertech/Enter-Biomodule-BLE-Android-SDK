@@ -30,7 +30,9 @@ implementation 'cn.entertech:biomoduleble:1.3.7'
 
 ```kotlin
 var biomoduleBleManager = BiomoduleBleManager.getInstance(context)
-//根据信号强弱连接最近的设备，如果需要连接指定设备可调用scanMacAndConnect方法传入mac地址连接
+//Connect to the nearest device according to the signal strength, 
+// if you need to connect to the specified device,
+// you can call the `scanMacAndConnect` method to connect to the mac address
 biomoduleBleManager.scanNearDeviceAndConnect(fun() {
             Logger.d("scan success")
         }, fun(e: Exception) {
