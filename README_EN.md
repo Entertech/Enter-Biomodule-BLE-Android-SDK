@@ -9,7 +9,7 @@ For the precautions for hardware use, please refer to [Enter Precautions for the
 
 This demo demonstrates the Bluetooth basic module SDK and Bluetooth device management interface SDK:
 * Bluetooth basic SDK, complete device connection and data collection, please refer to this Bluetooth SDK project-[Basic Bluetooth Module SDK](/ble/README_EN.md)；
-* Bluetooth device management UI SDK, about the packaging of the device management interface, it can be directly integrated if necessary, and the specific documents can be viewed [device management UISDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/bleuisdk).
+* Bluetooth device management UI SDK, about the packaging of the device management interface, it can be directly integrated if necessary, and the specific documents can be viewed [device management UISDK](/bleuisdk/README_EN.md).
 
 ## Operation
 Click the corresponding button in the demo to perform the corresponding operation, and click the `设备UI入口` below to enter the device management interface
