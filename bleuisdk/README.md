@@ -1,4 +1,4 @@
-[English Readme](/README_EN.md)
+[English Readme](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/bleuisdk/README_EN.md)
 # 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.7)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.7/link)
 
 ## 说明
