@@ -1,4 +1,5 @@
-# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.6)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.7/link)
+[English Readme](/README_EN.md)
+# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.7)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.7/link)
 
 ## 说明
 
