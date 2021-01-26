@@ -48,7 +48,7 @@ deviceUIConfig.init(isDeviceBind, isMultipleDevice, deviceCount)
 **Parameter Description**
 
 | Parameters | Type | Description |
-| ---------------- | ------- | ------------------------ -------------------------------- |
+| ---------------- | ------- | -------------------------------------------------------- |
 | isDeviceBind | Boolean | Whether to bind the device, if so, the previous device will be automatically connected each time the device is connected |
 | isMultipleDevice | Boolean | Whether to support multiple connections |
 | deviceCount | Int | The number of device connections, up to 4 devices |
