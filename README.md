@@ -17,5 +17,5 @@
 点击demo中对应的按钮进行相应的操作，点击下方`设备UI入口`可进入到设备管理界面
 ## 界面交互和展示
 
-<img src="../docimage/demo.jpeg" width="40%">
+<img src="/docimage/demo.jpeg" width="40%">
 
