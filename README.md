@@ -9,8 +9,8 @@
 ## Demo 说明
 
 本 demo 演示了蓝牙基础模块SDK和蓝牙设备管理界面SDK：
-* 蓝牙基础SDK，完成设备连接和数据采集，具体参见此蓝牙 SDK 工程--[基础蓝牙模块SDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/ble)；
-* 蓝牙设备管理UI SDK，关于设备管理界面的封装，如有需要可直接集成，具体文档可查看[设备管理UISDK](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/tree/master/bleuisdk)。
+* 蓝牙基础SDK，完成设备连接和数据采集，具体参见此蓝牙 SDK 工程--[基础蓝牙模块SDK](/ble/README.md)；
+* 蓝牙设备管理UI SDK，关于设备管理界面的封装，如有需要可直接集成，具体文档可查看[设备管理UISDK](/bleuisdk/README.md)。
 
 
 ## 操作
