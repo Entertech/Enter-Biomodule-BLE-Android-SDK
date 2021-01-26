@@ -1,4 +1,4 @@
-# Biomodule Ble Demo
+# Biomodule Ble SDK
 
 ## how to use hardware
 For the operation of the hardware, please refer to [Enter Bioelectricity Acquisition Module Operation Instructions](https://docs.affectivecloud.com/📲蓝牙采集模块/回车生物电蓝牙采集模块操作说明.html).
