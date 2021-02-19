@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlowtimeBle</string>
+    <string name="connect">connect</string>
+    <string name="disconnect">disconnect</string>
+    <string name="start_collect">start brain collect</string>
+    <string name="stop_collect">stop brain collect</string>
+    <string name="start_hr_collect">start hr collect</string>
+    <string name="stop_hr_collect">stop hr collect</string>
+    <string name="start_brain_hr_collect">start brain hr collect</string>
+    <string name="stop_brain_hr_collect">stop brain hr collect</string>
+    <string name="add_connect_listener">add connect listener</string>
+    <string name="remove_connect_listener">remove connect listener</string>
+    <string name="add_disconnect_listener">add disconnect listener</string>
+    <string name="remove_disconnect_listener">remove disconnect listener</string>
+    <string name="add_brain_listener">add brain listener</string>
+    <string name="remove_brain_listener">remove brain listener</string>
+    <string name="add_hr_listener">add hr listener</string>
+    <string name="remove_hr_listener">remove hr listener</string>
+    <string name="add_battery_listener">add battery listener</string>
+    <string name="remove_battery_listener">remove battery listener</string>
+    <string name="add_battery_voltage_listener">add battery voltage listener</string>
+    <string name="remove_battery_voltage_listener">remove battery voltage listener</string>
+    <string name="is_connected">is connected</string>
+    <string name="read_battery">read battery</string>
+    <string name="read_hardware_version">read hardware version</string>
+    <string name="read_firmware_version">read firmware version</string>
+    <string name="read_serial_number">read device serial</string>
+    <string name="read_device_manufacturer">read manufacturer</string>
+    <string name="check_device_connected">check device connected</string>
+    <string name="device_manager_page">device manager page</string>
+</resources>

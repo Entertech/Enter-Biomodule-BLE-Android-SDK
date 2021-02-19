@@ -15,5 +15,5 @@ This demo demonstrates the Bluetooth basic module SDK and Bluetooth device manag
 Click the corresponding button in the demo to perform the corresponding operation, and click the `设备UI入口` below to enter the device management interface
 ## Interface interaction and display
 
-<img src="/docimage/demo.jpeg" width="40%">
+<img src="/docimage/demo_en.jpeg" width="40%">
 
