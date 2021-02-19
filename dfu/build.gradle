@@ -29,8 +29,8 @@ dependencies {
 }
 
 //添加
-apply plugin: 'com.novoda.bintray-release'
-
+//apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.panpf.bintray-publish'
 publish {
     bintrayUser = "hzentertech"
     bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
@@ -43,7 +43,7 @@ publish {
     //版本号
     publishVersion = '1.11.0'
     //描述，不重要
-    desc = ''
+    desc = 'dfu'
     //网站，不重要
     website = 'https://github.com/Lloyd0577/Android-DFU-Library'
     dryRun = false
