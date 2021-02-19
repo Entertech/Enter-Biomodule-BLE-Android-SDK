@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">FlowtimeBle</string>
+    <string name="connect">连接</string>
+    <string name="disconnect">断开</string>
+    <string name="start_collect">开始脑波数据采集</string>
+    <string name="stop_collect">停止脑波数据采集</string>
+    <string name="start_hr_collect">开始心率数据采集</string>
+    <string name="stop_hr_collect">停止心率数据采集</string>
+    <string name="start_brain_hr_collect">开始脑波心率数据同时采集</string>
+    <string name="stop_brain_hr_collect">停止脑波心率数据采集</string>
+    <string name="add_connect_listener">添加连接成功监听</string>
+    <string name="remove_connect_listener">移除连接成功监听</string>
+    <string name="add_disconnect_listener">添加断开连接监听</string>
+    <string name="remove_disconnect_listener">移除断开连接监听</string>
+    <string name="add_brain_listener">添加原始脑波监听</string>
+    <string name="remove_brain_listener">去除原始脑波监听</string>
+    <string name="add_hr_listener">添加心率监听</string>
+    <string name="remove_hr_listener">去除心率监听</string>
+    <string name="add_battery_listener">添加监听电量</string>
+    <string name="remove_battery_listener">去除监听电量</string>
+    <string name="add_battery_voltage_listener">添加监听电池电压</string>
+    <string name="remove_battery_voltage_listener">去除监听电池电压</string>
+    <string name="is_connected">是否连接</string>
+    <string name="read_battery">读取电量</string>
+    <string name="read_hardware_version">读取硬件版本</string>
+    <string name="read_firmware_version">读取固件版本</string>
+    <string name="read_serial_number">读取设备序列号</string>
+    <string name="read_device_manufacturer">读取制造商</string>
+    <string name="check_device_connected">查找已连接设备</string>
+    <string name="device_manager_page">设备UI入口</string>
 </resources>

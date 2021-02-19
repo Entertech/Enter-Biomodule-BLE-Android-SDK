@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onDisconnet(view: View) {
+    fun onDisconnect(view: View) {
         biomoduleBleManager.disConnect()
     }
 

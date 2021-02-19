@@ -21,18 +21,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onConnect"
-                    android:text="连接" />
+                    android:text="@string/connect" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="onDisconnet"
-                    android:text="断开" />
+                    android:onClick="onDisconnect"
+                    android:text="@string/disconnect" />
 
             </LinearLayout>
 
@@ -42,18 +44,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectBrainStart"
-                    android:text="开始脑波数据采集" />
+                    android:text="@string/start_collect" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectBrainStop"
-                    android:text="停止脑波数据采集" />
+                    android:text="@string/stop_collect" />
 
             </LinearLayout>
 
@@ -64,18 +68,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectHeartStart"
-                    android:text="开始心率数据采集" />
+                    android:text="@string/start_hr_collect" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectHeartStop"
-                    android:text="停止心率数据采集" />
+                    android:text="@string/stop_hr_collect" />
 
             </LinearLayout>
 
@@ -85,18 +91,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectBrainAndHeartStart"
-                    android:text="开始脑波心率数据同时采集" />
+                    android:text="@string/start_brain_hr_collect" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onCollectBrainAndHeartStop"
-                    android:text="停止脑波心率数据采集" />
+                    android:text="@string/stop_brain_hr_collect" />
 
             </LinearLayout>
 
@@ -108,6 +116,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -115,6 +124,7 @@
                     android:text="开启脱落检测" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -129,18 +139,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddConnectedListener"
-                    android:text="添加连接成功监听" />
+                    android:text="@string/add_connect_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveConnectedListener"
-                    android:text="移除连接成功监听" />
+                    android:text="@string/remove_connect_listener" />
 
             </LinearLayout>
 
@@ -150,18 +162,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddDisconnectedListener"
-                    android:text="添加断开连接监听" />
+                    android:text="@string/add_disconnect_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveDisconnectedListener"
-                    android:text="移除断开连接监听" />
+                    android:text="@string/remove_disconnect_listener" />
 
             </LinearLayout>
 
@@ -172,18 +186,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddRawListener"
-                    android:text="添加原始脑波监听" />
+                    android:text="@string/add_brain_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveRawListener"
-                    android:text="去除原始脑波监听" />
+                    android:text="@string/remove_brain_listener" />
 
             </LinearLayout>
 
@@ -193,28 +209,32 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddHeartRateListener"
-                    android:text="添加心率监听" />
+                    android:text="@string/add_hr_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveHeartRateListener"
-                    android:text="去除心率监听" />
+                    android:text="@string/remove_hr_listener" />
 
             </LinearLayout>
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -222,6 +242,7 @@
                     android:text="添加佩戴质量监听" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -236,18 +257,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddBatteryListener"
-                    android:text="添加监听电量" />
+                    android:text="@string/add_battery_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveBatteryListener"
-                    android:text="去除监听电量" />
+                    android:text="@string/remove_battery_listener" />
             </LinearLayout>
 
 
@@ -257,18 +280,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onAddBatteryVoltageListener"
-                    android:text="添加监听电池电压" />
+                    android:text="@string/add_battery_voltage_listener" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onRemoveBatteryVoltageListener"
-                    android:text="去除监听电池电压" />
+                    android:text="@string/remove_battery_voltage_listener" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -276,18 +301,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onGetState"
-                    android:text="是否连接" />
+                    android:text="@string/is_connected" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onBattery"
-                    android:text="读取电量" />
+                    android:text="@string/read_battery" />
 
             </LinearLayout>
 
@@ -297,18 +324,20 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onReadHardware"
-                    android:text="读取硬件版本" />
+                    android:text="@string/read_hardware_version" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onReadFirmware"
-                    android:text="读取固件版本" />
+                    android:text="@string/read_firmware_version" />
 
             </LinearLayout>
 
@@ -319,33 +348,37 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onReadDeviceSerial"
-                    android:text="读取设备序列号" />
+                    android:text="@string/read_serial_number" />
 
                 <Button
+                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="oReadDeviceManufacturer"
-                    android:text="读取制造商" />
+                    android:text="@string/read_device_manufacturer" />
 
             </LinearLayout>
 
 
             <Button
+                android:textAllCaps="false"
                 android:onClick="onFindConnectedDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="查找已连接设备" />
+                android:text="@string/check_device_connected" />
             <Button
+                android:textAllCaps="false"
                 android:id="@+id/btn_device_ui"
                 android:onClick="onDeviceUI"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="设备UI入口" />
+                android:text="@string/device_manager_page" />
 
 
         </LinearLayout>
