@@ -24,9 +24,10 @@ object BatteryUtil {
             var q1 = a1 * exp(-((it - b1) / c1).pow(2.0))
             var q2 = a2 * exp(-((it - b2) / c2).pow(2.0))
             var q3 = a3 * exp(-((it - b3) / c3).pow(2.0))
-            var percent = (q1 + q2 + q3).toInt()
+            var percent = ((q1 + q2 + q3) * 1.13 - 5).toInt()
             percent = max(min(percent, 100), 0)
-            var minutes = 4.52 * percent
+//            原时长估计因子为4.52，保守估计为85%，故改成3.84
+            var minutes = 3.84 * percent
             val hours = (minutes / 60).toInt()
             val minutesLast = (minutes % 60).toInt()
             return NapBattery(hours, minutesLast, percent)
