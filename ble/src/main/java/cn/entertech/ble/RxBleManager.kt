@@ -122,7 +122,7 @@ class RxBleManager constructor(context: Context) {
                                     if (null == scanResult) {
                                         failure?.invoke("scan error 1")
                                     } else {
-                                        connect(nearScanResult!!, true, successConnect, failure)
+                                        connect(nearScanResult!!, successConnect, failure)
                                     }
                                 }
                             }
@@ -138,7 +138,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect device
      */
-    fun connect(scanResult: ScanResult, auto: Boolean = true, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+    fun connect(scanResult: ScanResult, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
         rxBleDevice = rxBleClient.getBleDevice(scanResult.bleDevice.macAddress)
 
         subscription = rxBleDevice!!.establishConnection(false)
@@ -152,9 +152,9 @@ class RxBleManager constructor(context: Context) {
                 }, { throwable ->
                     isConnecting = false
                     disConnectListeners.forEach {
-                        it.invoke("conn error")
+                        it.invoke("conn error:${throwable}")
                     }
-                    failure?.invoke("conn error")
+                    failure?.invoke("conn error:${throwable}")
                 })
     }
 
@@ -170,7 +170,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = SCAN_TIMEOUT, auto: Boolean = true) {
+    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = SCAN_TIMEOUT) {
         BleUtil.removePairDevice()
         var isScanSuccess = false
         isConnecting = true
@@ -191,7 +191,7 @@ class RxBleManager constructor(context: Context) {
                                             isConnecting = false
                                         } else {
                                             scanSubscription.dispose()
-                                            connect(scanResult, true, success, failure)
+                                            connect(scanResult, success, failure)
                                         }
                                     }
                                 }
@@ -229,23 +229,23 @@ class RxBleManager constructor(context: Context) {
     /**
      * write command
      */
-    fun command(command: Command, success: (() -> Unit)? = null) {
-        write(NapBleCharacter.CMD_DOWNLOAD.uuid, command.value, fun() {
+    fun command(command: Command, success: ((ByteArray) -> Unit)? = null) {
+        write(NapBleCharacter.CMD_DOWNLOAD.uuid, command.value, fun(characteristicValue) {
             Logger.d("succ command")
-            success?.invoke()
+            success?.invoke(characteristicValue)
         }, fun(_) {
             Logger.d("fail command")
         })
     }
 
-    /**
-     * notify command
-     */
-    fun notifyCommand(command: (Command) -> Unit) {
-        notify(NapBleCharacter.CMD_UPLOAD.uuid, fun(bytes: ByteArray) {
-
-        }, null)
-    }
+//    /**
+//     * notify command
+//     */
+//    fun notifyCommand(command: (Command) -> Unit) {
+//        notify(NapBleCharacter.CMD_UPLOAD.uuid, fun(bytes: ByteArray) {
+//
+//        }, null)
+//    }
 
     /**
      * read battery
@@ -371,12 +371,12 @@ class RxBleManager constructor(context: Context) {
     /**
      * write characteristic
      */
-    private fun write(characterId: String, bytes: ByteArray, success: (() -> Unit)? = null, failure: ((String) -> Unit)?) {
+    private fun write(characterId: String, bytes: ByteArray, success: ((ByteArray) -> Unit)? = null, failure: ((String) -> Unit)?) {
         rxBleConnection?.let {
             it.writeCharacteristic(UUID.fromString(characterId), bytes)
                     .subscribe(
                             { characteristicValue ->
-                                success?.invoke()
+                                success?.invoke(characteristicValue)
                             },
                             { throwable ->
                                 // Handle an error here.
@@ -402,7 +402,7 @@ class RxBleManager constructor(context: Context) {
                             { throwable ->
                                 // Handle an error here.
                                 Logger.d("notify error $throwable ")
-//                                failure?.invoke("notify error")
+                                failure?.invoke("notify error")
                             }
                     )
 

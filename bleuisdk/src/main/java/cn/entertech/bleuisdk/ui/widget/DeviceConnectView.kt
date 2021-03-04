@@ -12,6 +12,7 @@ import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.utils.getBatteryResId
+import com.orhanobut.logger.Logger
 
 class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet: AttributeSet? = null, def: Int = 0) :
     RelativeLayout(context, attributeSet, def) {
@@ -22,12 +23,14 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
         COLOR, WHITE
     }
 
-    var connectLinstener = fun(str: String) {
+    var connectListener = fun(str: String) {
+        Logger.d("connect success:${str}")
         BiomoduleBleManager.getInstance(context).readBattery(fun(napBattery: NapBattery) {
             (context as Activity).runOnUiThread {
                 image?.setImageResource(getBatteryResId(napBattery.percent, mIconType))
             }
         }, fun(error: String) {
+            Logger.d("connect error:${error}")
             (context as Activity).runOnUiThread {
                 image?.setImageResource(R.mipmap.ic_device_disconnect_color)
             }
@@ -35,6 +38,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
     }
 
     var disconnectListener = fun(str: String) {
+        Logger.d("disconnect:${str}")
         (context as Activity).runOnUiThread {
             if (mIconType == IconType.COLOR) {
                 image?.setImageResource(R.mipmap.ic_device_disconnect_color)
@@ -55,7 +59,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
 
 
     fun initListener() {
-        BiomoduleBleManager.getInstance(context).addConnectListener(connectLinstener)
+        BiomoduleBleManager.getInstance(context).addConnectListener(connectListener)
         BiomoduleBleManager.getInstance(context).addDisConnectListener(disconnectListener)
     }
 
@@ -74,6 +78,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
                     image?.setImageResource(getBatteryResId(napBattery.percent, mIconType))
                 }
             }, fun(error: String) {
+                Logger.d("read battery error:${error}")
                 (context as Activity).runOnUiThread {
                     if (mIconType == IconType.COLOR) {
                         image?.setImageResource(R.mipmap.ic_device_disconnect_color)
@@ -86,7 +91,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
     }
 
     fun release() {
-        BiomoduleBleManager.getInstance(context).removeConnectListener(connectLinstener)
+        BiomoduleBleManager.getInstance(context).removeConnectListener(connectListener)
         BiomoduleBleManager.getInstance(context).removeDisConnectListener(disconnectListener)
     }
 

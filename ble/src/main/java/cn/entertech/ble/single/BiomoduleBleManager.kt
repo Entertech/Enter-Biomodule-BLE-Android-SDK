@@ -276,7 +276,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * remove device contact listener
      */
-    open fun removeContactListener(listener: (Int) -> Unit) {
+    fun removeContactListener(listener: (Int) -> Unit) {
         contactListeners.remove(listener)
     }
 
