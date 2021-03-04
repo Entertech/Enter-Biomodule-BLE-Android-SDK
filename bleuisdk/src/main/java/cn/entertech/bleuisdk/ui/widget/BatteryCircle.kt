@@ -16,7 +16,7 @@ import cn.entertech.bleuisdk.utils.getBatteryResId
 /**
  * Created by EnterTech on 2017/11/20.
  */
-class BatteryCircle @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0): RelativeLayout(context, attrs, defStyleAttr) {
+class BatteryCircle @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): RelativeLayout(context, attrs, defStyleAttr) {
 
     private val mPaint = Paint()
     private val mCircleColor = Color.WHITE

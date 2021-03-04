@@ -81,7 +81,7 @@ class DeviceUpdateActivity : BaseActivity() {
         }
     }
 
-    fun startUpdate(view: View) {
+    fun startUpdate(@Suppress("UNUSED_PARAMETER")view: View) {
         updating()
     }
 
@@ -140,18 +140,18 @@ class DeviceUpdateActivity : BaseActivity() {
 //        reconnectDevice()
     }
 
-    fun reconnectDevice() {
-        BiomoduleBleManager.getInstance(this)
-            .scanMacAndConnect(SettingManager.getInstance(this).bleMac, fun(success: String) {
-                BiomoduleBleManager.getInstance(this).readDeviceFirmware(fun(version: String) {
-                    SettingManager.getInstance(this).bleFirmware = version
-                }, fun(error: String) {
-
-                })
-            }, fun(error: String) {
-
-            })
-    }
+//    fun reconnectDevice() {
+//        BiomoduleBleManager.getInstance(this)
+//            .scanMacAndConnect(SettingManager.getInstance(this).bleMac, fun(success: String) {
+//                BiomoduleBleManager.getInstance(this).readDeviceFirmware(fun(version: String) {
+//                    SettingManager.getInstance(this).bleFirmware = version
+//                }, fun(error: String) {
+//
+//                })
+//            }, fun(error: String) {
+//
+//            })
+//    }
 
     fun updateFailed() {
         btn_update.visibility = View.INVISIBLE

@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onDeviceUI(view: View) {
+    fun onDeviceUI(@Suppress("UNUSED_PARAMETER")view: View) {
         startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
     }
 
@@ -62,17 +62,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     var connectedListener = fun(string: String) {
+        Logger.d("connect success${string}")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "连接成功", Toast.LENGTH_SHORT).show()
         }
     }
     var disConnectedListener = fun(string: String) {
+        Logger.d("disconnect ${string}")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "已断开连接", Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun onConnect(view: View) {
+    fun onConnect(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.scanNearDeviceAndConnect(fun() {
             Logger.d("扫描成功")
         }, fun(e: Exception) {
@@ -90,56 +92,56 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onDisconnect(view: View) {
+    fun onDisconnect(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.disConnect()
     }
 
 
-    fun onAddConnectedListener(view: View) {
+    fun onAddConnectedListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addConnectListener(connectedListener)
     }
 
-    fun onRemoveConnectedListener(view: View) {
+    fun onRemoveConnectedListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeConnectListener(connectedListener)
     }
 
-    fun onAddDisconnectedListener(view: View) {
+    fun onAddDisconnectedListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addDisConnectListener(disConnectedListener)
     }
 
-    fun onRemoveDisconnectedListener(view: View) {
+    fun onRemoveDisconnectedListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeDisConnectListener(disConnectedListener)
     }
 
-    fun onStopContact(view: View) {
+    fun onStopContact(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.stopContact()
     }
 
-    fun onStartContact(view: View) {
+    fun onStartContact(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.startContact()
     }
 
-    fun onCollectHeartStart(view: View) {
+    fun onCollectHeartStart(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.startHeartRateCollection()
     }
 
-    fun onCollectHeartStop(view: View) {
+    fun onCollectHeartStop(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.stopHeartRateCollection()
     }
 
-    fun onCollectBrainStart(view: View) {
+    fun onCollectBrainStart(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.startBrainCollection()
     }
 
-    fun onCollectBrainStop(view: View) {
+    fun onCollectBrainStop(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.stopBrainCollection()
     }
 
-    fun onCollectBrainAndHeartStart(view: View) {
+    fun onCollectBrainAndHeartStart(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.startHeartAndBrainCollection()
     }
 
-    fun onCollectBrainAndHeartStop(view: View) {
+    fun onCollectBrainAndHeartStop(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.stopHeartAndBrainCollection()
     }
 
@@ -153,31 +155,31 @@ class MainActivity : AppCompatActivity() {
         Logger.d("heart rate data is " + heartRate)
     }
 
-    fun onAddRawListener(view: View) {
+    fun onAddRawListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addRawDataListener(rawListener)
     }
 
-    fun onRemoveRawListener(view: View) {
+    fun onRemoveRawListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeRawDataListener(rawListener)
     }
 
-    fun onAddHeartRateListener(view: View) {
+    fun onAddHeartRateListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addHeartRateListener(heartRateListener)
     }
 
-    fun onRemoveHeartRateListener(view: View) {
+    fun onRemoveHeartRateListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeHeartRateListener(heartRateListener)
     }
 
-    fun onAddContactListener(view: View) {
+    fun onAddContactListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addContactListener(contactListener)
     }
 
-    fun onRemoveContactListener(view: View) {
+    fun onRemoveContactListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeContactListener(contactListener)
     }
 
-    fun onBattery(view: View) {
+    fun onBattery(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.readBattery(fun(battery: NapBattery) {
             Logger.d("battery = " + battery)
             runOnUiThread {
@@ -188,7 +190,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onGetState(view: View) {
+    fun onGetState(@Suppress("UNUSED_PARAMETER")view: View) {
         Logger.d(biomoduleBleManager.isConnected())
         Toast.makeText(this, if (biomoduleBleManager.isConnected()) {
             "已连接"
@@ -203,22 +205,22 @@ class MainActivity : AppCompatActivity() {
     val batteryVoltageListener = fun(voltage: Double) {
         Logger.d("battery voltage = ${voltage}")
     }
-    fun onAddBatteryListener(view: View) {
+    fun onAddBatteryListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addBatteryListener(batteryListener)
     }
 
-    fun onRemoveBatteryListener(view: View) {
+    fun onRemoveBatteryListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeBatteryListener(batteryListener)
     }
-    fun onAddBatteryVoltageListener(view: View) {
+    fun onAddBatteryVoltageListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
     }
 
-    fun onRemoveBatteryVoltageListener(view: View) {
+    fun onRemoveBatteryVoltageListener(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
     }
 
-    fun onReadHardware(view: View) {
+    fun onReadHardware(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.readDeviceHardware(fun(hardware: String) {
             Logger.d("hardware is " + hardware)
             runOnUiThread {
@@ -229,7 +231,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onReadFirmware(view: View) {
+    fun onReadFirmware(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.readDeviceFirmware(fun(firmware: String) {
             Logger.d("firmware is " + firmware)
             runOnUiThread {
@@ -240,7 +242,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onReadDeviceSerial(view: View) {
+    fun onReadDeviceSerial(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.readDeviceSerial(fun(serial: String) {
             Logger.d("serial is " + serial)
             runOnUiThread {
@@ -251,7 +253,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun oReadDeviceManufacturer(view: View) {
+    fun oReadDeviceManufacturer(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.readDeviceManufacturer(fun(manufacturer: String) {
             Logger.d("manufacturer is " + manufacturer)
             runOnUiThread {
@@ -262,7 +264,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onFindConnectedDevice(view:View){
+    fun onFindConnectedDevice(@Suppress("UNUSED_PARAMETER")view:View){
         biomoduleBleManager.findConnectedDevice()
     }
 

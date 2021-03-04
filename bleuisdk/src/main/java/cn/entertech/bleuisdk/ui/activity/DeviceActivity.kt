@@ -47,7 +47,7 @@ class DeviceActivity : BaseActivity() {
 
     fun addConnectListener() {
         bleConnectedListener = fun(result: String) {
-            Logger.d("device connect success")
+            Logger.d("device connect success:${result}")
             runOnUiThread {
                 toConnect()
                 updateDeviceInfo()
@@ -64,7 +64,7 @@ class DeviceActivity : BaseActivity() {
 
     fun addDisConnectListener() {
         bleDisConnectedListener = fun(result: String) {
-            Logger.d("connect failure")
+            Logger.d("connect failure:${result}")
             runOnUiThread {
                 toDisConnect()
             }
@@ -152,7 +152,7 @@ class DeviceActivity : BaseActivity() {
     fun isNewVersion(localVersion: String, cloudVersion: String): Boolean {
         var cloudVersions = cloudVersion.split(".")
         var localVersions = localVersion.split(".")
-        if (cloudVersions != null && cloudVersions.size == 3 && localVersions != null && localVersions.size == 3) {
+        if (cloudVersions.size == 3 && localVersions.size == 3) {
             var cloudVersionMajor = cloudVersions[0]
             var cloudVersionMinor = cloudVersions[1]
             var cloudVersionPatch = cloudVersions[2]
@@ -206,14 +206,14 @@ class DeviceActivity : BaseActivity() {
                 if (deviceUIConfig.isForceUpdate) {
                     tv_firmware_update_flag.visibility = View.VISIBLE
                     device_firmware_layout.setOnClickListener {
-                        startActivity(Intent(DeviceActivity@ this, DeviceUpdateActivity::class.java)
+                        startActivity(Intent(this@DeviceActivity , DeviceUpdateActivity::class.java)
                                 .putExtra("firmwarePath", deviceUIConfig.firmwareUpdatePath))
                     }
                 } else {
                     if (firmwareNewVersion != null && isNewVersion(firmwareOldVersion, firmwareNewVersion)) {
                         tv_firmware_update_flag.visibility = View.VISIBLE
                         device_firmware_layout.setOnClickListener {
-                            startActivity(Intent(DeviceActivity@ this, DeviceUpdateActivity::class.java)
+                            startActivity(Intent(this@DeviceActivity, DeviceUpdateActivity::class.java)
                                     .putExtra("firmwarePath", deviceUIConfig.firmwareUpdatePath))
                         }
                     } else {
@@ -264,6 +264,7 @@ class DeviceActivity : BaseActivity() {
         var mac = set.getStringValue("ble_mac_$mDeviceIndex")
         if (mDeviceUIConfig.isDeviceBind && mac != null && mac != "") {
             mMultipleBiomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
+                Logger.d("connect success mac:${mac}")
                 runOnUiThread {
                     SettingManager.getInstance(this).isConnectBefore = true
                     toConnect()
@@ -271,7 +272,7 @@ class DeviceActivity : BaseActivity() {
                     initListview()
                 }
             }, fun(error: String) {
-                Logger.d("connect failure")
+                Logger.d("connect failure:${error}")
                 runOnUiThread {
                     toDisConnect()
                 }
@@ -282,6 +283,7 @@ class DeviceActivity : BaseActivity() {
                         Logger.d("scan succ")
                     },
                     fun(e: Exception) {
+                        Logger.d("scan error:${e}")
                         runOnUiThread {
                             toDisConnect()
                         }
@@ -296,7 +298,7 @@ class DeviceActivity : BaseActivity() {
                         }
                     },
                     fun(error: String) {
-                        Logger.d("connect failure")
+                        Logger.d("connect failure:${error}")
                         runOnUiThread {
                             toDisConnect()
                         }
@@ -331,30 +333,30 @@ class DeviceActivity : BaseActivity() {
 //        rxBleManager.notifyBattery(onBatteryLevel,null)
     }
 
-    fun onConnectGuide(view: View) {
+    fun onConnectGuide(@Suppress("UNUSED_PARAMETER")view: View) {
 //        startActivity(Intent(this, WebActivity::class.java).putExtra(INTENT_WEB_TITLE, getString(R.string.can_t_connect_to_the_device))
 //                .putExtra(INTENT_WEB_URL, getString(R.string.device_can_not_connect_url)))
         startActivity(Intent(this, DeviceCanNotConnectActivity::class.java))
     }
 
-    fun onReConnect(view: View) {
+    fun onReConnect(@Suppress("UNUSED_PARAMETER")view: View) {
         toConnecting()
     }
 
-    fun onHardware(view: View) {
+    fun onHardware(@Suppress("UNUSED_PARAMETER")view: View) {
     }
 
-    fun onFirmware(view: View) {
+    fun onFirmware(@Suppress("UNUSED_PARAMETER")view: View) {
     }
 
-    fun onMac(view: View) {
+    fun onMac(@Suppress("UNUSED_PARAMETER")view: View) {
     }
 
-    fun onUnbind(view: View) {
+    fun onUnbind(@Suppress("UNUSED_PARAMETER")view: View) {
 //        startActivity(Intent(this, DeviceDeleteActivity::class.java))
     }
 
-    fun onFindConnectedDevice(view: View) {
+    fun onFindConnectedDevice(@Suppress("UNUSED_PARAMETER")view: View) {
         mMultipleBiomoduleBleManager.findConnectedDevice()
     }
 

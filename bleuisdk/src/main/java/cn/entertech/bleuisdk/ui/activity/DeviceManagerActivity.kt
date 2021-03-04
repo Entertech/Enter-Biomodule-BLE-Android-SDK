@@ -90,7 +90,7 @@ class DeviceManagerActivity : BaseActivity() {
         findViewById<TextView>(R.id.tv_title).visibility = View.INVISIBLE
     }
 
-    fun onLocation(view: View) {
+    fun onLocation(@Suppress("UNUSED_PARAMETER")view: View) {
         if (!isLocationEnable()) {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             return
@@ -125,11 +125,11 @@ class DeviceManagerActivity : BaseActivity() {
         }
     }
 
-    fun onBluetooth(view: View) {
+    fun onBluetooth(@Suppress("UNUSED_PARAMETER")view: View) {
         startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
     }
 
-    fun onConnect(view: View) {
+    fun onConnect(@Suppress("UNUSED_PARAMETER")view: View) {
         startActivity(Intent(this, DeviceActivity::class.java))
     }
 
