@@ -36,7 +36,7 @@ Scan and connect to the device with the strongest signal nearby, you need to pas
 ** Parameter description **
 
 | Parameter                   | Type                | Description         |
-| ---------------------- | ------------------- | ------ ------ |
+| ---------------------- | ------------------- | ------------ |
 | scanSuccessCallBack | () -> Unit | Scan success callback |
 | scanFailCallBack | (Exception) -> Unit | Scan failed callback |
 | connectSuccessCallBack | (String) ->Unit | Connect success callback |
@@ -611,12 +611,12 @@ var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
 > ```c#
 > //c# defines the brainwave monitoring class
 > class RawBrainDataCallback: AndroidJavaProxy {
-> public RawBrainDataCallback():base("kotlin.jvm.functions.Function1"){
-> }
-> public void invoke(AndroidJavaObject jo){
-> AndroidJavaObject bufferObject = jo.Get<AndroidJavaObject>("Buffer");
-> byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());// The buffer data here is the returned brainwave array
->}
+>     public RawBrainDataCallback():base("kotlin.jvm.functions.Function1"){
+>     }
+>     public void invoke(AndroidJavaObject jo){
+>         AndroidJavaObject bufferObject = jo.Get<AndroidJavaObject>("Buffer");
+>         byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());// The buffer data here is the returned brainwave array
+>     }
 >}
 > AndroidJavaClass biomoduleBleManagerJc = new AndroidJavaClass("cn.entertech.ble.BiomoduleBleManager");
 > var companion = biomoduleBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
