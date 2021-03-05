@@ -61,7 +61,7 @@ To connect to a device with a specified mac address, you need to pass in the use
 ```
 **Parameter description**
 
-| Parameter            | Type           | Description        |
+| Parameter            | Type           | Description  |
 | --------------- | -------------- | ----------- |
 | mac | String | device mac address |
 | successCallBack | (String)->Unit | Success Callback    |
@@ -99,8 +99,8 @@ boolean isConnected = biomoduleBleManager.isConnected()
 **Return value description**
 
 
-| Parameter        | Type    | Description                              |
-| ----------- | ------- | --------------------------------- |
+| Parameter        | Type    | Description  |
+| ----------- | ------- | ------------- |
 | isConnected | Boolean | The device is connected to true , not connected to false . |
 
 
@@ -133,7 +133,7 @@ Add original brain wave monitoring, through which the original brain wave data c
 
 **Parameter description**
 
-| Parameter            | Type                | Description         |
+| Parameter    | Type    | Description   |
 | --------------- | ----------------- | ------------ |
 | rawDataListener | ( ByteArray ) ->Unit | Raw brainwave callback |
 
@@ -169,7 +169,7 @@ biomoduleBleManager.removeRawDataListener(rawDataListener)
 
 **Parameter description**
 
-| Parameter            | Type                | Description         |
+| Parameter     | Type   | Description   |
 | --------------- | ------------------- | ------------ |
 | rawDataListener | ( ByteArray ) ->Unit | Raw brainwave callback |
 
@@ -191,7 +191,7 @@ biomoduleBleManager.addHeartRateListener(heartRateListener)
 ```
 **Parameter description**
 
-| Parameter              | Type          | Description             |
+| Parameter              | Type    | Description  |
 | ----------------- | ------------- | ---------------- |
 | heartRateListener | ( Int ) ->Unit | Heart rate data acquisition callback |
 
@@ -212,7 +212,7 @@ biomoduleBleManager.removeHeartRateListener(heartRateListener)
 ```
 **Parameter description**
 
-| Parameter              | Type          | Description         |
+| Parameter    | Type  | Description  |
 | ----------------- | ------------- | ------------ |
 | heartRateListener | ( Int ) ->Unit | Heart Rate Data Callback |
 
@@ -240,8 +240,8 @@ biomoduleBleManager.addContactListener(contactListener)
 ```
 **Parameter description**
 
-| Parameter            | Type                   | Description                                                         |
-| --------------- | ---------------------- | ---------- -------------------------------------------------- |
+| Parameter            | Type        | Description    |
+| --------------- | ---------------------- | --------------- |
 | contactListener | ( ContactState ) ->Unit | Wear signal callback. The returned ContactState is an enumerated type, and the enumerated values are ContactState.GOOD , ContactState.POOR , ContactState.BAD, which respectively indicate the quality of the wearing signal: good, normal, poor |
 
 #### Remove wearing signal monitor
@@ -259,7 +259,7 @@ biomoduleBleManager.removeContactListener(contactListener)
 **Parameter description**
 
 
-| Parameter            | Type                   | Description         |
+| Parameter      | Type   | Description         |
 | --------------- | ---------------------- | ----------- |
 | contactListener | ( ContactState ) ->Unit | Wear signal callback |
 
@@ -285,9 +285,10 @@ biomoduleBleManager.addBatteryListener(batteryListener)
 ```
 **Parameter description**
 
-| Parameter            | Type            | Description     |
+| Parameter      | Type      | Description     |
 | --------------- | --------------- | -------- |
 | batteryListener | ( Byte ) -> Unit | Battery Callback |
+
 #### Remove battery monitor
 **Method Description**
 After removal, you will not receive a battery callback
@@ -301,7 +302,7 @@ biomoduleBleManager.removeBatteryListener(batteryListener)
 
 **Parameter description**
 
-| Parameter            | Type            | Description     |
+| Parameter            | Type     | Description     |
 | --------------- | --------------- | -------- |
 | batteryListener | ( Byte ) -> Unit | Battery Callback |
 
