@@ -59,7 +59,7 @@ publish {
     //项目名称
     artifactId = 'biomodulebleui'
     //版本号
-    publishVersion = '1.0.7'
+    publishVersion = '1.0.8'
     //描述，不重要
     desc = 'ble ui'
     //网站，不重要
