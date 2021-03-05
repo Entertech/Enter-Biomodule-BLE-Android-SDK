@@ -9,11 +9,6 @@ import android.net.NetworkInfo;
  */
 
 public class NetworkState {
-    /**
-     * 获取当前网络类型
-     * @param context
-     * @return
-     */
     public static int getConnectedType(Context context) {
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -1,5 +1,5 @@
 [English Readme](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/bleuisdk/README_EN.md)
-# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.7)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.7/link)
+# 设备管理界面 SDK（按需接入）[![Download](https://api.bintray.com/packages/hzentertech/maven/biomodulebleui/images/download.svg?version=1.0.8)](https://bintray.com/hzentertech/maven/biomodulebleui/1.0.8/link)
 
 ## 说明
 
@@ -11,7 +11,7 @@
 
 ```groovy
 implementation 'cn.entertech:biomoduleble:1.3.7'  //ble基础功能
-implementation 'cn.entertech:biomodulebleui:1.0.7' //ble 设备管理界面
+implementation 'cn.entertech:biomodulebleui:1.0.8' //ble 设备管理界面
 ```
 
 在项目根目录的build.gradle文件下添加以下依赖地址

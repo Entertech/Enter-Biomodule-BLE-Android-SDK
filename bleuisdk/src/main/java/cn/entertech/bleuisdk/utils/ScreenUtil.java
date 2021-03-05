@@ -11,18 +11,8 @@ import android.view.WindowManager;
 
 import java.lang.reflect.Method;
 
-/**
- * @function 屏幕工具
- * @auther: Created by yinglan
- * @time: 16/3/16
- */
 public class ScreenUtil {
 
-    /**
-     * 透明状态栏
-     *
-     * @param context
-     */
     public static void setStateBarTransparent(Context context) {
         ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     }
@@ -37,12 +27,6 @@ public class ScreenUtil {
     }
 
 
-    /**
-     * 获取底部导航栏
-     *
-     * @param context
-     * @return
-     */
     public static int getNavigationBarHeight(Context context) {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
@@ -54,12 +38,6 @@ public class ScreenUtil {
         }
     }
 
-    /**
-     * 判断是否有导航栏
-     *
-     * @param context
-     * @return
-     */
     public static boolean checkDeviceHasNavigationBar(Context context) {
         boolean hasNavigationBar = false;
         Resources rs = context.getResources();
@@ -100,12 +78,6 @@ public class ScreenUtil {
         return false;
     }
 
-    /**
-     * 获取屏幕内容高度
-     *
-     * @param context
-     * @return
-     */
     public static int getScreenHeight(Context context) {
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
@@ -114,12 +86,6 @@ public class ScreenUtil {
         return outMetrics.heightPixels;
     }
 
-    /**
-     * 获得屏幕高度
-     *
-     * @param context
-     * @return
-     */
     public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
@@ -128,38 +94,15 @@ public class ScreenUtil {
         return outMetrics.widthPixels;
     }
 
-    /**
-     * dp转px
-     *
-     * @param context
-     * @param dipValue
-     * @return
-     */
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
     }
 
-    /**
-     * px转dp
-     *
-     * @param context
-     * @param pxValue
-     * @return
-     */
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
-
-
-    /**
-     * sp转px
-     *
-     * @param context
-     * @param spVal
-     * @return
-     */
 
     public static int sp2px(Context context, float spVal) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
