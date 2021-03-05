@@ -64,30 +64,30 @@ class MainActivity : AppCompatActivity() {
     var connectedListener = fun(string: String) {
         Logger.d("connect success${string}")
         runOnUiThread {
-            Toast.makeText(this@MainActivity, "连接成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, "connect success", Toast.LENGTH_SHORT).show()
         }
     }
     var disConnectedListener = fun(string: String) {
         Logger.d("disconnect ${string}")
         runOnUiThread {
-            Toast.makeText(this@MainActivity, "已断开连接", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun onConnect(@Suppress("UNUSED_PARAMETER")view: View) {
         biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d("扫描成功")
+            Logger.d("sacn success")
         }, fun(e: Exception) {
-            Logger.d("扫描失败：$e")
+            Logger.d("sacn failed：$e")
         }, fun(mac: String) {
-            Logger.d("连接成功$mac")
+            Logger.d("connect success$mac")
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "设备连接成功", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT).show()
             }
         }) { msg ->
-            Logger.d("连接失败")
+            Logger.d("connect failed")
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "设备连接失败：${msg}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "failed to connect to device：${msg}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -193,9 +193,9 @@ class MainActivity : AppCompatActivity() {
     fun onGetState(@Suppress("UNUSED_PARAMETER")view: View) {
         Logger.d(biomoduleBleManager.isConnected())
         Toast.makeText(this, if (biomoduleBleManager.isConnected()) {
-            "已连接"
+            "connected"
         } else {
-            "未连接"
+            "disconnect"
         }, Toast.LENGTH_SHORT).show()
     }
 
@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.readDeviceHardware(fun(hardware: String) {
             Logger.d("hardware is " + hardware)
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "硬件版本：${hardware}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "hardware is：${hardware}", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
             Logger.d("error is " + error)
@@ -235,7 +235,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.readDeviceFirmware(fun(firmware: String) {
             Logger.d("firmware is " + firmware)
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "固件版本：${firmware}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "firmware is：${firmware}", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
             Logger.d("error is " + error)
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.readDeviceSerial(fun(serial: String) {
             Logger.d("serial is " + serial)
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "序列号：${serial}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "serial is：${serial}", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
             Logger.d("error is " + error)
@@ -257,7 +257,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.readDeviceManufacturer(fun(manufacturer: String) {
             Logger.d("manufacturer is " + manufacturer)
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "制造商：${manufacturer}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "manufacturer is：${manufacturer}", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
             Logger.d("error is " + error)
