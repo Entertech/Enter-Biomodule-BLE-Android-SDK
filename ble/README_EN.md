@@ -72,7 +72,7 @@ biomoduleBleManager.addRawDataListener(rawDataListener)
 biomoduleBleManager.startBrainCollection()
 ```
 
-For more detail ble function,please refer to [Ble Detail API](<https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/Ble%E8%AF%A6%E7%BB%86API%E8%AF%B4%E6%98%8E.md>)
+For more detail ble function,please refer to [Ble Detail API](../Ble_Detail_API.md)
 
 # Change Notes
 
