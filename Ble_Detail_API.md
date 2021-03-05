@@ -1,22 +1,10 @@
 # Detailed API description
 
-
-
 ### Get Bluetooth Management Class
 
-
-
-** Method Description **
-
-
-
+**Method Description**
 This class integrates all the operations of Bluetooth
-
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
@@ -24,133 +12,69 @@ biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 
 ```
 
-
-
 ### Device connection
-
-
 
 #### Connect to the device with the strongest signal nearby (unknown device mac address)
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Scan and connect to the device with the strongest signal nearby, you need to pass in the user id , if the user binding function is not required, pass in a fixed value
 
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
-
    biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-
             Logger.d(" Scan successfully ")
-
         }, fun(e: Exception) {
-
             Logger.d(" Scan failed: $e")
-
         }, fun(mac: String) {
-
             Logger.d(" Connected successfully $mac")
-
         }) {msg ->
-
             Logger.d(" Connection failed ")
-
         }
-
 ```
-
-
-
 ** Parameter description **
 
-
-
 | Parameter                   | Type                | Description         |
-
 | ---------------------- | ------------------- | ------ ------ |
-
 | scanSuccessCallBack | () -> Unit | Scan success callback |
-
 | scanFailCallBack | (Exception) -> Unit | Scan failed callback |
-
 | connectSuccessCallBack | (String) ->Unit | Connect success callback |
-
 | failedCallBack | (String)->Unit | Failed Callback     |
-
-
 
 #### According to the specified mac connection (known device mac address)
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 To connect to a device with a specified mac address, you need to pass in the user id and mac address
 
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
   biomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
-
     Logger.d(" Connected successfully $mac")
-
   }){msg->
-
     Logger.d(" Connection failed ")
-
   }
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type           | Description        |
-
 | --------------- | -------------- | ----------- |
-
 | mac | String | device mac address |
-
 | successCallBack | (String)->Unit | Success Callback    |
-
 | failedCallBack | (String)->Unit | Failed Callback    |
-
 
 
 ### Device disconnect
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Disconnect from the device
 
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
@@ -158,23 +82,13 @@ biomoduleBleManager.disConnect()
 
 ```
 
-
-
 ### Get device connection status
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Get the current device connection status
 
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
@@ -182,43 +96,26 @@ boolean isConnected = biomoduleBleManager.isConnected()
 
 ```
 
-
-
-** Return value description **
-
-
+**Return value description**
 
 | Parameter        | Type    | Description                              |
-
 | ----------- | ------- | ----------------------------- ---- |
-
 | isConnected | Boolean | The device is connected to true , not connected to false . |
 
-
-
 ### Set up the listening interface
-
-
 
 **The monitoring interface life cycle needs to be managed, no monitoring is needed, please call remove**
 
 
-
 #### Add original brainwave monitoring
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Add original brain wave monitoring, through which the original brain wave data can be obtained from the hardware
 
 
 
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
@@ -227,62 +124,37 @@ Add original brain wave monitoring, through which the original brain wave data c
         Logger.d(Arrays.toString(data))
 
   }
-
   biomoduleBleManager.addRawDataListener(rawDataListener)
 
 ```
 
 
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type                | Description         |
-
 | --------------- | ------------------- | ------------ |
-
 | rawDataListener | ( ByteArray ) ->Unit | Raw brainwave callback |
 
-
-
 > ** Explanation of raw brainwave data **
-
 >
-
 > The original brainwave data returned from the brainwave callback is a byte array with a length of 20 , the first two bytes are the packet number, the last 18 bytes are valid brainwave data, and the brainwave data is divided into two channels , In order: one channel, two channels, one channel, two channels ...
-
 >
-
 > ** Example of normal data **
-
 >
-
 > [0, -94, 21, -36, 125, 21, -12, -75, 22, 8, 61, 22, 10, -72, 22, 15, -19,20,10,8]
-
 >
-
 > ** Example of abnormal data (no brain wave data detected) **
-
 >
-
 > [0, 101, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ,-1,-1,-1]
-
-
 
 #### Remove the original brainwave monitor
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 If you don’t want to receive brainwave data, just remove the monitor
 
 
-
-** Sample Code **
+**Sample Code**
 
 
 
@@ -292,77 +164,41 @@ biomoduleBleManager.removeRawDataListener(rawDataListener)
 
 ```
 
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type                | Description         |
-
 | --------------- | ------------------- | ------------ |
-
 | rawDataListener | ( ByteArray ) ->Unit | Raw brainwave callback |
 
-
-
-
-
 #### Add heart rate monitor
-
-
-
-** Method Description **
-
-
+**Method Description**
 
 Add a heart rate monitor, through which heart rate data can be obtained from the hardware
 
-
-
-** Sample Code **
-
-
+**Sample Code**
 
 ```kotlin
 
 var heartRateListener = fun(heartRate: Int) {
-
     Logger.d("heart rate data is "+ heartRate)
-
 }
 
 biomoduleBleManager.addHeartRateListener(heartRateListener)
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter              | Type          | Description             |
-
 | ----------------- | ------------- | ---------------- |
-
 | heartRateListener | ( Int ) ->Unit | Heart rate data acquisition callback |
-
-
 
 #### Remove heart rate monitor
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 If you don’t want to receive your heart rate, just remove the monitor
 
-
-
-** Sample Code **
+**Sample Code**
 
 
 
@@ -371,34 +207,19 @@ If you don’t want to receive your heart rate, just remove the monitor
 biomoduleBleManager.removeHeartRateListener(heartRateListener)
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter              | Type          | Description         |
-
 | ----------------- | ------------- | ------------ |
-
 | heartRateListener | ( Int ) ->Unit | Heart Rate Data Callback |
-
-
 
 #### Add wearing signal monitoring
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Add this monitor, you can get the quality of equipment wearing in real time
 
-
-
-** Code Example **
+**Code Example**
 
 
 
@@ -413,74 +234,40 @@ contactListener = fun(state: ContactState) {
 biomoduleBleManager.addContactListener(contactListener)
 
 
-
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type                   | Description                                                         |
-
 | --------------- | ---------------------- | ---------- -------------------------------------------------- |
-
 | contactListener | ( ContactState ) ->Unit | Wear signal callback. The returned ContactState is an enumerated type, and the enumerated values ​​are ContactState.GOOD , ContactState.POOR , ContactState.BAD, which respectively indicate the quality of the wearing signal: good, normal, poor |
 
-
-
 #### Remove wearing signal monitor
-
-
-
-** Method Description **
-
-
+**Method Description**
 
 Remove the monitor, you won’t receive the wear signal
 
-
-
-** Code Example **
-
-
+**Code Example**
 
 ```kotlin
 
 biomoduleBleManager.removeContactListener(contactListener)
 
 ```
-
-
-
-** Parameter description **
-
+**Parameter description**
 
 
 | Parameter            | Type                   | Description         |
-
 | --------------- | ---------------------- | ---------- - |
-
 | contactListener | ( ContactState ) ->Unit | Wear signal callback |
-
 
 
 #### Add battery monitor
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 Add battery monitor, after adding it will call back every 30 seconds
 
-
-
-** Code Example **
-
-
+**Code Example**
 
 ```kotlin
 
@@ -493,72 +280,34 @@ var batteryListener = fun(byte: Byte) {
 biomoduleBleManager.addBatteryListener(batteryListener)
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type            | Description     |
-
 | --------------- | --------------- | -------- |
-
 | batteryListener | ( Byte ) -> Unit | Battery Callback |
-
-
-
 #### Remove battery monitor
-
-
-
-** Method Description **
-
-
-
+**Method Description**
 After removal, you will not receive a battery callback
 
-
-
-** Code Example **
-
-
-
+**Code Example**
 ```kotlin
 
 biomoduleBleManager.removeBatteryListener(batteryListener)
 
 ```
 
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type            | Description     |
-
 | --------------- | --------------- | -------- |
-
 | batteryListener | ( Byte ) -> Unit | Battery Callback |
 
-
-
 #### Add battery voltage monitor
-
-
-
-** Method Description **
-
-
+**Method Description**
 
 Add battery voltage monitor, it will be called back every 30 seconds after adding
 
-
-
-** Code Example **
-
-
+**Code Example**
 
 ```kotlin
 
@@ -567,38 +316,24 @@ var batteryVoltageListener = fun(voltage: Double) {
    Logger.d("battery voltage = $voltage")
 
 }
-
 biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type            | Description     |
-
 | --------------- | --------------- | -------- |
-
 | batteryVoltageListener | ( Double ) -> Unit | Battery Voltage Callback |
 
 
 
 #### Remove battery voltage monitor
 
-
-
-** Method Description **
-
-
+**Method Description**
 
 After removal, you will not receive battery voltage callback
 
-
-
-** Code Example **
+**Code Example**
 
 
 
@@ -607,46 +342,21 @@ After removal, you will not receive battery voltage callback
 biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 
 ```
-
-
-
-** Parameter description **
-
-
+**Parameter description**
 
 | Parameter            | Type            | Description     |
-
 | --------------- | --------------- | -------- |
-
 | batteryVoltageListener | ( Double ) -> Unit | Battery Voltage Callback |
-
-
-
 The battery power can be calculated based on the battery voltage,
-
-
-
 The default battery specifications (model 401015 , capacity 40mAh, rated voltage 3.7V ) calculation formula is as follows:
-
-
-
 ```
 
 The known voltage is x (unit: V )
 
-
-
 [ 1 ] The remaining power percentage q (unit: % ; value range: 0~100 ) expression:
-
-
-
 q = a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/ c3)^2) #Gaussian fitting curve
 
-
-
 q = max([min([q, 100]), 0]) #The value range is limited to 0~100
-
-
 
 The parameter values ​​are as follows :
 
@@ -669,38 +379,33 @@ The parameter values ​​are as follows :
            c3 = 0.09208
 
 [ 2 ] Remaining use time t (unit: min ) expression:
-
-
-
 t = 4.52*q
-
 ```
 
 ### Collection and stop
 
 #### Start brainwave data collection
 
-** Method Description **
+**Method Description**
 
 Start brain wave data collection, call this interface to start collecting brain wave data
 
 
-** Sample Code **
+**Sample Code**
 
 ```kotlin
 
 biomoduleBleManager.startBrainCollection()
 
 ```
-
 #### Stop brainwave data collection
 
-** Method Description **
+**Method Description**
 
 Stop collecting, call this method to stop collecting brain wave data
 
 
-** Sample Code **
+**Sample Code**
 
 ```kotlin
 
@@ -709,30 +414,30 @@ biomoduleBleManager.stopBrainCollection()
 ```
 #### Start heart rate data collection
 
-** Method Description **
+**Method Description**
 
 Start heart rate data collection, call this interface to start collecting heart rate data
-** Sample Code **
+**Sample Code**
 ```kotlin
 
 biomoduleBleManager.startHeartRateCollection()
 
 ```
 #### Stop heart rate data collection
-** Method Description **
+**Method Description**
 Stop collecting, call this method to stop collecting heart rate data
-** Sample Code **
+**Sample Code**
 ```kotlin
 
 biomoduleBleManager.stopHeartRateCollection()
 
 ```
 #### Start brainwave and heart rate data collection at the same time
-** Method Description **
+**Method Description**
 
 Start heart rate data collection, call this interface to start collecting brain wave and heart rate data at the same time
 
-** Sample Code **
+**Sample Code**
 
 ```kotlin
 
@@ -741,10 +446,10 @@ biomoduleBleManager.startHeartAndBrainCollection()
 ```
 #### Stop brainwave and heart rate data collection
 
-** Method Description **
+**Method Description**
 
 Stop collecting, call this method to stop collecting brain wave and heart rate data
-** Sample Code **
+**Sample Code**
 
 ```kotlin
 
@@ -752,38 +457,21 @@ biomoduleBleManager.stopHeartAndBrainCollection()
 
 ```
 
-
-
-
-
-
-
 ### DFU (device firmware upgrade)
 
-
-
 Support DFU ( Device Firmware Update ), that is, device remote firmware upgrade. Since the bottom layer of this SDK depends on the Android-DFU-Library library, if you need DFU , you need to add the following dependencies to your build.gradle file:
-
-
 
 ```groovy
 
 implementation'com.github.santa-cat:Android-DFU-Library:v1.6.1'
 
 ```
-
-
-
 #### Use of DFU
-
-
 
 First, you need to define a service and inherit DfuBaseService , as follows:
 
 
-
 ```
-
 public class DfuService extends DfuBaseService {
 
               @Override
@@ -795,9 +483,6 @@ public class DfuService extends DfuBaseService {
                                         //NotificationActivity this Activity
 
               }
-
-
-
               @Override
 
               protected boolean isDebug() {
@@ -805,279 +490,136 @@ public class DfuService extends DfuBaseService {
                  // This method indicates whether to print more debug logs
 
                   return BuildConfig.DEBUG;//BuildConfig.DEBUG is false , if you want to print more logs, return true directly
-
               }
-
 }
-
 ```
-
-
-
 The NotificationActivity class code is as follows:
 
-
-
 ```
-
 public class NotificationActivity extends Activity {
-
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         if (isTaskRoot()) {
-
             // Declare the Activity you want to jump here
-
             final Intent intent = new Intent(this, MyActivity.class);
-
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
             intent.putExtras(getIntent().getExtras());
-
             startActivity(intent);
-
         }
-
         finish();
-
     }
-
 }
-
 ```
-
-
-
 > * Note: Don’t forget to register the above service and Activity in the AndroidManifest.xml file *
-
-
 
 Next, you need to create a remote upgrade monitor to monitor the various processes in the upgrade process:
 
-
-
 ```kotlin
-
 private val mDfuProgressListener = object: DfuProgressListenerAdapter() {
-
-
-
-     //The device is connecting
-
+        //The device is connecting
         override fun onDeviceConnecting(deviceAddress: String?) {
-
         }
-
-       //The device is connected
-
+        //The device is connected
         override fun onDeviceConnected(deviceAddress: String?) {
-
         }
-
-       // Preparing to start the upgrade
-
+         // Preparing to start the upgrade
         override fun onDfuProcessStarting(deviceAddress: String?) {
-
         }
-
-       //The equipment starts to upgrade
-
+        //The equipment starts to upgrade
         override fun onDfuProcessStarting(deviceAddress: String?) {
-
         }
-
-
-
         override fun onEnablingDfuMode(deviceAddress: String?) {
-
         }
-
-
-
-          // Firmware verification
-
+         // Firmware verification
         override fun onFirmwareValidating(deviceAddress: String?) {
-
         }
-
-      //The device is disconnecting
-
+        //The device is disconnecting
         override fun onDeviceDisconnecting(deviceAddress: String?) {
-
         }
-
-      // Upgrade completed
-
+        // Upgrade completed
         override fun onDfuCompleted(deviceAddress: String?) {
-
         }
-
-      // Due to unexpected reasons, the upgrade was aborted and the upgrade failed
-
+        // Due to unexpected reasons, the upgrade was aborted and the upgrade failed
         override fun onDfuAborted(deviceAddress: String?) {
-
         }
-
-      // Progress callback during upgrade
-
+         // Progress callback during upgrade
         override fun onProgressChanged(deviceAddress: String?, percent: Int, speed: Float, avgSpeed: Float, currentPart: Int, partsTotal: Int) {
-
         }
-
-      // Upgrade failed
-
+         // Upgrade failed
         override fun onError(deviceAddress: String?, error: Int, errorType: Int, message: String?) {
-
         }
-
     }
-
 ```
-
-
-
 #### Register to monitor
-
-
 
 To register and unregister the monitor in the corresponding life cycle
 
-
-
-** Code Example **
-
-
-
+**Code Example**
 ```kotlin
-
 override fun onCreate(savedInstanceState: Bundle?) {
-
    super.onCreate(savedInstanceState)
-
    setContentView(R.layout.activity_device_update_tip)
-
    DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener)
-
 }
-
 override fun onDestroy() {
-
    super.onDestroy()
-
    DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener)
-
 }
-
 ```
-
-
-
 #### Start upgrade
 
-
-
 ```kotlin
-
 val starter = DfuServiceInitiator(deviceMac) // Incoming device mac address
-
           .setDeviceName(deviceName) // Incoming device name
-
            .setkeepBond(true) // Whether to keep device binding
-
 // Call this method to make Nordic nrf52832 enter bootloader mode
-
 starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
-
 // Set file path
-
 starter.setZip(FileUtil.getFirmwareDir() + "/firmware.zip")
-
 // Start to upgrade
-
 starter.start(this, DfuService::class.java)
-
 ```
-
-
 
 For Android 8.0 and above systems, if you want the DFU service to be able to display the progress bar in the notification bar, you need to create a notification channel. The easiest way is to call the following method:
 
-
-
 ```kotlin
-
 DfuServiceInitiator.createDfuNotificationChannel(context);
-
 ```
 
 ### Multi-device connection
 
-
-
 Added the MultipleBiomoduleBleManager class to support the connection of multiple devices. MultipleBiomoduleBleManager and BiomoduleBleManager have the same functional interface. The only difference is that the instantiation method is different. BiomoduleBleManager adopts singleton mode, while MultipleBiomoduleBleManager can be instantiated arbitrarily. Each MultipleBiomoduleBleManager corresponds to one ble device, but the number of connected devices will be limited by the mobile terminal. The number of terminal limits will be different, and it needs to be analyzed according to the specific situation.
 
-
-
-** Code Example **
-
-
+**Code Example**
 
 ```kotlin
-
 // Instantiate the ble management class
-
 var multipleBiomoduleBleManager = MultipleBiomoduleBleManager()
-
 // All the following interface calling methods are the same as the BiomoduleBleManager class, so I won’t repeat them here.
-
 ...
-
 ```
-
 ### C# Calling instructions
 
 >
-
 > Most of the SDK methods can be called by C# , but when it comes to the transfer of arrays, C# will fail to call, such as the brainwave data transfer here. Therefore, if you need to set up brainwave data monitoring in C# , you can use the following methods:
-
 >
-
 > ```c#
-
 > //c# defines the brainwave monitoring class
-
 > class RawBrainDataCallback: AndroidJavaProxy {
-
 > public RawBrainDataCallback():base("kotlin.jvm.functions.Function1"){
-
 > }
-
 > public void invoke(AndroidJavaObject jo){
-
 > AndroidJavaObject bufferObject = jo.Get<AndroidJavaObject>("Buffer");
-
 > byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());// The buffer data here is the returned brainwave array
-
 >}
-
 >}
-
 > AndroidJavaClass biomoduleBleManagerJc = new AndroidJavaClass("cn.entertech.ble.BiomoduleBleManager");
-
 > var companion = biomoduleBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
-
 > var biomoduleBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
-
 > // Instantiate brainwave data monitoring callback
-
 > RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback();
-
 > biomoduleBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
-
 > ```
 
 
