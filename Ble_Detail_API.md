@@ -98,9 +98,11 @@ boolean isConnected = biomoduleBleManager.isConnected()
 
 **Return value description**
 
+
 | Parameter        | Type    | Description                              |
-| ----------- | ------- | ----------------------------- ---- |
+| ----------- | ------- | --------------------------------- |
 | isConnected | Boolean | The device is connected to true , not connected to false . |
+
 
 ### Set up the listening interface
 
@@ -132,8 +134,9 @@ Add original brain wave monitoring, through which the original brain wave data c
 **Parameter description**
 
 | Parameter            | Type                | Description         |
-| --------------- | ------------------- | ------------ |
+| --------------- | ----------------- | ------------ |
 | rawDataListener | ( ByteArray ) ->Unit | Raw brainwave callback |
+
 
 > ** Explanation of raw brainwave data **
 >
@@ -239,7 +242,7 @@ biomoduleBleManager.addContactListener(contactListener)
 
 | Parameter            | Type                   | Description                                                         |
 | --------------- | ---------------------- | ---------- -------------------------------------------------- |
-| contactListener | ( ContactState ) ->Unit | Wear signal callback. The returned ContactState is an enumerated type, and the enumerated values ​​are ContactState.GOOD , ContactState.POOR , ContactState.BAD, which respectively indicate the quality of the wearing signal: good, normal, poor |
+| contactListener | ( ContactState ) ->Unit | Wear signal callback. The returned ContactState is an enumerated type, and the enumerated values are ContactState.GOOD , ContactState.POOR , ContactState.BAD, which respectively indicate the quality of the wearing signal: good, normal, poor |
 
 #### Remove wearing signal monitor
 **Method Description**
@@ -257,7 +260,7 @@ biomoduleBleManager.removeContactListener(contactListener)
 
 
 | Parameter            | Type                   | Description         |
-| --------------- | ---------------------- | ---------- - |
+| --------------- | ---------------------- | ----------- |
 | contactListener | ( ContactState ) ->Unit | Wear signal callback |
 
 
@@ -347,8 +350,8 @@ biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 | Parameter            | Type            | Description     |
 | --------------- | --------------- | -------- |
 | batteryVoltageListener | ( Double ) -> Unit | Battery Voltage Callback |
-The battery power can be calculated based on the battery voltage,
-The default battery specifications (model 401015 , capacity 40mAh, rated voltage 3.7V ) calculation formula is as follows:
+
+The battery power can be calculated based on the battery voltage,The default battery specifications (model 401015 , capacity 40mAh, rated voltage 3.7V ) calculation formula is as follows:
 ```
 
 The known voltage is x (unit: V )
