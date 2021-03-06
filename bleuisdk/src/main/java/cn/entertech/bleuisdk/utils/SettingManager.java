@@ -42,7 +42,7 @@ public class SettingManager {
     }
 
 
-    //BLE 相关存储
+    //BLE
     public synchronized void setBleMac(String mac) {
         getEditor().putString(BLE_MAC, mac).apply();
     }
@@ -51,7 +51,6 @@ public class SettingManager {
         return getSharedPreferences().getString(BLE_MAC, "");
     }
 
-    //BLE 相关存储
     public synchronized void setStringValue(String key, String value) {
         getEditor().putString(key, value).apply();
     }

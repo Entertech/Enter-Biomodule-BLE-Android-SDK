@@ -26,6 +26,7 @@ object BatteryUtil {
             var q3 = a3 * exp(-((it - b3) / c3).pow(2.0))
             var percent = ((q1 + q2 + q3) * 1.13 - 5).toInt()
             percent = max(min(percent, 100), 0)
+//            The original duration estimation factor is 4.52, and the conservative estimate is 85%, so it is changed to 3.84
 //            原时长估计因子为4.52，保守估计为85%，故改成3.84
             var minutes = 3.84 * percent
             val hours = (minutes / 60).toInt()

@@ -102,7 +102,6 @@ class DeviceActivity : BaseActivity() {
             toConnecting()
         }
         initDeleteButton()
-//        删除设备
 
     }
 
