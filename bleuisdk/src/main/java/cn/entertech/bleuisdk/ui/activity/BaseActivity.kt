@@ -25,7 +25,6 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
-    //修改状态栏字体
     fun setStatusBarLight() {
         window.decorView.systemUiVisibility =
             window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR

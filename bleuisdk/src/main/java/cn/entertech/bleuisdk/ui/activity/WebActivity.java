@@ -148,7 +148,7 @@ public class WebActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && mWebView != null && mWebView.canGoBack()) {
-            mWebView.goBack();// 返回前一个页面
+            mWebView.goBack();// back to pre page 返回前一个页面
             return true;
         }
         return super.onKeyDown(keyCode, event);
