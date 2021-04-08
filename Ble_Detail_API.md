@@ -228,10 +228,8 @@ Add this monitor, you can get the quality of equipment wearing in real time
 
 ```kotlin
 
-contactListener = fun(state: ContactState) {
-
-   napManager.setTouchState(ContactState.GOOD == state);// The wearing signal obtained from the hardware layer is passed into the algorithm
-
+contactListener = fun(state: Int) {
+    Logger.d("Whether the wearing contact is good:"+ state == 0);
 }
 
 biomoduleBleManager.addContactListener(contactListener)
@@ -242,7 +240,7 @@ biomoduleBleManager.addContactListener(contactListener)
 
 | Parameter            | Type        | Description    |
 | --------------- | ---------------------- | --------------- |
-| contactListener | ( ContactState ) ->Unit | Wear signal callback. The returned ContactState is an enumerated type, and the enumerated values are ContactState.GOOD , ContactState.POOR , ContactState.BAD, which respectively indicate the quality of the wearing signal: good, normal, poor |
+| contactListener | ( Int ) ->Unit | Wear signal callback.  0 means normal wearing, other values ​​mean abnormal wearing |
 
 #### Remove wearing signal monitor
 **Method Description**
@@ -261,7 +259,7 @@ biomoduleBleManager.removeContactListener(contactListener)
 
 | Parameter      | Type   | Description         |
 | --------------- | ---------------------- | ----------- |
-| contactListener | ( ContactState ) ->Unit | Wear signal callback |
+| contactListener | ( Int ) ->Unit | Wear signal callback |
 
 
 #### Add battery monitor
@@ -354,36 +352,24 @@ biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 
 The battery power can be calculated based on the battery voltage,The default battery specifications (model 401015 , capacity 40mAh, rated voltage 3.7V ) calculation formula is as follows:
 ```
-
-The known voltage is x (unit: V )
-
-[ 1 ] The remaining power percentage q (unit: % ; value range: 0~100 ) expression:
-q = a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/ c3)^2) #Gaussian fitting curve
-
-q = max([min([q, 100]), 0]) #The value range is limited to 0~100
-
-The parameter values ​​are as follows :
-
-           a1 = 99.84
-
-           b1 = 4.244
-
-           c1 = 0.3781
-
-           a2 = 21.38
-
-           b2 = 3.953
-
-           c2 = 0.1685
-
-           a3 = 15.21
-
-           b3 = 3.813
-
-           c3 = 0.09208
-
-[ 2 ] Remaining use time t (unit: min ) expression:
-t = 4.52*q
+The known voltage is x (unit: V)
+[1] Remaining power percentage q (unit: %; value range: 0~100) expression:
+q = a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/ c3)^2) # Gaussian fitting curve
+q = q*1.13-5 # Tibetan electricity, the upper limit is 8 and the lower limit is 5
+To
+q = max([min([q, 100]), 0]) # The value range is limited to 0~100
+The parameter values ​​are as follows:
+       a1 = 99.84
+       b1 = 4.244
+       c1 = 0.3781
+       a2 = 21.38
+       b2 = 3.953
+       c2 = 0.1685
+       a3 = 15.21
+       b3 = 3.813
+       c3 = 0.09208
+[2] Remaining use time t (unit: min) expression:
+t = 3.84*q # The original time length estimation factor is 4.52, and the conservative estimate is 85%, so it is changed to 3.84
 ```
 
 ### Collection and stop

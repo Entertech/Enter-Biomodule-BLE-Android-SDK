@@ -201,8 +201,8 @@ biomoduleBleManager.removeHeartRateListener(heartRateListener)
 **代码示例**
 
 ```kotlin
-contactListener = fun(state: ContactState) {
-   napManager.setTouchState(ContactState.GOOD == state);//将从硬件层获取的佩戴信号传入算法
+contactListener = fun(state: Int) {
+   Logger.d("Whether the wearing contact is good:"+ state == 0);
 }
 biomoduleBleManager.addContactListener(contactListener)
     
@@ -212,7 +212,7 @@ biomoduleBleManager.addContactListener(contactListener)
 
 | 参数            | 类型                   | 说明                                                         |
 | --------------- | ---------------------- | ------------------------------------------------------------ |
-| contactListener | （ContactState）->Unit | 佩戴信号回调。返回的ContactState为一个枚举类型，枚举值为ContactState.GOOD、ContactState.POOR、ContactState.BAD,分别表示佩戴信号质量：好、一般、差 |
+| contactListener | （Int）->Unit | 佩戴信号回调。0:接触良好，其他值：未正常佩戴 |
 
 #### 移除佩戴信号监听
 
@@ -230,7 +230,7 @@ biomoduleBleManager.removeContactListener(contactListener)
 
 | 参数            | 类型                   | 说明         |
 | --------------- | ---------------------- | ------------ |
-| contactListener | （ContactState）->Unit | 佩戴信号回调 |
+| contactListener | （Int）->Unit | 佩戴信号回调 |
 
 #### 添加电量监听
 
@@ -316,26 +316,23 @@ biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 
 ```
 已知电压为x（单位：V）
-
 【1】剩余电量百分比q（单位：%；取值范围：0~100）表达式：
+	q =  a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/c3)^2)	# 高斯拟合曲线
+	q = q*1.13 - 5  		# 藏电，上限藏8，下限藏5
 
-q =  a1*exp(-((x-b1)/c1)^2) + a2*exp(-((x-b2)/c2)^2) + a3*exp(-((x-b3)/c3)^2)    # 高斯拟合曲线
-
-q = max([min([q, 100]), 0])    # 取值范围限制在0~100
-
-其中参数值如下:
-           a1 =       99.84
-           b1 =       4.244
-           c1 =      0.3781
-           a2 =       21.38
-           b2 =       3.953
-           c2 =      0.1685
-           a3 =       15.21
-           b3 =       3.813
-           c3 =     0.09208
+	q = max([min([q, 100]), 0])	# 取值范围限制在0~100
+	其中参数值如下:
+       		a1 =       99.84
+       		b1 =       4.244
+       		c1 =      0.3781
+       		a2 =       21.38
+       		b2 =       3.953
+       		c2 =      0.1685
+       		a3 =       15.21
+       		b3 =       3.813
+       		c3 =     0.09208
 【2】剩余使用时长t（单位：min）表达式：
-
-t = 4.52*q
+	t = 3.84*q  		# 原时长估计因子为4.52，保守估计为85%，故改成3.84
 ```
 
 ### 采集与停止
