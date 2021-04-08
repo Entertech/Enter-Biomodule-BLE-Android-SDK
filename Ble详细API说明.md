@@ -312,7 +312,7 @@ biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 
 可以根据电池电压计算电池电量，
 
-默认电池规格（型号401015，容量 40mAh,额定电压3.7V）计算公式如下：
+默认电池规格（型号401015，容量 40mAh,额定电压4.1V）计算公式如下：
 
 ```
 已知电压为x（单位：V）

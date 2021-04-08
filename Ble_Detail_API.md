@@ -350,7 +350,7 @@ biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
 | --------------- | --------------- | -------- |
 | batteryVoltageListener | ( Double ) -> Unit | Battery Voltage Callback |
 
-The battery power can be calculated based on the battery voltage,The default battery specifications (model 401015 , capacity 40mAh, rated voltage 3.7V ) calculation formula is as follows:
+The battery power can be calculated based on the battery voltage,The default battery specifications (model 401015 , capacity 40mAh, rated voltage 4.1V ) calculation formula is as follows:
 ```
 The known voltage is x (unit: V)
 [1] Remaining power percentage q (unit: %; value range: 0~100) expression:
