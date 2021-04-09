@@ -140,8 +140,9 @@ Add original brain wave monitoring, through which the original brain wave data c
 
 > **Explanation of raw brainwave data**
 >
-> The original brainwave data returned from the brainwave callback is a byte array with a length of 20 , the first two bytes are the packet number, the last 18 bytes are valid brainwave data, and the brainwave data is divided into two channels , In order: one channel, two channels, one channel, two channels ...
->
+> The original brainwave data returned from the brainwave callback is a byte array with a length of 20, the first two bytes are the packet number, the last 18 bytes are valid brainwave data, of which the brainwave data is divided into two left and right aisle,
+> In order: left, left, left, right, right, right, left, left, left, right, right, right, left, left, left, right, right, right
+
 > **Example of normal data**
 >
 > [0, -94, 21, -36, 125, 21, -12, -75, 22, 8, 61, 22, 10, -72, 22, 15, -19,20,10,8]
