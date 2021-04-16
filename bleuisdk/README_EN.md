@@ -11,7 +11,7 @@ The device management interface SDK includes the basic ble function, and also in
 Add the following dependencies to the module's build.gradle file:
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.7'  //basic ble function 
+implementation 'cn.entertech:biomoduleble:1.4.0'  //basic ble function
 implementation 'cn.entertech:biomodulebleui:1.0.8' //the device management interface
 ```
 

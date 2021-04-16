@@ -1,5 +1,5 @@
 [English Readme](https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/ble/README_EN.md)
-# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.9)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.9/link)
+# Ble基础SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.4.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.4.0/link)
 
 ## 说明
 
@@ -12,7 +12,7 @@
 在所需的module中的build.gradle文件下添加以下依赖即可：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.9'
+implementation 'cn.entertech:biomoduleble:1.4.0'
 ```
 
 ### 注意事项

@@ -10,7 +10,7 @@
 在module的build.gradle文件中加入以下依赖：
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.7'  //ble基础功能
+implementation 'cn.entertech:biomoduleble:1.4.0'  //ble基础功能
 implementation 'cn.entertech:biomodulebleui:1.0.8' //ble 设备管理界面
 ```
 

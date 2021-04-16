@@ -1,4 +1,4 @@
-# Ble SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.3.7)](https://bintray.com/hzentertech/maven/biomoduleble/1.3.7/link)
+# Ble SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.4.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.4.0/link)
 
 ## Description
 
@@ -11,7 +11,7 @@ The basic Ble SDK can easily collect raw brainwaves, heart rate and other data f
 Add the following dependencies under the build.gradle file in the required module:
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.3.7'
+implementation 'cn.entertech:biomoduleble:1.4.0'
 ```
 
 ### Permissions
