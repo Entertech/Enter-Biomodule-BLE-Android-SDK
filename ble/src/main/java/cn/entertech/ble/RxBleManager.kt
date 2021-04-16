@@ -145,6 +145,7 @@ class RxBleManager constructor(context: Context) {
                 .subscribe({ rxBleConnection ->
                     this.rxBleConnection = rxBleConnection
                     Logger.d("conn succ")
+                    isConnecting = false
                     success?.invoke(scanResult.bleDevice.macAddress)
                     connectListeners.forEach {
                         it.invoke(scanResult.bleDevice.macAddress)
