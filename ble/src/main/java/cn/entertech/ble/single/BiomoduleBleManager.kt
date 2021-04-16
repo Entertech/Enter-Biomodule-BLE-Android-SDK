@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.ContactState
 import cn.entertech.ble.RxBleManager
+import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
 import cn.entertech.ble.toEnum
 import cn.entertech.ble.utils.*
 import io.reactivex.disposables.Disposable
@@ -207,8 +208,8 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
+    fun scanNearDeviceAndConnect(scanTimeout: Long = SCAN_TIMEOUT,successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanNearDeviceAndConnect(scanTimeout,successScan, failScan, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -217,8 +218,8 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanMacAndConnect(mac, fun(mac: String) {
+    fun scanMacAndConnect(mac: String,scanTimeout: Long = SCAN_TIMEOUT,successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanMacAndConnect(mac,scanTimeout, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)

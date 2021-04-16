@@ -38,10 +38,12 @@ class RxBleManager constructor(context: Context) {
     private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
     private lateinit var scanSubscription: Disposable
-    private val SCAN_TIMEOUT: Long = 20000
     private val DURATION_OF_SORT: Long = 3000
     private val CONNECT_TASK_DELAY: Long = 1000
 
+    companion object{
+        val SCAN_TIMEOUT: Long = 20000
+    }
     init {
         rxBleClient = RxBleClient.create(context)
 
@@ -93,7 +95,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
+    fun scanNearDeviceAndConnect(scanTimeout: Long = SCAN_TIMEOUT,successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
                                  successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
 
         BleUtil.removePairDevice()
@@ -107,7 +109,7 @@ class RxBleManager constructor(context: Context) {
                 ScanFilter.Builder().setServiceUuid(ParcelUuid(UUID.fromString(NapBleDevice.NAPTIME.uuid)))
                         .build()
 
-        ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
+        ).timeout(scanTimeout, TimeUnit.MILLISECONDS).subscribe(
                 { scanResult ->
                     if (null == nearScanResult || scanResult.rssi > nearScanResult!!.rssi) {
                         nearScanResult = scanResult
@@ -171,7 +173,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, success: ((String) -> Unit)?, failure: ((String) -> Unit)?, timeout: Long = SCAN_TIMEOUT) {
+    fun scanMacAndConnect(mac: String, timeout: Long = SCAN_TIMEOUT,success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
         BleUtil.removePairDevice()
         var isScanSuccess = false
         isConnecting = true
