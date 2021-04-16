@@ -218,8 +218,8 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanMacAndConnect(mac, fun(mac: String) {
+    fun scanMacAndConnect(mac: String,scanTimeout: Long = RxBleManager.SCAN_TIMEOUT, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanMacAndConnect(mac,scanTimeout, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
