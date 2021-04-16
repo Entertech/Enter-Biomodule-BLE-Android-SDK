@@ -262,7 +262,7 @@ class DeviceActivity : BaseActivity() {
         findViewById<View>(R.id.toolbar_layout).setBackgroundColor(mDeviceUIConfig.mainColor)
         var mac = set.getStringValue("ble_mac_$mDeviceIndex")
         if (mDeviceUIConfig.isDeviceBind && mac != null && mac != "") {
-            mMultipleBiomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
+            mMultipleBiomoduleBleManager.scanMacAndConnect(mac, successConnect = fun(mac: String) {
                 Logger.d("connect success mac:${mac}")
                 runOnUiThread {
                     SettingManager.getInstance(this).isConnectBefore = true
@@ -270,7 +270,7 @@ class DeviceActivity : BaseActivity() {
                     updateDeviceInfo()
                     initListview()
                 }
-            }, fun(error: String) {
+            },failure = fun(error: String) {
                 Logger.d("connect failure:${error}")
                 runOnUiThread {
                     toDisConnect()

@@ -208,8 +208,8 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(scanTimeout: Long = SCAN_TIMEOUT,successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanNearDeviceAndConnect(scanTimeout,successScan, failScan, fun(mac: String) {
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)

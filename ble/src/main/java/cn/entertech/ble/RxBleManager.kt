@@ -95,7 +95,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(scanTimeout: Long = SCAN_TIMEOUT,successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
+    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
                                  successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
 
         BleUtil.removePairDevice()
@@ -109,7 +109,7 @@ class RxBleManager constructor(context: Context) {
                 ScanFilter.Builder().setServiceUuid(ParcelUuid(UUID.fromString(NapBleDevice.NAPTIME.uuid)))
                         .build()
 
-        ).timeout(scanTimeout, TimeUnit.MILLISECONDS).subscribe(
+        ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
                 { scanResult ->
                     if (null == nearScanResult || scanResult.rssi > nearScanResult!!.rssi) {
                         nearScanResult = scanResult
