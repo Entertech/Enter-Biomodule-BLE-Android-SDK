@@ -8,8 +8,14 @@
 ## 集成
 
 ### gradle自动依赖
+在项目根目录的build.gradle文件下添加以下依赖：
+```groovy
+repositories {
+  mavenCentral()
+}
+```
 
-在所需的module中的build.gradle文件下添加以下依赖即可：
+在所需的module中的build.gradle文件下添加以下依赖：
 
 ```groovy
 implementation 'cn.entertech.android:biomoduleble:1.4.2'
