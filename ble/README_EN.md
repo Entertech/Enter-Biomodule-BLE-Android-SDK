@@ -1,4 +1,4 @@
-# Ble SDK [![Download](https://api.bintray.com/packages/hzentertech/maven/biomoduleble/images/download.svg?version=1.4.0)](https://bintray.com/hzentertech/maven/biomoduleble/1.4.0/link)
+# Ble SDK [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cn.entertech.android/biomoduleble/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cn.entertech.android/biomoduleble)
 
 ## Description
 
