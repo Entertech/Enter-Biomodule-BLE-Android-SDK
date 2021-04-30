@@ -11,7 +11,7 @@ The basic Ble SDK can easily collect raw brainwaves, heart rate and other data f
 Add the following dependencies under the build.gradle file in the required module:
 
 ```groovy
-implementation 'cn.entertech:biomoduleble:1.4.0'
+implementation 'cn.entertech.android:biomoduleble:1.4.2'
 ```
 
 ### Permissions

@@ -1,0 +1,37 @@
+apply plugin: 'maven'
+
+//任务名
+uploadArchives{
+    repositories {
+        mavenDeployer {
+            //nexus账号密码在local.properties文件中配置
+            Properties properties = new Properties()// local.properties file in the root director
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            def userName = properties.getProperty("ossrhUsername")
+            def password = properties.getProperty("ossrhPassword")
+            //这里的url是nexus中maven-releases的路径，可以点击copy按钮查看复制
+            repository(url: "https://s01.oss.sonatype.org/content/repositories/releases/") {
+                authentication(userName: userName, password: password)
+            }
+            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: userName, password: password)
+            }
+            // 下面这三项pom参数，在调用的时候是这个样子 ： compile 'com.jcking.jbottomtabbar:jbottomtabbar:0.0.1'
+            // library的包名
+            pom.groupId = 'cn.entertech.android'
+            // library的项目名
+            pom.artifactId = 'biomodulebleui'
+            // library的版本号
+            pom.version = '1.0.8'
+
+            pom.project {
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+            }
+        }
+    }
+}
