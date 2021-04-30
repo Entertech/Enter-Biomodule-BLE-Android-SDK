@@ -20,9 +20,7 @@ Add the following dependency address under the build.gradle file in the project 
 ```groovy
 allprojects {
     repositories {
-        maven {
-            url "https://dl.bintray.com/hzentertech/maven"
-        }
+        mavenCentral()
     }
 }
 ```

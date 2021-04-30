@@ -19,9 +19,7 @@ implementation 'cn.entertech.android:biomodulebleui:1.0.8' //ble 设备管理界
 ```groovy
 allprojects {
     repositories {
-        maven {
-            url "https://dl.bintray.com/hzentertech/maven"
-        }
+        mavenCentral()
     }
 }
 ```

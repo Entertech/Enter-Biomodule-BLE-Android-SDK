@@ -7,6 +7,12 @@ The basic Ble SDK can easily collect raw brainwaves, heart rate and other data f
 ## Getting Started
 
 ### Gradle
+Add the following dependencies under the build.gradle file in the project root directory:
+```groovy
+repositories {
+  mavenCentral()
+}
+```
 
 Add the following dependencies under the build.gradle file in the required module:
 
