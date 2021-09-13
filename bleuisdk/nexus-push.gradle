@@ -22,7 +22,7 @@ uploadArchives{
             // library的项目名
             pom.artifactId = 'biomodulebleui'
             // library的版本号
-            pom.version = '1.0.8'
+            pom.version = '1.1.0'
 
             pom.project {
                 licenses {
