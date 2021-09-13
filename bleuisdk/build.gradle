@@ -23,7 +23,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -35,35 +37,33 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
-    implementation 'com.orhanobut:logger:1.15'
 //    implementation 'com.github.santa-cat:Android-DFU-Library:v1.6.1'
 //    implementation 'no.nordicsemi.android:dfu:1.10.5'
     implementation 'org.greenrobot:eventbus:3.1.1'
 //    implementation 'cn.entertech:Android-DFU-Library-Flowtime:1.11.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.airbnb.android:lottie:3.4.0'
-    api project(':ble')
-    api project(':dfu')
+    implementation 'cn.entertech.android:biomoduleble-dfu:1.11.0'
+    implementation 'cn.entertech.android:biomoduleble:1.4.2'
 }
 
 //添加
 //apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'com.github.panpf.bintray-publish'
-publish {
-    bintrayUser = "hzentertech"
-    bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
-    //bintray.com用户名
-    userOrg = 'hzentertech'
-    //jcenter上的路径
-    groupId = 'cn.entertech'
-    //项目名称
-    artifactId = 'biomodulebleui'
-    //版本号
-    publishVersion = '1.0.8'
-    //描述，不重要
-    desc = 'ble ui'
-    //网站，不重要
-    website = 'https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK'
-    dryRun = false
-}
+//apply plugin: 'com.github.panpf.bintray-publish'
+//publish {
+//    bintrayUser = "hzentertech"
+//    bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
+//    //bintray.com用户名
+//    userOrg = 'hzentertech'
+//    //jcenter上的路径
+//    groupId = 'cn.entertech'
+//    //项目名称
+//    artifactId = 'biomodulebleui'
+//    //版本号
+//    publishVersion = '1.0.9'
+//    //描述，不重要
+//    desc = 'ble ui'
+//    //网站，不重要
+//    website = 'https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK'
+//    dryRun = false
+//}

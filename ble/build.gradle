@@ -41,21 +41,21 @@ dependencies {
 
 //添加
 //apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'com.github.panpf.bintray-publish'
-publish {
-    bintrayUser = "hzentertech"
-    bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
-    //bintray.com用户名
-    userOrg = 'hzentertech'
-    //jcenter上的路径
-    groupId = 'cn.entertech'
-    //项目名称
-    artifactId = 'biomoduleble'
-    //版本号
-    publishVersion = '1.4.0'
-    //描述，不重要
-    desc = 'ble'
-    //网站，不重要
-    website = 'https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK'
-    dryRun = false
-}
+//apply plugin: 'com.github.panpf.bintray-publish'
+//publish {
+//    bintrayUser = "hzentertech"
+//    bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
+//    //bintray.com用户名
+//    userOrg = 'hzentertech'
+//    //jcenter上的路径
+//    groupId = 'cn.entertech'
+//    //项目名称
+//    artifactId = 'biomoduleble'
+//    //版本号
+//    publishVersion = '1.4.0'
+//    //描述，不重要
+//    desc = 'ble'
+//    //网站，不重要
+//    website = 'https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK'
+//    dryRun = false
+//}
