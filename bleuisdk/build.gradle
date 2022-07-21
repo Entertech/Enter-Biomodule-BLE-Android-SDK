@@ -43,8 +43,9 @@ dependencies {
 //    implementation 'cn.entertech:Android-DFU-Library-Flowtime:1.11.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.airbnb.android:lottie:3.4.0'
-    implementation 'cn.entertech.android:biomoduleble-dfu:1.11.0'
+//    implementation 'cn.entertech.android:biomoduleble-dfu:1.11.0'
     implementation 'cn.entertech.android:biomoduleble:1.4.2'
+    implementation 'no.nordicsemi.android:dfu:1.11.0'
 }
 
 //添加
