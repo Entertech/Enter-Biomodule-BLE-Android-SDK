@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager = BiomoduleBleManager.getInstance(this)
         initPermission()
         DeviceUIConfig.getInstance(this).init(false, false, 1)
-        DeviceUIConfig.getInstance(this).updateFirmware("1.2.0","${Environment.getExternalStorageDirectory()}/firmware_1.1.0.zip",true)
+        DeviceUIConfig.getInstance(this).updateFirmware("1.2.0","${Environment.getExternalStorageDirectory()}/dfufile.zip",true)
     }
 
 
