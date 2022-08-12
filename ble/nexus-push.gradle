@@ -22,7 +22,7 @@ uploadArchives{
             // library的项目名
             pom.artifactId = 'biomoduleble'
             // library的版本号
-            pom.version = '1.4.2'
+            pom.version = '1.4.3-alpha01'
 
             pom.project {
                 licenses {

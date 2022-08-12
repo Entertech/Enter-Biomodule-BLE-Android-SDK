@@ -208,7 +208,12 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit), successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+    fun scanNearDeviceAndConnect(
+        successScan: (() -> Unit)?,
+        failScan: ((Exception) -> Unit),
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
+    ) {
         rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
@@ -218,8 +223,13 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String,scanTimeout: Long = SCAN_TIMEOUT,successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.scanMacAndConnect(mac,scanTimeout, fun(mac: String) {
+    fun scanMacAndConnect(
+        mac: String,
+        scanTimeout: Long = SCAN_TIMEOUT,
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
+    ) {
+        rxBleManager.scanMacAndConnect(mac, scanTimeout, fun(mac: String) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
@@ -416,5 +426,7 @@ class BiomoduleBleManager private constructor(context: Context) {
         rxBleManager.readDeviceManufacturer(success, failure)
     }
 
-
+    fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceMac(success, failure)
+    }
 }
