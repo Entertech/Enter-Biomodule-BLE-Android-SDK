@@ -329,6 +329,13 @@ class RxBleManager constructor(context: Context) {
     }
 
     /**
+     * read device mac
+     */
+    fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        readDeviceInfo(NapBleCharacter.DEVICE_MAC.uuid, success, failure)
+    }
+
+    /**
      * read device info
      */
     private fun readDeviceInfo(characterId: String, success: (String) -> Unit, failure: ((String) -> Unit)?) {
