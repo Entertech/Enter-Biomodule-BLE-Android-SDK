@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: './nexus-push.gradle'
 android {
-    compileSdkVersion 28
+    compileSdkVersion 32
 
 
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -35,7 +35,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.16.0"
     implementation 'com.orhanobut:logger:1.15'
 }
 
