@@ -74,8 +74,8 @@ biomoduleBleManager.addRawDataListener(rawDataListener)
 **Code**
 
 ```kotlin
-//invoke `stopBrainCollection()` if you want to stop collecting
-biomoduleBleManager.startBrainCollection()
+//invoke `stopHeartAndBrainCollection()` if you want to stop collecting
+biomoduleBleManager.startHeartAndBrainCollection()
 ```
 
 For more detail ble function,please refer to [Ble Detail API](../Ble_Detail_API.md)

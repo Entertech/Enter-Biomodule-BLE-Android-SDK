@@ -75,8 +75,8 @@ biomoduleBleManager.addRawDataListener(rawDataListener)
 **代码示例**
 
 ```kotlin
-//如果想要停止采集调用stopBrainCollection()
-biomoduleBleManager.startBrainCollection()
+//如果想要停止采集调用stopHeartAndBrainCollection()
+biomoduleBleManager.startHeartAndBrainCollection()
 ```
 
 更多详细的蓝牙ble方法可以参考[Ble详细API说明](<https://github.com/Entertech/Enter-Biomodule-BLE-Android-SDK/blob/master/Ble%E8%AF%A6%E7%BB%86API%E8%AF%B4%E6%98%8E.md>)
