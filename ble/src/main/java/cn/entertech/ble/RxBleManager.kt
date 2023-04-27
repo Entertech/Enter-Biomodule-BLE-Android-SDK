@@ -46,7 +46,6 @@ class RxBleManager constructor(context: Context) {
     }
     init {
         rxBleClient = RxBleClient.create(context)
-
         handlerThread = HandlerThread("shake_hand")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
