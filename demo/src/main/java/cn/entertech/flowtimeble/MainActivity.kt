@@ -13,8 +13,7 @@ import android.view.View
 import android.widget.Toast
 import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.utils.NapBattery
-import cn.entertech.bleuisdk.ui.DeviceUIConfig
-import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
+
 import com.orhanobut.logger.Logger
 import java.util.*
 
@@ -23,14 +22,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        biomoduleBleManager = BiomoduleBleManager.getInstance(this)
+        biomoduleBleManager = BiomoduleBleManager.getInstance(applicationContext)
+        Log.d("cpTest","oncreate")
         initPermission()
-        DeviceUIConfig.getInstance(this).init(false, false, 1)
+    /*    DeviceUIConfig.getInstance(this).init(false, false, 1)
         DeviceUIConfig.getInstance(this).updateFirmware(
             "1.2.0",
             "${Environment.getExternalStorageDirectory()}/dfufile.zip",
             true
-        )
+        )*/
     }
 
 
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onDeviceUI(@Suppress("UNUSED_PARAMETER") view: View) {
-        startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
+    //    startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
     }
 
     var contactListener = fun(contactState: Int) {
