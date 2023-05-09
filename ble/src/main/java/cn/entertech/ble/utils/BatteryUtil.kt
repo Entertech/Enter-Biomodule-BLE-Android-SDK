@@ -11,6 +11,11 @@ import kotlin.math.pow
 object BatteryUtil {
 
     fun getMinutesLeft(byte: Byte): NapBattery {
+        return NapBattery(0, 0, CharUtil.converUnchart(byte))
+    }
+
+
+    fun getMinutesLeftOld(byte: Byte): NapBattery {
         ((byte / 100.0) * (4.1 - 3.1) + 3.1).let {
             var a1 = 99.84
             var b1 = 4.244
