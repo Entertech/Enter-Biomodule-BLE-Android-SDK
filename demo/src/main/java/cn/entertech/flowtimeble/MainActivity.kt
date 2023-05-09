@@ -25,12 +25,6 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager = BiomoduleBleManager.getInstance(applicationContext)
         Log.d("cpTest","oncreate")
         initPermission()
-    /*    DeviceUIConfig.getInstance(this).init(false, false, 1)
-        DeviceUIConfig.getInstance(this).updateFirmware(
-            "1.2.0",
-            "${Environment.getExternalStorageDirectory()}/dfufile.zip",
-            true
-        )*/
     }
 
 
@@ -81,12 +75,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     var connectedListener = fun(string: String) {
+        Log.d("cpTest","connect success in mainActivity")
         Logger.d("connect success${string}")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "connect success", Toast.LENGTH_SHORT).show()
         }
     }
     var disConnectedListener = fun(string: String) {
+        Log.d("cpTest","disconnect in mainActivity")
         Logger.d("disconnect ${string}")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
@@ -226,9 +222,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     val batteryListener = fun(napBattery: NapBattery) {
+        Log.d("cpTest","battery = ${napBattery}")
         Logger.d("battery = ${napBattery}")
     }
     val batteryVoltageListener = fun(voltage: Double) {
+
         Logger.d("battery voltage = ${voltage}")
     }
 
