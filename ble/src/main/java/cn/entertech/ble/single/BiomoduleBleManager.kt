@@ -32,7 +32,6 @@ class BiomoduleBleManager private constructor(context: Context) {
 
 
     init {
-        Log.d("cpTest","safgaf")
         fastBleManager = FastBleManager(context)
         handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
@@ -212,6 +211,8 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun addRawDataListener(listener: (ByteArray) -> Unit) {
         rawDataListeners.add(listener)
+        fastBleManager.addRawDataListener(listener)
+
     }
 
     /**
@@ -231,6 +232,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun removeRawDataListener(listener: (ByteArray) -> Unit) {
         rawDataListeners.remove(listener)
+        fastBleManager.removeRawDataListener(listener)
     }
 
     /**
@@ -238,6 +240,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun addContactListener(listener: (Int) -> Unit) {
         contactListeners.add(listener)
+        fastBleManager.addContactListener(listener)
     }
 
     /**
@@ -245,6 +248,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun removeContactListener(listener: (Int) -> Unit) {
         contactListeners.remove(listener)
+        fastBleManager.removeContactListener(listener)
     }
 
     /**
@@ -252,6 +256,8 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun addBatteryListener(listener: (NapBattery) -> Unit) {
         batteryListeners.add(listener)
+        Log.d("cpTest","addBatteryListener ")
+        fastBleManager.addBatteryListener(listener)
     }
 
     /**
@@ -259,6 +265,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun removeBatteryListener(listener: (NapBattery) -> Unit) {
         batteryListeners.remove(listener)
+        fastBleManager.removeBatteryListener(listener)
     }
 
     /**
@@ -266,6 +273,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun addBatteryVoltageListener(listener: (Double) -> Unit) {
         batteryVoltageListeners.add(listener)
+        fastBleManager.addBatteryVoltageListener(listener)
     }
 
     /**
@@ -273,6 +281,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun removeBatteryVoltageListener(listener: (Double) -> Unit) {
         batteryVoltageListeners.remove(listener)
+        fastBleManager.removeBatteryVoltageListener(listener)
     }
 
 
@@ -281,6 +290,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun addHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.add(listener)
+        fastBleManager.addHeartRateListener(listener)
     }
 
     /**
@@ -288,11 +298,12 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun removeHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.remove(listener)
+        fastBleManager.removeHeartRateListener(listener)
     }
 
     fun startContact() {
         //rxBleManager.command(RxBleManager.Command.START_CONTACT)
-        fastBleManager.startHeartAndBrainCollection()
+        fastBleManager.command(RxBleManager.Command.START_CONTACT)
     }
 
     fun stopContact() {
@@ -303,7 +314,6 @@ class BiomoduleBleManager private constructor(context: Context) {
      * start collect brain data
      */
     fun startBrainCollection() {
-
         fastBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT)
     }
 
@@ -311,7 +321,6 @@ class BiomoduleBleManager private constructor(context: Context) {
      * stop collect brain data
      */
     fun stopBrainCollection() {
-
         fastBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT)
     }
 
@@ -319,7 +328,6 @@ class BiomoduleBleManager private constructor(context: Context) {
      * start collect heart rate data
      */
     fun startHeartRateCollection() {
-
         fastBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT)
     }
 
@@ -394,4 +402,9 @@ class BiomoduleBleManager private constructor(context: Context) {
         }, failure)
 
     }
+
+
+
+
+
 }
