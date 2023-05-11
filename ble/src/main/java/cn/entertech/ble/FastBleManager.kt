@@ -54,16 +54,31 @@ class FastBleManager constructor(context: Context) {
         }
 
 
-        val scanRuleConfig = BleScanRuleConfig.Builder()
-            .setServiceUuids(serviceUuids) // 只扫描指定的服务的设备，可选
-            .setScanTimeOut(10000) // 扫描超时时间，可选，默认10秒
-            .build()
-        BleManager.getInstance().initScanRule(scanRuleConfig)
+
+        if(TextUtils.isEmpty(mac)){
+            val scanRuleConfig = BleScanRuleConfig.Builder()
+                .setServiceUuids(serviceUuids) // 只扫描指定的服务的设备，可选
+                .setScanTimeOut(10000) // 扫描超时时间，可选，默认10秒
+                .build()
+            BleManager.getInstance().initScanRule(scanRuleConfig)
+        }else{
+            val scanRuleConfig = BleScanRuleConfig.Builder()
+                .setServiceUuids(serviceUuids) // 只扫描指定的服务的设备，可选
+                .setScanTimeOut(10000) // 扫描超时时间，可选，默认10秒
+                .setDeviceMac(mac)
+                .build()
+            BleManager.getInstance().initScanRule(scanRuleConfig)
+        }
+
     }
 
 
     fun isConnected(): Boolean {
         return BleManager.getInstance().isConnected(curBleDevice)
+    }
+
+    fun getConnectState():Int{
+        return  BleManager.getInstance().getConnectState(curBleDevice)
     }
 
 
@@ -106,13 +121,12 @@ class FastBleManager constructor(context: Context) {
             override fun onConnectSuccess(bleDevice: BleDevice, gatt: BluetoothGatt, status: Int) {
                 Log.d("cpTest", "onConnect success first " + bleDevice.mac)
                 curBleDevice = bleDevice
-         //       startHeartAndBrainCollection()
                 initNotification()
                 connectListeners.forEach {
                     it.invoke(bleDevice.mac)
                 }
 
-                FileUtils.writeLocalFile(bleDevice.mac)
+            //    FileUtils.writeLocalFile(bleDevice.mac)
 
             }
 
@@ -170,11 +184,10 @@ class FastBleManager constructor(context: Context) {
                 Log.d("cpTest", "onConnect success" + bleDevice.mac)
                 curBleDevice = bleDevice
                 initNotification()
-            //    startHeartAndBrainCollection()
                 connectListeners.forEach {
                     it.invoke(bleDevice.mac)
                 }
-                FileUtils.writeLocalFile(bleDevice.mac)
+            //    FileUtils.writeLocalFile(bleDevice.mac)
 
             }
 
@@ -227,7 +240,7 @@ class FastBleManager constructor(context: Context) {
             connectListeners.forEach {
                 it.invoke(bleDevice.mac)
             }
-            FileUtils.writeLocalFile(bleDevice.mac)
+        //    FileUtils.writeLocalFile(bleDevice.mac)
         }
 
         override fun onDisConnected(
@@ -345,7 +358,6 @@ class FastBleManager constructor(context: Context) {
             object : BleNotifyCallback() {
                 override fun onNotifySuccess() {
                     Log.d("cpTest", "notifyBrainWave success")
-               //     startHeartAndBrainCollection()
                 }
 
                 override fun onNotifyFailure(e: com.clj.fastble.exception.BleException) {
@@ -369,7 +381,6 @@ class FastBleManager constructor(context: Context) {
             object : BleNotifyCallback() {
                 override fun onNotifySuccess() {
                     Log.d("cpTest", "notify battery success")
-              //        startHeartAndBrainCollection()
                 }
 
                 override fun onNotifyFailure(e: com.clj.fastble.exception.BleException) {

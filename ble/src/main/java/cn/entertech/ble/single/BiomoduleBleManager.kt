@@ -346,6 +346,11 @@ class BiomoduleBleManager private constructor(context: Context) {
         fastBleManager.startHeartAndBrainCollection()
     }
 
+
+    fun getConnectState():Int{
+        return  fastBleManager.getConnectState()
+    }
+
     /**
      * stop collect all data
      */
