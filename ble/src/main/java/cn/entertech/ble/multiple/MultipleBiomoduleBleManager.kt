@@ -378,13 +378,16 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
                 BleLogUtil.d(TAG,"currentVersion: $version")
                 when(BatteryUtil.compareBleVersion(version,"3.0.0")){
                     BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT->{
+                        BleLogUtil.e(TAG,"ble version error")
                         failure?.invoke("")
                     }
                     //当前版本小于3.0.0
                     BatteryUtil.COMPARE_VERSION_VALUE_SMALL->{
+                        BleLogUtil.d(TAG,"use old battery")
                         success.invoke(BatteryUtil.getMinutesLeftOld(bytes[0]))
                     }
                     else->{
+                        BleLogUtil.d(TAG,"use new battery")
                         success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
                     }
                 }
