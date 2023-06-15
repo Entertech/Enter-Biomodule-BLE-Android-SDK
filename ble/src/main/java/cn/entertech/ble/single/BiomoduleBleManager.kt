@@ -129,9 +129,12 @@ class BiomoduleBleManager private constructor(context: Context) {
         batteryDisposable = rxBleManager.notifyBattery(fun(byte: Byte) {
             handler.post {
                 byte.let {
-                    batteryListeners.forEach { listener ->
-                        listener.invoke(BatteryUtil.getMinutesLeft(it))
-                    }
+                    castBattery(it, { napBattery ->
+                        batteryListeners.forEach { listener ->
+                            listener.invoke(napBattery)
+                        }
+                    }, null)
+
                     batteryVoltageListeners.forEach { listener ->
                         listener.invoke(BatteryUtil.getBatteryVoltage(it))
                     }
@@ -395,29 +398,36 @@ class BiomoduleBleManager private constructor(context: Context) {
     //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
         rxBleManager.read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
-            readDeviceHardware(fun(version){
-                BleLogUtil.d(TAG,"currentVersion: $version")
-                when(BatteryUtil.compareBleVersion(version,"3.0.0")){
-                    BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT->{
-                        BleLogUtil.e(TAG,"ble version error")
-                        failure?.invoke("")
-                    }
-                    //当前版本小于3.0.0
-                    BatteryUtil.COMPARE_VERSION_VALUE_SMALL->{
-                        BleLogUtil.d(TAG,"use old battery")
-                        success.invoke(BatteryUtil.getMinutesLeftOld(bytes[0]))
-                    }
-                    else->{
-                        BleLogUtil.d(TAG,"use new battery")
-                        success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
-                    }
-                }
-            }){
-                failure?.invoke("")
-            }
-
+            castBattery(bytes[0],success,failure)
         }, failure)
     }
+
+    /**
+     * 电量转换
+     * */
+    private fun castBattery(byte: Byte,success: (NapBattery) -> Unit,failure: ((String) -> Unit)?){
+        readDeviceHardware(fun(version){
+            BleLogUtil.d(TAG,"currentVersion: $version")
+            when(BatteryUtil.compareBleVersion(version,"3.0.0")){
+                BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT->{
+                    BleLogUtil.e(TAG,"ble version error")
+                    failure?.invoke("")
+                }
+                //当前版本小于3.0.0
+                BatteryUtil.COMPARE_VERSION_VALUE_SMALL->{
+                    BleLogUtil.d(TAG,"use old battery")
+                    success.invoke(BatteryUtil.getMinutesLeftOld(byte))
+                }
+                else->{
+                    BleLogUtil.d(TAG,"use new battery")
+                    success.invoke(BatteryUtil.getMinutesLeft(byte))
+                }
+            }
+        }){
+            failure?.invoke("")
+        }
+    }
+
 
     /**
      * read device serial（readDeviceInfo）
