@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.ContactState
 import cn.entertech.ble.RxBleManager
+import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.toEnum
 import cn.entertech.ble.utils.*
 import com.polidea.rxandroidble2.RxBleDevice
@@ -12,6 +13,9 @@ import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.Exception
 
+/**
+ * 多设备
+ * */
 class MultipleBiomoduleBleManager constructor(context: Context) {
     val rxBleManager: RxBleManager
     private var handler: Handler
@@ -26,7 +30,9 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
     var heartRateDisposable: Disposable? = null
     var contactDisposable: Disposable? = null
 
-
+    companion object {
+        private const val TAG="MultipleBiomoduleBleManager"
+    }
     init {
         rxBleManager = RxBleManager(context)
         handlerThread = HandlerThread("notify_thread")
@@ -368,8 +374,24 @@ class MultipleBiomoduleBleManager constructor(context: Context) {
     //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
         rxBleManager.read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
-//            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
-            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
+            readDeviceHardware(fun(version){
+                BleLogUtil.d(TAG,"currentVersion: $version")
+                when(BatteryUtil.compareBleVersion(version,"3.0.0")){
+                    BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT->{
+                        failure?.invoke("")
+                    }
+                    //当前版本小于3.0.0
+                    BatteryUtil.COMPARE_VERSION_VALUE_SMALL->{
+                        success.invoke(BatteryUtil.getMinutesLeftOld(bytes[0]))
+                    }
+                    else->{
+                        success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
+                    }
+                }
+            }){
+                failure?.invoke("")
+            }
+
         }, failure)
     }
 

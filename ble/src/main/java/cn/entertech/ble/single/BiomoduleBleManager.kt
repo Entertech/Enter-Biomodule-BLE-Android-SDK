@@ -3,15 +3,16 @@ package cn.entertech.ble.single
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import cn.entertech.ble.ContactState
 import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
-import cn.entertech.ble.toEnum
 import cn.entertech.ble.utils.*
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.Exception
 
+/**
+ * 单设备
+ * */
 class BiomoduleBleManager private constructor(context: Context) {
     val rxBleManager: RxBleManager
     private var handler: Handler
@@ -49,6 +50,7 @@ class BiomoduleBleManager private constructor(context: Context) {
             }
             return mBleDeviceManager!!
         }
+        private const val TAG="BiomoduleBleManager"
     }
 
 
@@ -393,8 +395,24 @@ class BiomoduleBleManager private constructor(context: Context) {
     //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
         rxBleManager.read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
-//            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
-            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
+            readDeviceHardware(fun(version){
+                BleLogUtil.d(TAG,"currentVersion: $version")
+                when(BatteryUtil.compareBleVersion(version,"3.0.0")){
+                    BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT->{
+                        failure?.invoke("")
+                    }
+                    //当前版本小于3.0.0
+                    BatteryUtil.COMPARE_VERSION_VALUE_SMALL->{
+                        success.invoke(BatteryUtil.getMinutesLeftOld(bytes[0]))
+                    }
+                    else->{
+                        success.invoke(BatteryUtil.getMinutesLeft(bytes[0]))
+                    }
+                }
+            }){
+                failure?.invoke("")
+            }
+
         }, failure)
     }
 
