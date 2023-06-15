@@ -10,11 +10,56 @@ import kotlin.math.pow
  */
 object BatteryUtil {
 
+    const val COMPARE_VERSION_VALUE_BIG=0
+    const val COMPARE_VERSION_VALUE_SMALL=1
+    const val COMPARE_VERSION_VALUE_EQUAL=2
+    /**
+     * 蓝牙版本格式不正确
+     * */
+    const val COMPARE_VERSION_VALUE_ERROR_FORMAT=3
+    /**蓝牙版本数字个数*/
+    private const val BLE_VERSION_NUM_LENGTH=3
+
+
     fun getMinutesLeft(byte: Byte): NapBattery {
         return NapBattery(0, 0, CharUtil.converUnchart(byte))
     }
 
+    /**
+     * 对比两个蓝牙版本大小
+     * version 版本格式：*.*.*
+     * @return [COMPARE_VERSION_VALUE_BIG] 表示 version1>version2
+     * @return [COMPARE_VERSION_VALUE_SMALL] 表示 version1<version2
+     * @return [COMPARE_VERSION_VALUE_EQUAL] 表示 version1=version2
+     * @return [COMPARE_VERSION_VALUE_ERROR_FORMAT] 表示 版本格式不正确
+     *
+     * */
+    fun compareBleVersion(version1: String, version2: String): Int {
+        val version1List = version1.split(".")
+        val version2List = version2.split(".")
+        val versionSize1 = version1List.size
+        val versionSize2 = version2List.size
+        if (versionSize1 != versionSize2 && versionSize1 != BLE_VERSION_NUM_LENGTH) {
+            return COMPARE_VERSION_VALUE_ERROR_FORMAT
+        }
+        try {
+            for (index in 0 until BLE_VERSION_NUM_LENGTH) {
+                val number1 = version1List[index].toInt()
+                val number2 = version2List[index].toInt()
+                if (number1 > number2) {
+                    return COMPARE_VERSION_VALUE_BIG
+                } else if (number1 < number2) {
+                    return COMPARE_VERSION_VALUE_SMALL
+                }
+            }
+        } catch (e: Exception) {
+            return COMPARE_VERSION_VALUE_ERROR_FORMAT
+        }
+        return COMPARE_VERSION_VALUE_EQUAL
+    }
 
+
+    /**3.0.0以前的硬件版本电量*/
     fun getMinutesLeftOld(byte: Byte): NapBattery {
         ((byte / 100.0) * (4.1 - 3.1) + 3.1).let {
             var a1 = 99.84
