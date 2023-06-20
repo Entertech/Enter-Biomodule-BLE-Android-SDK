@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: './nexus-push.gradle'
+apply from: './push.gradle'
 android {
     compileSdkVersion 32
 
@@ -23,6 +24,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/main/java'] // 指定源代码目录
+            }
+        }
+    }
+
     lintOptions {
         abortOnError false
     }
