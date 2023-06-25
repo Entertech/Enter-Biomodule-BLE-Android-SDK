@@ -257,18 +257,31 @@ class BiomoduleBleManager private constructor(context: Context) {
         }
     }
 
-
-    /**
-     * 该方法为连接设备入口，实现与方法名称无关
-     */
-    @Deprecated("该方法名称有误导性 建议用connectDevice 替代",ReplaceWith("connectDevice"))
     fun scanNearDeviceAndConnect(
         successScan: (() -> Unit)?,
         failScan: ((Exception) -> Unit),
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?
     ) {
-        connectBondedDevice(successConnect, failure)
+        connectDevice(
+            successConnect,
+            failure,
+            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
+        )
+    }
+
+    /**
+     * 该方法为连接设备入口，实现与方法名称无关 具体连接实现[ConnectionBleStrategy]
+     */
+    @Deprecated("该方法名称有误导性 建议用connectDevice 替代", ReplaceWith("connectDevice"))
+    fun scanNearDeviceAndConnect(
+        successScan: (() -> Unit)?,
+        failScan: ((Exception) -> Unit),
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?,
+        connectionBleStrategy: ConnectionBleStrategy
+    ) {
+        connectDevice(successConnect,failure,connectionBleStrategy)
     }
 
     /**
