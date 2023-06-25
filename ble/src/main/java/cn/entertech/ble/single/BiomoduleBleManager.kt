@@ -3,6 +3,7 @@ package cn.entertech.ble.single
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
+import cn.entertech.ble.ConnectionBleStrategy
 import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
 import cn.entertech.ble.utils.*
@@ -235,20 +236,24 @@ class BiomoduleBleManager private constructor(context: Context) {
 
     /**
      * 该方法为连接设备入口
-     * @param needScan true 主动扫描连接设备，会断开现有已连接的设备，[scanNearAndConnectDevice]
+     * @param connectionBleStrategy 连接策略
      */
     fun connectDevice(
-        needScan: Boolean, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?
+        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
+        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
     ) {
-        if (needScan) {
-            rxBleManager.scanNearDeviceAndConnect({ }, {
-                failure?.invoke(it.message ?: "scan failure")
-            }, fun(mac: String) {
-                initNotifications()
-                successConnect?.invoke(mac)
-            }, failure)
-        } else {
-            connectBondedDevice(successConnect, failure)
+        when(connectionBleStrategy){
+            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL->{
+                rxBleManager.scanNearDeviceAndConnect({ }, {
+                    failure?.invoke(it.message ?: "scan failure")
+                }, fun(mac: String) {
+                    initNotifications()
+                    successConnect?.invoke(mac)
+                }, failure)
+            }
+            ConnectionBleStrategy.CONNECT_BONDED->{
+                connectBondedDevice(successConnect, failure)
+            }
         }
     }
 
