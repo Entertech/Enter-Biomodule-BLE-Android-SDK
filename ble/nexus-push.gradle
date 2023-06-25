@@ -1,5 +1,5 @@
 apply plugin: 'maven'
-
+// 产生物地址： https://s01.oss.sonatype.org/content/repositories/releases/cn/entertech/android/biomoduleble/
 //任务名
 uploadArchives{
     repositories {
@@ -22,7 +22,7 @@ uploadArchives{
             // library的项目名
             pom.artifactId = 'biomoduleble'
             // library的版本号
-            pom.version = '1.5.0'
+            pom.version = '1.5.1'
 
             pom.project {
                 licenses {
