@@ -92,6 +92,21 @@ class RxBleManager constructor(context: Context) {
     fun getDevice():RxBleDevice?{
         return rxBleDevice
     }
+
+    /**
+     * 连接已配对的设备
+     * */
+    fun connectBondedDevice(successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?){
+        val bondedDevices=rxBleClient.bondedDevices?.toTypedArray()?: emptyArray()
+        if(bondedDevices.isEmpty()){
+            failure?.invoke("no bonded device")
+        }else{
+            if (isConnected()) disConnect()
+            connect(bondedDevices[0], successConnect, failure)
+        }
+    }
+
+
     /**
      * connect close device
      */
@@ -136,29 +151,31 @@ class RxBleManager constructor(context: Context) {
         })
     }
 
-
+    fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        //不懂为啥要多写下面这一行
+        rxBleDevice = rxBleClient.getBleDevice(device.macAddress)
+        subscription = rxBleDevice!!.establishConnection(false)
+            .subscribe({ rxBleConnection ->
+                this.rxBleConnection = rxBleConnection
+                Logger.d("conn succ")
+                isConnecting = false
+                success?.invoke(device.macAddress)
+                connectListeners.forEach {
+                    it.invoke(device.macAddress)
+                }
+            }, { throwable ->
+                isConnecting = false
+                disConnectListeners.forEach {
+                    it.invoke("conn error:${throwable}")
+                }
+                failure?.invoke("conn error:${throwable}")
+            })
+    }
     /**
      * connect device
      */
     fun connect(scanResult: ScanResult, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleDevice = rxBleClient.getBleDevice(scanResult.bleDevice.macAddress)
-
-        subscription = rxBleDevice!!.establishConnection(false)
-                .subscribe({ rxBleConnection ->
-                    this.rxBleConnection = rxBleConnection
-                    Logger.d("conn succ")
-                    isConnecting = false
-                    success?.invoke(scanResult.bleDevice.macAddress)
-                    connectListeners.forEach {
-                        it.invoke(scanResult.bleDevice.macAddress)
-                    }
-                }, { throwable ->
-                    isConnecting = false
-                    disConnectListeners.forEach {
-                        it.invoke("conn error:${throwable}")
-                    }
-                    failure?.invoke("conn error:${throwable}")
-                })
+        connect(scanResult.bleDevice,success,failure)
     }
 
 

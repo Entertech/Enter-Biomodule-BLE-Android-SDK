@@ -211,9 +211,9 @@ class BiomoduleBleManager private constructor(context: Context) {
     }
 
     /**
-     * connect close device
+     * 扫描附近的设备，选择信号最好的，然后连接
      */
-    fun scanNearDeviceAndConnect(
+    private fun scanNearAndConnectDevice(
         successScan: (() -> Unit)?,
         failScan: ((Exception) -> Unit),
         successConnect: ((String) -> Unit)?,
@@ -223,6 +223,47 @@ class BiomoduleBleManager private constructor(context: Context) {
             initNotifications()
             successConnect?.invoke(mac)
         }, failure)
+    }
+
+    /**
+     * 连接已配对的设备
+     * */
+    private fun connectBondedDevice(successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.connectBondedDevice(successConnect, failure)
+    }
+
+
+    /**
+     * 该方法为连接设备入口
+     * @param needScan true 主动扫描连接设备，会断开现有已连接的设备，[scanNearAndConnectDevice]
+     */
+    fun connectDevice(
+        needScan: Boolean, successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?
+    ) {
+        if (needScan) {
+            rxBleManager.scanNearDeviceAndConnect({ }, {
+                failure?.invoke(it.message ?: "scan failure")
+            }, fun(mac: String) {
+                initNotifications()
+                successConnect?.invoke(mac)
+            }, failure)
+        } else {
+            connectBondedDevice(successConnect, failure)
+        }
+    }
+
+
+    /**
+     * 该方法为连接设备入口，实现与方法名称无关
+     */
+    @Deprecated("该方法名称有误导性 建议用connectDevice 替代",ReplaceWith("connectDevice"))
+    fun scanNearDeviceAndConnect(
+        successScan: (() -> Unit)?,
+        failScan: ((Exception) -> Unit),
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
+    ) {
+        connectBondedDevice(successConnect, failure)
     }
 
     /**
