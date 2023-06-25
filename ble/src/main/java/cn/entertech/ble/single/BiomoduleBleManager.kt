@@ -279,9 +279,15 @@ class BiomoduleBleManager private constructor(context: Context) {
         failScan: ((Exception) -> Unit),
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?,
-        connectionBleStrategy: ConnectionBleStrategy
+        connectionBleStrategy: Int
     ) {
-        connectDevice(successConnect,failure,connectionBleStrategy)
+        connectDevice(
+            successConnect,
+            failure,
+            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL.getConnectionBleStrategy(
+                connectionBleStrategy
+            )
+        )
     }
 
     /**
