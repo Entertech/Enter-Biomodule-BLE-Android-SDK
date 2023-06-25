@@ -38,11 +38,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'com.orhanobut:logger:1.15'
     api project(':bleuisdk')
-//    api project(':ble')
+    api project(':ble')
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 //    implementation 'com.orhanobut:logger:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
-    implementation 'cn.entertech.android:biomoduleble:1.4.4-alpha01'
+//    implementation 'cn.entertech.android:biomoduleble:1.4.4-alpha01'
 }

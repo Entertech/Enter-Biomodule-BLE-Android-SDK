@@ -44,8 +44,11 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.airbnb.android:lottie:3.4.0'
 //    implementation 'cn.entertech.android:biomoduleble-dfu:1.11.0'
-    implementation 'cn.entertech.android:biomoduleble:1.4.4-alpha01'
+//    implementation 'cn.entertech.android:biomoduleble:1.4.4-alpha01'
     implementation 'no.nordicsemi.android:dfu:1.11.0'
+    implementation project(':ble')
+    implementation 'com.orhanobut:logger:1.15'
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.16.0"
 }
 
 //添加
