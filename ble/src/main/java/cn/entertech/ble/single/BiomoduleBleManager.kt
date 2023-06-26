@@ -257,6 +257,24 @@ class BiomoduleBleManager private constructor(context: Context) {
         }
     }
 
+    /**
+     * 为c#添加的方法，c#不能直接使用枚举
+     * */
+    fun connectDevice(
+        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
+        connectionBleStrategy: Int
+    ) {
+        connectDevice(
+            successConnect,
+            failure,
+            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL.getConnectionBleStrategy(
+                connectionBleStrategy
+            )
+        )
+    }
+
+
+
     fun scanNearDeviceAndConnect(
         successScan: (() -> Unit)?,
         failScan: ((Exception) -> Unit),
