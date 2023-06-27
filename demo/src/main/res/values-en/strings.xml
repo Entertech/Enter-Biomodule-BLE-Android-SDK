@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">FlowtimeBle</string>
     <string name="connect">connect</string>
+    <string name="connectBonded">connectBonded</string>
     <string name="disconnect">disconnect</string>
     <string name="start_collect">start brain collect</string>
     <string name="stop_collect">stop brain collect</string>

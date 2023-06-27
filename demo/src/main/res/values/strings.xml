@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FlowtimeBle</string>
     <string name="connect">连接</string>
+    <string name="connectBonded">连接绑定设备</string>
     <string name="disconnect">断开</string>
     <string name="start_collect">开始脑波数据采集</string>
     <string name="stop_collect">停止脑波数据采集</string>

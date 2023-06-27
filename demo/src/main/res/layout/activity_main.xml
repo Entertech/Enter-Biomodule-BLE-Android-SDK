@@ -27,7 +27,13 @@
                     android:layout_weight="1"
                     android:onClick="onConnect"
                     android:text="@string/connect" />
-
+                <Button
+                    android:id="@+id/btnConnect"
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/connectBonded" />
                 <Button
                     android:textAllCaps="false"
                     android:layout_width="0dp"
