@@ -11,11 +11,13 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.Toast
+import cn.entertech.ble.ConnectionBleStrategy
 import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
 import com.orhanobut.logger.Logger
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +33,9 @@ class MainActivity : AppCompatActivity() {
             "${Environment.getExternalStorageDirectory()}/dfufile.zip",
             true
         )
+        btnConnect.setOnClickListener {
+            onConnectBound()
+        }
     }
 
 
@@ -92,6 +97,24 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun onConnectBound() {
+        biomoduleBleManager.connectDevice({
+            Logger.d("connect success")
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
+            }
+        }, {
+            Logger.d("connect failed")
+            runOnUiThread {
+                Toast.makeText(
+                    this@MainActivity, "connect failed error $it ", Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, ConnectionBleStrategy.CONNECT_BONDED
+        )
+    }
+
 
     fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.scanNearDeviceAndConnect(fun() {
