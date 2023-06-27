@@ -48,7 +48,7 @@ dependencies {
     implementation 'no.nordicsemi.android:dfu:1.11.0'
     implementation project(':ble')
     implementation 'com.orhanobut:logger:1.15'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.16.0"
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
 }
 
 //添加

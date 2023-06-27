@@ -103,6 +103,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     fun notifyBrainWave() {
         brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
             bytes.let {
+                BleLogUtil.d(TAG,"notifyBrainWave")
                 handler.post {
                     FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it)
                     rawDataListeners.forEach { listener ->
@@ -251,8 +252,11 @@ class BiomoduleBleManager private constructor(context: Context) {
                     successConnect?.invoke(mac)
                 }, failure)
             }
-            ConnectionBleStrategy.CONNECT_BONDED->{
-                connectBondedDevice(successConnect, failure)
+            ConnectionBleStrategy.CONNECT_BONDED -> {
+                connectBondedDevice({
+                    initNotifications()
+                    successConnect?.invoke(it)
+                }, failure)
             }
         }
     }

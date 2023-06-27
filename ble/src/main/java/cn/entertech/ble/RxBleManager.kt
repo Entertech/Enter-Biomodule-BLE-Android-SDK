@@ -43,6 +43,7 @@ class RxBleManager constructor(context: Context) {
 
     companion object{
         val SCAN_TIMEOUT: Long = 20000
+        private const val TAG="RxBleManager"
     }
     init {
         rxBleClient = RxBleClient.create(context)
@@ -418,17 +419,19 @@ class RxBleManager constructor(context: Context) {
      * notify characteristic
      */
     private fun notify(characterId: String, success: (ByteArray) -> Unit, failure: ((String) -> Unit)?): Disposable? {
+        BleLogUtil.d(TAG,"notify characterId ${characterId}")
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
                     .flatMap({ notificationObservable -> notificationObservable })
                     .subscribe(
                             { characteristicValue ->
                                 //                                Logger.d(Arrays.toString(characteristicValue))
+                                BleLogUtil.d(TAG,"notify characterId  success $success")
                                 success.invoke(characteristicValue)
                             },
                             { throwable ->
                                 // Handle an error here.
-                                Logger.d("notify error $throwable ")
+                                BleLogUtil.d(TAG,"notify characterId  error $throwable ")
                                 failure?.invoke("notify error")
                             }
                     )
