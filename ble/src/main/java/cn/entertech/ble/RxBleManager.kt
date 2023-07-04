@@ -97,13 +97,26 @@ class RxBleManager constructor(context: Context) {
     /**
      * 连接已配对的设备
      * */
-    fun connectBondedDevice(successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?){
-        val bondedDevices=rxBleClient.bondedDevices?.toTypedArray()?: emptyArray()
-        if(bondedDevices.isEmpty()){
+    fun connectBondedDevice(
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?,
+        filter: (String?,String?) -> Boolean = {_,_-> true }
+    ) {
+        val bondedDevices = rxBleClient.bondedDevices?.toTypedArray() ?: emptyArray()
+        BleLogUtil.d(TAG,"connectBondedDevice : deviceSize ${bondedDevices.size}")
+        val filterDevices = if (bondedDevices.size > 1) {
+            bondedDevices.filter {
+                filter(it.name,it.macAddress)
+            }
+        } else {
+            bondedDevices.toList()
+        }
+        BleLogUtil.d(TAG,"connectBondedDevice : filter deviceSize ${filterDevices.size}")
+        if (filterDevices.isEmpty()) {
             failure?.invoke("no bonded device")
-        }else{
+        } else {
             if (isConnected()) disConnect()
-            connect(bondedDevices[0], successConnect, failure)
+            connect(filterDevices[0], successConnect, failure)
         }
     }
 
