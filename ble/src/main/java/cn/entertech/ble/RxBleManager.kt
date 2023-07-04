@@ -100,20 +100,29 @@ class RxBleManager constructor(context: Context) {
     fun connectBondedDevice(
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?,
-        filter: (String?,String?) -> Boolean = {_,_-> true }
+        filter: (String?, String?) -> Boolean = { _, _ -> true }
     ) {
         val bondedDevices = rxBleClient.bondedDevices?.toTypedArray() ?: emptyArray()
-        BleLogUtil.d(TAG,"connectBondedDevice : deviceSize ${bondedDevices.size}")
+        BleLogUtil.d(TAG, "connectBondedDevice : deviceSize ${bondedDevices.size}")
         val filterDevices =
             bondedDevices.filter {
                 filter(it.name, it.macAddress)
             }
-        BleLogUtil.d(TAG,"connectBondedDevice : filter deviceSize ${filterDevices.size}")
+        BleLogUtil.d(TAG, "connectBondedDevice : filter deviceSize ${filterDevices.size}")
         if (filterDevices.isEmpty()) {
             failure?.invoke("no bonded device")
         } else {
-            if (isConnected()) disConnect()
-            connect(filterDevices[0], successConnect, failure)
+            disConnect()
+            val targetDevice = filterDevices[0]
+            /*connect(targetDevice, successConnect) {
+                BleLogUtil.e(TAG, "connectBondedDevice error $it")
+                scanMacAndConnect(
+                    targetDevice.macAddress,
+                    success = successConnect,
+                    failure = failure
+                )
+            }*/
+            connect(targetDevice, successConnect, failure)
         }
     }
 
@@ -125,7 +134,7 @@ class RxBleManager constructor(context: Context) {
                                  successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
 
         BleUtil.removePairDevice()
-        if (isConnected()) disConnect()
+        disConnect()
         var scanStartTime = System.currentTimeMillis()
         var isScanSuccess = false
         var nearScanResult: ScanResult? = null
@@ -168,7 +177,7 @@ class RxBleManager constructor(context: Context) {
         subscription = rxBleDevice!!.establishConnection(false)
             .subscribe({ rxBleConnection ->
                 this.rxBleConnection = rxBleConnection
-                Logger.d("conn succ")
+                BleLogUtil.d(TAG, "conn succ")
                 isConnecting = false
                 success?.invoke(device.macAddress)
                 connectListeners.forEach {
@@ -201,33 +210,38 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect device by mac address
      */
-    fun scanMacAndConnect(mac: String, timeout: Long = SCAN_TIMEOUT,success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+    fun scanMacAndConnect(
+        mac: String,
+        timeout: Long = SCAN_TIMEOUT,
+        success: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
+    ) {
         BleUtil.removePairDevice()
         var isScanSuccess = false
         isConnecting = true
         scanSubscription = rxBleClient.scanBleDevices(
-                ScanSettings.Builder()
-                        .build(),
-                ScanFilter.Builder().setDeviceAddress(mac)
-                        .build()
+            ScanSettings.Builder()
+                .build(),
+            ScanFilter.Builder().setDeviceAddress(mac)
+                .build()
         ).timeout(timeout, TimeUnit.MILLISECONDS)
-                .subscribe(
-                        { scanResult ->
-                            if (!isScanSuccess) {
-                                isScanSuccess = true
-                                Timer().schedule(CONNECT_TASK_DELAY) {
-                                    handler.post {
-                                        if (null == scanResult) {
-                                            failure?.invoke("scan error 1")
-                                            isConnecting = false
-                                        } else {
-                                            scanSubscription.dispose()
-                                            connect(scanResult, success, failure)
-                                        }
-                                    }
+            .subscribe(
+                { scanResult ->
+                    if (!isScanSuccess) {
+                        isScanSuccess = true
+                        Timer().schedule(CONNECT_TASK_DELAY) {
+                            handler.post {
+                                if (null == scanResult) {
+                                    failure?.invoke("scan error 1")
+                                    isConnecting = false
+                                } else {
+                                    scanSubscription.dispose()
+                                    connect(scanResult, success, failure)
                                 }
                             }
-                        }, {
+                        }
+                    }
+                }, {
                     isConnecting = false
                     it.printStackTrace()
                     failure?.invoke("scan error")
@@ -237,10 +251,14 @@ class RxBleManager constructor(context: Context) {
     /**
      * disconnect device
      */
-    fun disConnect() {
+    fun disConnect(isForce:Boolean=false) {
+        BleLogUtil.d(TAG,"disConnect")
+        val isConnected = isConnected()
         subscription?.dispose()
-        disConnectListeners.forEach {
-            it.invoke("disconnect")
+        if (isConnected || isForce) {
+            disConnectListeners.forEach {
+                it.invoke("disconnect")
+            }
         }
     }
 
