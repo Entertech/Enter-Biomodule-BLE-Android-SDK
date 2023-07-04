@@ -104,13 +104,10 @@ class RxBleManager constructor(context: Context) {
     ) {
         val bondedDevices = rxBleClient.bondedDevices?.toTypedArray() ?: emptyArray()
         BleLogUtil.d(TAG,"connectBondedDevice : deviceSize ${bondedDevices.size}")
-        val filterDevices = if (bondedDevices.size > 1) {
+        val filterDevices =
             bondedDevices.filter {
-                filter(it.name,it.macAddress)
+                filter(it.name, it.macAddress)
             }
-        } else {
-            bondedDevices.toList()
-        }
         BleLogUtil.d(TAG,"connectBondedDevice : filter deviceSize ${filterDevices.size}")
         if (filterDevices.isEmpty()) {
             failure?.invoke("no bonded device")
