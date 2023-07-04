@@ -230,8 +230,12 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * 连接已配对的设备
      * */
-    private fun connectBondedDevice(successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        rxBleManager.connectBondedDevice(successConnect, failure)
+    private fun connectBondedDevice(
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?,
+        filter: (String?,String?) -> Boolean = {_,_-> true }
+    ) {
+        rxBleManager.connectBondedDevice(successConnect, failure, filter)
     }
 
 
@@ -241,7 +245,8 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun connectDevice(
         successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
-        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
+        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL,
+        filter: (String?,String?) -> Boolean = {_,_-> true }
     ) {
         when(connectionBleStrategy){
             ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL->{
@@ -256,7 +261,7 @@ class BiomoduleBleManager private constructor(context: Context) {
                 connectBondedDevice({
                     initNotifications()
                     successConnect?.invoke(it)
-                }, failure)
+                }, failure,filter)
             }
         }
     }
@@ -266,29 +271,16 @@ class BiomoduleBleManager private constructor(context: Context) {
      * */
     fun connectDevice(
         successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
-        connectionBleStrategy: Int
+        connectionBleStrategy: Int,
+        filter: (String?,String?) -> Boolean = {_,_-> true }
     ) {
         connectDevice(
             successConnect,
             failure,
             ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL.getConnectionBleStrategy(
                 connectionBleStrategy
-            )
-        )
-    }
-
-
-
-    fun scanNearDeviceAndConnect(
-        successScan: (() -> Unit)?,
-        failScan: ((Exception) -> Unit),
-        successConnect: ((String) -> Unit)?,
-        failure: ((String) -> Unit)?
-    ) {
-        connectDevice(
-            successConnect,
-            failure,
-            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
+            ),
+            filter
         )
     }
 
@@ -301,14 +293,16 @@ class BiomoduleBleManager private constructor(context: Context) {
         failScan: ((Exception) -> Unit),
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?,
-        connectionBleStrategy: Int
+        connectionBleStrategy: Int,
+        filter: (String?,String?) -> Boolean = {_,_-> true }
     ) {
         connectDevice(
             successConnect,
             failure,
             ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL.getConnectionBleStrategy(
                 connectionBleStrategy
-            )
+            ),
+            filter
         )
     }
 
