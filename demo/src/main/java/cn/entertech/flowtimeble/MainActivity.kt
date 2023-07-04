@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun onConnectBound() {
         biomoduleBleManager.connectDevice({
             Logger.d("connect success")
@@ -105,29 +106,27 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
             }
         }, {
-            Logger.d("connect failed")
+            Logger.d("connect failed error $it ")
+
             runOnUiThread {
                 Toast.makeText(
                     this@MainActivity, "connect failed error $it ", Toast.LENGTH_SHORT
                 ).show()
             }
-        }, ConnectionBleStrategy.CONNECT_BONDED
+        }, ConnectionBleStrategy.CONNECT_BONDED, { name, macAdress ->
+            name?.lowercase()?.startsWith("flowtime") ?: false
+        }
         )
     }
 
-
     fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d("sacn success")
-        }, fun(e: Exception) {
-            Logger.d("sacn failed：$e")
-        }, fun(mac: String) {
+        biomoduleBleManager.connectDevice(fun(mac: String) {
             Logger.d("connect success$mac")
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
                     .show()
             }
-        }) { msg ->
+        }, { msg ->
             Logger.d("connect failed")
             runOnUiThread {
                 Toast.makeText(
@@ -136,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }
+        }, ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
     }
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
