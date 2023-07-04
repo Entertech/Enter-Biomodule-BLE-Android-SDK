@@ -326,7 +326,7 @@ class BiomoduleBleManager private constructor(context: Context) {
      */
     fun disConnect() {
         rxBleManager.command(RxBleManager.Command.DISCONNECTED) {
-            rxBleManager.disConnect()
+            rxBleManager.disConnect(true)
         }
     }
 
