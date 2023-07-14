@@ -146,6 +146,7 @@ class MainActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalStdlibApi::class)
     fun onConnectBound() {
+        mainHandler.removeCallbacks(reconnectRunnable)
         biomoduleBleManager.connectDevice({
             BleLogUtil.i(TAG, "connect Bound success")
             mainHandler.post(checkConnectRunnable)
@@ -169,6 +170,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
+        mainHandler.removeCallbacks(reconnectRunnable)
         biomoduleBleManager.connectDevice(fun(mac: String) {
             BleLogUtil.i(TAG, "connect success $mac")
             runOnUiThread {
