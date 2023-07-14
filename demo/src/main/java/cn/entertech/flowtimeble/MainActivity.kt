@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalStdlibApi::class)
     fun onConnectBound() {
         biomoduleBleManager.connectDevice({
-            BleLogUtil.d(TAG,"connect success")
+            BleLogUtil.i(TAG,"connect Bound success")
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
             }
