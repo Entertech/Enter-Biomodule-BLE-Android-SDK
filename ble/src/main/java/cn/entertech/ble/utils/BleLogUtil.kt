@@ -29,6 +29,7 @@ object BleLogUtil {
         val formatTime = currentTime.format(current)
         sb.append(formatTime).append(BLANK).append(tag).append(BLANK).appendLine(msg)
         Logger.i(sb.toString())
+        sb.clear()
     }
 
     fun e(tag: String, msg: String) {
