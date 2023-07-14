@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * 30s
          * */
-        private const val CHECK_CONNECT_TIME = 1000 * 5L
+        private const val CHECK_CONNECT_TIME = 1000 * 30L
     }
 
     private val mainHandler by lazy {
