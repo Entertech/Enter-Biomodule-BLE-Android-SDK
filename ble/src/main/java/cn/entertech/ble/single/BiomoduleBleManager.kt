@@ -97,13 +97,17 @@ class BiomoduleBleManager private constructor(context: Context) {
         rxBleManager.removeConnectListener(listener)
     }
 
+    var lastNotifyBrainWaveLogTime=0L
     /**
      * notify brain
      */
     fun notifyBrainWave() {
         brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
             bytes.let {
-                BleLogUtil.i(TAG,"notifyBrainWave")
+                if (System.currentTimeMillis() - lastNotifyBrainWaveLogTime > 1000 * 20L) {
+                    BleLogUtil.i(TAG, "notifyBrainWave")
+                    lastNotifyBrainWaveLogTime = System.currentTimeMillis()
+                }
                 handler.post {
                     FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it)
                     rawDataListeners.forEach { listener ->
@@ -131,7 +135,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     fun notifyBattery() {
         batteryDisposable = rxBleManager.notifyBattery(fun(byte: Byte) {
             handler.post {
-                if (System.currentTimeMillis() - lastNotifyHeartRateLogTime > 1000 * 20L) {
+                if (System.currentTimeMillis() - lastNotifyBatteryLogTime > 1000 * 20L) {
                     BleLogUtil.i(TAG, "notifyBattery")
                     lastNotifyBatteryLogTime = System.currentTimeMillis()
                 }
@@ -158,7 +162,7 @@ class BiomoduleBleManager private constructor(context: Context) {
         heartRateDisposable = rxBleManager.notifyHeartRate(fun(heartRate: Int) {
             handler.post {
                 if (System.currentTimeMillis() - lastNotifyHeartRateLogTime > 1000 * 20L) {
-                    BleLogUtil.i(TAG, "notifyBattery")
+                    BleLogUtil.i(TAG, "notifyHeartRate")
                     lastNotifyHeartRateLogTime = System.currentTimeMillis()
                 }
                 heartRate.let {
