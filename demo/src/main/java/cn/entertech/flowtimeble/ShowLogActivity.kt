@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -41,6 +42,7 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
         btnPreviousLog = findViewById(R.id.btnPreviousLog)
         btnPreviousLog.setOnClickListener(this)
         btnNextLog.setOnClickListener(this)
+        tvShowLogs.setMovementMethod(ScrollingMovementMethod.getInstance());
         showLogs()
     }
 
@@ -58,14 +60,15 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
                         sb.clear()
                         if (currentIndex < 0) {
                             currentIndex++
-                            tvIndex.text = currentIndex.toString()
+                            tvIndex.text = currentIndex.toString()+"/"+logCacheList.size
                             mainHandler.post {
                                 tvShowLogs.text = firstLog
                             }
                         }
                         if (logCacheList.size > 100) {
                             Log.d("wk", "大于100了 ${logCacheList.size}")
-                            break
+                            sb.clear()
+                            return@thread
                         }
                     }
                     str = rb.readLine()?.trim()
@@ -75,11 +78,11 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
                     logCacheList.add(logString)
                 } else {
                     currentIndex++
-                    tvIndex.text = currentIndex.toString()
                     mainHandler.post {
                         tvShowLogs.text = logString
                     }
                 }
+                tvIndex.text = currentIndex.toString()+"/"+logCacheList.size
             }
 
         }
@@ -98,7 +101,7 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
                 if (currentIndex > logCacheList.size) {
                     currentIndex = logCacheList.size - 1
                 }
-                tvIndex.text = currentIndex.toString()
+                tvIndex.text = currentIndex.toString()+"/"+logCacheList.size
                 if (currentIndex < logCacheList.size && currentIndex >= 0) {
                     tvShowLogs.text = logCacheList[currentIndex]
                 }
@@ -108,7 +111,7 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
                 if (currentIndex < 0) {
                     currentIndex = 0
                 }
-                tvIndex.text = currentIndex.toString()
+                tvIndex.text = currentIndex.toString()+"/"+logCacheList.size
                 if (currentIndex < logCacheList.size && currentIndex >= 0) {
                     tvShowLogs.text = logCacheList[currentIndex]
                 }
