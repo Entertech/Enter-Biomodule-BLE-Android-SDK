@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         btnConnect.setOnClickListener {
             onConnectBound()
         }
-        mainHandler.post(checkConnectRunnable)
+
     }
 
 
@@ -148,6 +148,7 @@ class MainActivity : AppCompatActivity() {
     fun onConnectBound() {
         biomoduleBleManager.connectDevice({
             BleLogUtil.i(TAG, "connect Bound success")
+            mainHandler.post(checkConnectRunnable)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
             }
@@ -164,6 +165,7 @@ class MainActivity : AppCompatActivity() {
             name?.lowercase()?.startsWith("flowtime") ?: false
         }
         )
+
     }
 
     fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
