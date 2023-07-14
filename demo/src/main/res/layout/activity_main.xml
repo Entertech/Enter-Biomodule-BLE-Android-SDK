@@ -370,7 +370,12 @@
                     android:text="@string/read_device_manufacturer" />
 
             </LinearLayout>
-
+            <Button
+                android:textAllCaps="false"
+                android:onClick="showLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/show_log" />
 
             <Button
                 android:textAllCaps="false"

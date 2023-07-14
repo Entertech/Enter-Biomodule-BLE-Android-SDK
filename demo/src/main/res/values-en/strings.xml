@@ -29,5 +29,6 @@
     <string name="read_serial_number">read device serial</string>
     <string name="read_device_manufacturer">read manufacturer</string>
     <string name="check_device_connected">check device connected</string>
+    <string name="show_log">show log</string>
     <string name="device_manager_page">device manager page</string>
 </resources>
