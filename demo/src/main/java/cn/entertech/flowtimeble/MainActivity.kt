@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import cn.entertech.ble.ConnectionBleStrategy
 import cn.entertech.ble.single.BiomoduleBleManager
+import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
@@ -22,6 +23,11 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var biomoduleBleManager: BiomoduleBleManager
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Android6.0 auth
      */
-    fun initPermission() {
+    private fun initPermission() {
         val needPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             arrayOf(
                 Manifest.permission.BLUETOOTH_SCAN,
@@ -82,17 +88,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     var contactListener = fun(contactState: Int) {
-        Logger.d("contace state is ${contactState}")
+        BleLogUtil.i(TAG,"contace state is ${contactState}")
     }
 
     var connectedListener = fun(string: String) {
-        Logger.d("connect success${string}")
+        BleLogUtil.i(TAG,"connect success${string}")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "connect success", Toast.LENGTH_SHORT).show()
         }
     }
     var disConnectedListener = fun(string: String) {
-        Logger.d("disconnect ${string}")
+        BleLogUtil.i(TAG,"disconnect $string")
         runOnUiThread {
             Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
         }
@@ -101,16 +107,16 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalStdlibApi::class)
     fun onConnectBound() {
         biomoduleBleManager.connectDevice({
-            Logger.d("connect success")
+            BleLogUtil.d(TAG,"connect success")
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
             }
         }, {
-            Logger.d("connect failed error $it ")
+            BleLogUtil.i(TAG,"connect Bound failed error $it ")
 
             runOnUiThread {
                 Toast.makeText(
-                    this@MainActivity, "connect failed error $it ", Toast.LENGTH_SHORT
+                    this@MainActivity, "connect Bound failed error $it ", Toast.LENGTH_SHORT
                 ).show()
             }
         }, ConnectionBleStrategy.CONNECT_BONDED, { name, macAdress ->
@@ -121,13 +127,13 @@ class MainActivity : AppCompatActivity() {
 
     fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.connectDevice(fun(mac: String) {
-            Logger.d("connect success$mac")
+            BleLogUtil.i(TAG,"connect success $mac")
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
                     .show()
             }
         }, { msg ->
-            Logger.d("connect failed")
+            BleLogUtil.i(TAG,"connect failed")
             runOnUiThread {
                 Toast.makeText(
                     this@MainActivity,
@@ -192,13 +198,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     var rawListener = fun(bytes: ByteArray) {
-//        Logger.d("firmware fixing hex " + HexDump.toHexString(bytes))
+//        BleLogUtil.d(TAG,"firmware fixing hex " + HexDump.toHexString(bytes))
         Log.d("######", "braindata: " + HexDump.toHexString(bytes))
-//        Logger.d("brain data is " + Arrays.toString(bytes))
+//        BleLogUtil.d(TAG,"brain data is " + Arrays.toString(bytes))
     }
 
     var heartRateListener = fun(heartRate: Int) {
-        Logger.d("heart rate data is " + heartRate)
+        BleLogUtil.d(TAG,"heart rate data is " + heartRate)
     }
 
     fun onAddRawListener(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -227,17 +233,17 @@ class MainActivity : AppCompatActivity() {
 
     fun onBattery(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.readBattery(fun(battery: NapBattery) {
-            Logger.d("battery = " + battery)
+            BleLogUtil.d(TAG, "battery = $battery")
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "电量:" + battery, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "电量:$battery", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
-            Logger.d("error is ${error}")
+            BleLogUtil.d(TAG,"error is ${error}")
         })
     }
 
     fun onGetState(@Suppress("UNUSED_PARAMETER") view: View) {
-        Logger.d(biomoduleBleManager.isConnected())
+        BleLogUtil.d(TAG,"biomoduleBleManager.isConnected()： ${biomoduleBleManager.isConnected()}")
         Toast.makeText(
             this, if (biomoduleBleManager.isConnected()) {
                 "connected"
@@ -248,10 +254,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     val batteryListener = fun(napBattery: NapBattery) {
-        Logger.d("battery = ${napBattery}")
+        BleLogUtil.d(TAG,"battery = ${napBattery}")
     }
     val batteryVoltageListener = fun(voltage: Double) {
-        Logger.d("battery voltage = ${voltage}")
+        BleLogUtil.d(TAG,"battery voltage = ${voltage}")
     }
 
     fun onAddBatteryListener(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -272,42 +278,42 @@ class MainActivity : AppCompatActivity() {
 
     fun onReadHardware(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.readDeviceHardware(fun(hardware: String) {
-            Logger.d("hardware is " + hardware)
+            BleLogUtil.d(TAG,"hardware is " + hardware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "hardware is：${hardware}", Toast.LENGTH_SHORT)
                     .show()
             }
         }, fun(error: String) {
-            Logger.d("error is " + error)
+            BleLogUtil.d(TAG,"error is " + error)
         })
     }
 
     fun onReadFirmware(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.readDeviceFirmware(fun(firmware: String) {
-            Logger.d("firmware is " + firmware)
+            BleLogUtil.d(TAG,"firmware is " + firmware)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "firmware is：${firmware}", Toast.LENGTH_SHORT)
                     .show()
             }
         }, fun(error: String) {
-            Logger.d("error is " + error)
+            BleLogUtil.d(TAG,"error is " + error)
         })
     }
 
     fun onReadDeviceSerial(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.readDeviceSerial(fun(serial: String) {
-            Logger.d("serial is " + serial)
+            BleLogUtil.d(TAG,"serial is " + serial)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "serial is：${serial}", Toast.LENGTH_SHORT).show()
             }
         }, fun(error: String) {
-            Logger.d("error is " + error)
+            BleLogUtil.d(TAG,"error is " + error)
         })
     }
 
     fun oReadDeviceManufacturer(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.readDeviceManufacturer(fun(manufacturer: String) {
-            Logger.d("manufacturer is " + manufacturer)
+            BleLogUtil.d(TAG,"manufacturer is " + manufacturer)
             runOnUiThread {
                 Toast.makeText(
                     this@MainActivity,
@@ -316,8 +322,12 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }, fun(error: String) {
-            Logger.d("error is " + error)
+            BleLogUtil.d(TAG,"error is " + error)
         })
+    }
+
+    fun showLog(view:View){
+        startActivity(Intent(this,ShowLogActivity::class.java))
     }
 
     fun onFindConnectedDevice(@Suppress("UNUSED_PARAMETER") view: View) {

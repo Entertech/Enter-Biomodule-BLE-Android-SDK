@@ -28,5 +28,6 @@
     <string name="read_serial_number">读取设备序列号</string>
     <string name="read_device_manufacturer">读取制造商</string>
     <string name="check_device_connected">查找已连接设备</string>
+    <string name="show_log">查看日志</string>
     <string name="device_manager_page">设备UI入口</string>
 </resources>
