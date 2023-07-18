@@ -8,16 +8,18 @@ import android.util.Log
  * */
 object BleLogUtil {
 
-    fun d(tag:String,msg:String){
-        Log.d(tag,msg)
+    private const val TAG = "BleLogUtil"
+
+    fun d(tag: String = TAG, msg: Any) {
+        Log.d(tag, msg.toString())
     }
 
-    fun i(tag:String,msg:String){
-        Log.i(tag,msg)
+    fun i(tag: String = TAG, msg: String) {
+        Log.i(tag, msg)
     }
 
-    fun e(tag: String,msg:String){
-        Log.e(tag,msg)
+    fun e(tag: String = TAG, msg: String) {
+        Log.e(tag, msg)
     }
 
 }
