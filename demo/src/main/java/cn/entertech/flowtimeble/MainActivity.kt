@@ -40,6 +40,16 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper())
     }
 
+
+    /**
+     * 是否是持久性实验
+     * true 是，
+     * 连接失败/断开 都会尝试重连，
+     * 连接成功后会每隔[CHECK_CONNECT_TIME]检查连接状态
+     * 连接成功后会进行脑波心率数据的采集
+     * */
+    private var isPersistenceExperiment = false
+
     private val reconnectRunnable: Runnable by lazy {
         Runnable {
             BleLogUtil.i(TAG, "reconnectRunnable")
@@ -74,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         btnConnect.setOnClickListener {
             onConnectBound()
         }
+        initPersistenceState()
 
     }
 
@@ -149,14 +160,19 @@ class MainActivity : AppCompatActivity() {
         mainHandler.removeCallbacks(reconnectRunnable)
         biomoduleBleManager.connectDevice({
             BleLogUtil.i(TAG, "connect Bound success")
-            mainHandler.post(checkConnectRunnable)
+            if(isPersistenceExperiment) {
+                mainHandler.post(checkConnectRunnable)
+                onCollectBrainAndHeartStart()
+            }
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
             }
 
         }, {
             BleLogUtil.i(TAG, "connect Bound failed error $it ")
-            reconnect()
+            if(isPersistenceExperiment) {
+                reconnect()
+            }
             runOnUiThread {
                 Toast.makeText(
                     this@MainActivity, "connect Bound failed error $it ", Toast.LENGTH_SHORT
@@ -188,6 +204,21 @@ class MainActivity : AppCompatActivity() {
             }
         }, ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
     }
+
+    private fun initPersistenceState() {
+        btnSwapPersistenceState.text = if (isPersistenceExperiment) {
+            "当前是处于持续性实验状态"
+        } else {
+            "当前是处于非持续性实验状态"
+        }
+    }
+
+
+    fun onSwapPersistenceState(@Suppress("UNUSED_PARAMETER") view: View) {
+        isPersistenceExperiment = !isPersistenceExperiment
+        initPersistenceState()
+    }
+
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.disConnect()
@@ -235,6 +266,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onCollectBrainAndHeartStart(@Suppress("UNUSED_PARAMETER") view: View) {
+        onCollectBrainAndHeartStart()
+    }
+
+    fun onCollectBrainAndHeartStart(){
         biomoduleBleManager.startHeartAndBrainCollection()
     }
 
