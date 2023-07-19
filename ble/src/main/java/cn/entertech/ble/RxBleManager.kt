@@ -417,7 +417,7 @@ class RxBleManager constructor(context: Context) {
                             },
                             { throwable ->
                                 // Handle an error here.
-                                Logger.d("read error $throwable")
+                                BleLogUtil.i(TAG,"read error $throwable")
                                 failure?.invoke("read error $throwable")
                             }
                     )
@@ -436,7 +436,7 @@ class RxBleManager constructor(context: Context) {
                             },
                             { throwable ->
                                 // Handle an error here.
-                                BleLogUtil.d(TAG,"write error $throwable")
+                                BleLogUtil.i(TAG,"write error $throwable")
                                 failure?.invoke("write error")
                             }
                     )
@@ -453,8 +453,6 @@ class RxBleManager constructor(context: Context) {
                     .flatMap({ notificationObservable -> notificationObservable })
                     .subscribe(
                             { characteristicValue ->
-                                //                                Logger.d(Arrays.toString(characteristicValue))
-                                BleLogUtil.d(TAG,"notify characterId  success $success")
                                 success.invoke(characteristicValue)
                             },
                             { throwable ->
