@@ -41,7 +41,14 @@
                     android:layout_weight="1"
                     android:onClick="onDisconnect"
                     android:text="@string/disconnect" />
-
+                <Button
+                    android:id="@+id/btnSwapPersistenceState"
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onSwapPersistenceState"
+                    android:text="@string/disconnect" />
             </LinearLayout>
 
             <LinearLayout
