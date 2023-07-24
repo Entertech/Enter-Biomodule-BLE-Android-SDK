@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.orhanobut.logger.Logger
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -46,10 +47,12 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
         showLogs()
     }
 
+
+
     private fun showLogs() {
         thread = thread {
             val sb = java.lang.StringBuilder()
-            cacheDir.listFiles()?.forEach {
+            (application as App).logFile.parentFile?.listFiles()?.forEach {
                 val rb = BufferedReader(InputStreamReader(FileInputStream(it)))
                 var str: String? = rb.readLine()?.trim()
                 while (str != null) {
