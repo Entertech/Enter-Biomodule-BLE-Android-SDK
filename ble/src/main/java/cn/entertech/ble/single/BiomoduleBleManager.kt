@@ -80,7 +80,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * add device connect listener
      */
-    fun addConnectListener(listener: (String) -> Unit) {
+    fun addConnectListener(listener: (String?) -> Unit) {
         fastBleManager.addConnectListener(listener)
     }
 
