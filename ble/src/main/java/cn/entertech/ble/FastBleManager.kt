@@ -95,11 +95,11 @@ class FastBleManager constructor(context: Context) {
                 Log.d("cpTest", "onScanStarted")
             }
 
-            override fun onScanning(bleDevice: BleDevice) {
+            override fun onScanning(bleDevice: BleDevice?) {
                 Log.d("cpTest", "onScanning")
             }
 
-            override fun onScanFinished(scanResult: BleDevice) {
+            override fun onScanFinished(scanResult: BleDevice?) {
                 Log.d("cpTest", "onScanFinished")
             }
 
@@ -107,8 +107,8 @@ class FastBleManager constructor(context: Context) {
                 Log.d("cpTest", "onStartConnect")
             }
 
-            override fun onConnectFail(bleDevice: BleDevice, exception: com.clj.fastble.exception.BleException) {
-                Log.d("cpTest", "onConnect fail " + bleDevice.mac)
+            override fun onConnectFail(bleDevice: BleDevice?, exception: com.clj.fastble.exception.BleException?) {
+                Log.d("cpTest", "onConnect fail  mac: " + bleDevice?.mac)
                 if (curBleDevice != null) {
                     mHandler.postDelayed(reConnectRunnable, 5000)
                 }
@@ -118,12 +118,12 @@ class FastBleManager constructor(context: Context) {
 
             }
 
-            override fun onConnectSuccess(bleDevice: BleDevice, gatt: BluetoothGatt, status: Int) {
-                Log.d("cpTest", "onConnect success first " + bleDevice.mac)
+            override fun onConnectSuccess(bleDevice: BleDevice?, gatt: BluetoothGatt?, status: Int) {
+                Log.d("cpTest", "onConnect success first " + bleDevice?.mac)
                 curBleDevice = bleDevice
                 initNotification()
                 connectListeners.forEach {
-                    it.invoke(bleDevice.mac)
+                    it.invoke(bleDevice?.mac)
                 }
 
             //    FileUtils.writeLocalFile(bleDevice.mac)
@@ -132,8 +132,8 @@ class FastBleManager constructor(context: Context) {
 
             override fun onDisConnected(
                 isActiveDisConnected: Boolean,
-                device: BleDevice,
-                gatt: BluetoothGatt,
+                device: BleDevice?,
+                gatt: BluetoothGatt?,
                 status: Int
             ) {
                 stopNotify()
@@ -157,11 +157,11 @@ class FastBleManager constructor(context: Context) {
                 Log.d("cpTest", "onScanStarted")
             }
 
-            override fun onScanning(bleDevice: BleDevice) {
+            override fun onScanning(bleDevice: BleDevice?) {
                 Log.d("cpTest", "onScanning")
             }
 
-            override fun onScanFinished(scanResult: BleDevice) {
+            override fun onScanFinished(scanResult: BleDevice?) {
                 Log.d("cpTest", "onScanFinished")
             }
 
@@ -169,8 +169,8 @@ class FastBleManager constructor(context: Context) {
                 Log.d("cpTest", "onStartConnect")
             }
 
-            override fun onConnectFail(bleDevice: BleDevice, exception: com.clj.fastble.exception.BleException) {
-                Log.d("cpTest", "onConnectFail " + bleDevice.mac)
+            override fun onConnectFail(bleDevice: BleDevice?, exception: com.clj.fastble.exception.BleException?) {
+                Log.d("cpTest", "onConnectFail  " + bleDevice?.mac)
                 if (curBleDevice != null) {
                     mHandler.postDelayed(reConnectRunnable, 5000)
                 }
@@ -180,12 +180,12 @@ class FastBleManager constructor(context: Context) {
 
             }
 
-            override fun onConnectSuccess(bleDevice: BleDevice, gatt: BluetoothGatt, status: Int) {
-                Log.d("cpTest", "onConnect success" + bleDevice.mac)
+            override fun onConnectSuccess(bleDevice: BleDevice?, gatt: BluetoothGatt?, status: Int) {
+                Log.d("cpTest", "onConnect success" + bleDevice?.mac)
                 curBleDevice = bleDevice
                 initNotification()
                 connectListeners.forEach {
-                    it.invoke(bleDevice.mac)
+                    it.invoke(bleDevice?.mac)
                 }
             //    FileUtils.writeLocalFile(bleDevice.mac)
 
@@ -193,8 +193,8 @@ class FastBleManager constructor(context: Context) {
 
             override fun onDisConnected(
                 isActiveDisConnected: Boolean,
-                device: BleDevice,
-                gatt: BluetoothGatt,
+                device: BleDevice?,
+                gatt: BluetoothGatt?,
                 status: Int
             ) {
                 stopNotify()
@@ -202,7 +202,7 @@ class FastBleManager constructor(context: Context) {
                     mHandler.postDelayed(reConnectRunnable, 5000)
                 }
                 disConnectListeners.forEach {
-                    it.invoke("disconnect  ${device.mac}")
+                    it.invoke("disconnect  ${device?.mac}")
                 }
             }
         })
@@ -223,7 +223,7 @@ class FastBleManager constructor(context: Context) {
 
         }
 
-        override fun onConnectFail(bleDevice: BleDevice, e: com.clj.fastble.exception.BleException) {
+        override fun onConnectFail(bleDevice: BleDevice?, e: com.clj.fastble.exception.BleException?) {
             Log.d("cpTest", "onConnectFail")
             if (curBleDevice != null) {
                 mHandler.postDelayed(reConnectRunnable, 5000)
@@ -233,20 +233,20 @@ class FastBleManager constructor(context: Context) {
             }
         }
 
-        override fun onConnectSuccess(bleDevice: BleDevice, bluetoothGatt: BluetoothGatt, i: Int) {
+        override fun onConnectSuccess(bleDevice: BleDevice?, bluetoothGatt: BluetoothGatt?, i: Int) {
             curBleDevice = bleDevice
        //     startHeartAndBrainCollection()
             initNotification()
             connectListeners.forEach {
-                it.invoke(bleDevice.mac)
+                it.invoke(bleDevice?.mac)
             }
         //    FileUtils.writeLocalFile(bleDevice.mac)
         }
 
         override fun onDisConnected(
             b: Boolean,
-            bleDevice: BleDevice,
-            bluetoothGatt: BluetoothGatt,
+            bleDevice: BleDevice?,
+            bluetoothGatt: BluetoothGatt?,
             i: Int
         ) {
             stopNotify()
@@ -481,7 +481,7 @@ class FastBleManager constructor(context: Context) {
 
 
     val disConnectListeners = mutableListOf<(String) -> Unit>()
-    val connectListeners = mutableListOf<(String) -> Unit>()
+    val connectListeners = mutableListOf<(String?) -> Unit>()
 
     /**
      * add device disconnect listener
@@ -500,7 +500,7 @@ class FastBleManager constructor(context: Context) {
     /**
      * add device connect listener
      */
-    fun addConnectListener(listener: (String) -> Unit) {
+    fun addConnectListener(listener: (String?) -> Unit) {
         connectListeners.add(listener)
     }
 
