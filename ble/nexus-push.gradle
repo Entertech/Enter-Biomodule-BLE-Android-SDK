@@ -1,4 +1,5 @@
-apply plugin: 'maven'
+/*
+apply plugin: 'maven-publish'
 // 产生物地址： https://s01.oss.sonatype.org/content/repositories/releases/cn/entertech/android/biomoduleble/
 //任务名
 uploadArchives{
@@ -35,3 +36,4 @@ uploadArchives{
         }
     }
 }
+*/
