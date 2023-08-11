@@ -1,7 +1,8 @@
+/*
 apply plugin: 'maven'
 
 //任务名
-uploadArchives{
+uploadArchives {
     repositories {
         mavenDeployer {
             //nexus账号密码在local.properties文件中配置
@@ -35,3 +36,4 @@ uploadArchives{
         }
     }
 }
+*/
