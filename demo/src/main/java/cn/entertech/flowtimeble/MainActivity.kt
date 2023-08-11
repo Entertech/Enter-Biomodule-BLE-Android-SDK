@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         Logger.d("contace state is ${contactState}")
     }
 
-    var connectedListener = fun(string: String) {
+    var connectedListener = fun(string: String?) {
         Log.d("cpTest","connect success in mainActivity")
         Logger.d("connect success${string}")
         runOnUiThread {
