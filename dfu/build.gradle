@@ -1,5 +1,12 @@
 apply plugin: 'com.android.library'
-apply from: './nexus-push.gradle'
+apply plugin: 'custom.android.plugin'
+
+PublishInfo {
+    groupId = 'cn.entertech.android' // 库的组织，使用域名表示
+    artifactId = 'biomoduleble-dfu' // 库名称
+    version = '1.11.0' // 库版本
+}
+
 android {
     compileSdkVersion 32
 
@@ -27,24 +34,3 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.google.code.gson:gson:2.8.6'
 }
-
-//添加
-//apply plugin: 'com.novoda.bintray-release'
-//apply plugin: 'com.github.panpf.bintray-publish'
-//publish {
-//    bintrayUser = "hzentertech"
-//    bintrayKey = "a5c7edd58f68d746817dce405483be33f6b0c219"
-//    //bintray.com用户名
-//    userOrg = 'hzentertech'
-//    //jcenter上的路径
-//    groupId = 'cn.entertech'
-//    //项目名称
-//    artifactId = 'Android-DFU-Library-Flowtime'
-//    //版本号
-//    publishVersion = '1.11.0'
-//    //描述，不重要
-//    desc = 'dfu'
-//    //网站，不重要
-//    website = 'https://github.com/Lloyd0577/Android-DFU-Library'
-//    dryRun = false
-//}
