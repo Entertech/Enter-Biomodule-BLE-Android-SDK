@@ -14,7 +14,7 @@ private val HANDSHAKE_LEN = 5
 //format：random of hour, min, second
 fun encode(input: ByteArray? =  null): ByteArray {
     val output = ByteArray(HANDSHAKE_LEN) { 0 }
-    output[4] = (Math.random() * 255).toByte()
+    output[4] = (Math.random() * 255).toInt().toByte()
     if (null == input) {
         val calendar = Calendar.getInstance()
         output[0] = 1
