@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'custom.android.plugin'
 
 PublishInfo {
+    // https://s01.oss.sonatype.org/content/repositories/releases/cn/entertech/android/biomoduleble/
     groupId = 'cn.entertech.android' // 库的组织，使用域名表示
     artifactId = 'biomoduleble' // 库名称
     version = '1.5.5' // 库版本
