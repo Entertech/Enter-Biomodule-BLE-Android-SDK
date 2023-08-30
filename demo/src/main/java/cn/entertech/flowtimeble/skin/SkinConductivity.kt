@@ -1,4 +1,4 @@
-package cn.entertech.flowtimeble
+package cn.entertech.flowtimeble.skin
 
 import android.os.Bundle
 import android.os.Handler
@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.flowtimeble.R
+import cn.entertech.flowtimeble.RealtimeAnimLineChartView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -92,6 +94,7 @@ class SkinConductivity : AppCompatActivity() {
         try {
             val dataInt = Integer.parseInt(sb.toString(), 16)
             BleLogUtil.d(TAG, "电阻为： $dataInt")
+            SkinConductivityHelper.addSkinConductivityData(dataInt,this)
             tvSkinRealtimeData?.text="实时数据： $sb    $dataInt"
             if (dataInt > maxValue) {
                 maxValue = dataInt
