@@ -40,7 +40,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".SkinConductivity"
+            android:name=".skin.SkinConductivityInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".skin.SkinConductivityRecordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".skin.SkinConductivity"
             android:exported="false" />
         <activity
             android:name=".ShowLogActivity"

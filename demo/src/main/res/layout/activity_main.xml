@@ -232,28 +232,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="onAddRawListener"
-                    android:text="@string/add_skin_conductivity_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveRawListener"
-                    android:text="@string/remove_skin_conductivity_listener" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:onClick="onAddHeartRateListener"
                     android:text="@string/add_hr_listener" />
 
@@ -406,12 +384,29 @@
 
             </LinearLayout>
 
-            <Button
-                android:textAllCaps="false"
-                android:onClick="goToSkinConductivity"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/skin_conductivity" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="goToSkinConductivity"
+                    android:text="@string/skin_conductivity" />
+
+                <Button
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="readSkinConductivity"
+                    android:text="@string/read_skin_conductivity" />
+
+            </LinearLayout>
+
             <Button
                 android:textAllCaps="false"
                 android:onClick="onFindConnectedDevice"

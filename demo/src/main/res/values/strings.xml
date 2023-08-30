@@ -31,6 +31,7 @@
     <string name="read_device_manufacturer">读取制造商</string>
     <string name="check_device_connected">查找已连接设备</string>
     <string name="skin_conductivity" translatable="false">皮肤电导数据页面</string>
+    <string name="read_skin_conductivity" translatable="false">读取皮肤电导数据</string>
     <string name="show_log">查看日志</string>
     <string name="device_manager_page">设备UI入口</string>
 </resources>

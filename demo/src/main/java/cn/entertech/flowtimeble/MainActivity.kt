@@ -15,7 +15,10 @@ import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
-import com.orhanobut.logger.Logger
+import cn.entertech.flowtimeble.skin.ISaveDataListener
+import cn.entertech.flowtimeble.skin.SkinConductivity
+import cn.entertech.flowtimeble.skin.SkinConductivityHelper
+import cn.entertech.flowtimeble.skin.SkinConductivityRecordActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -421,6 +424,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, SkinConductivity::class.java))
     }
 
+    fun readSkinConductivity(view: View){
+        startActivity(Intent(this, SkinConductivityRecordActivity::class.java))
+    }
+
     override fun onDestroy() {
         biomoduleBleManager.removeRawDataListener(rawListener)
         biomoduleBleManager.removeContactListener(contactListener)
@@ -432,4 +439,20 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    override fun onResume() {
+        super.onResume()
+        SkinConductivityHelper.saveDataIntoFile(this,object :ISaveDataListener{
+            override fun start() {
+                Toast.makeText(applicationContext, "开始准备保存数据", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun complete() {
+                Toast.makeText(applicationContext, "保存数据成功", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun error(errorMsg:String) {
+                Toast.makeText(applicationContext, "保存数据失败：$errorMsg", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 }
