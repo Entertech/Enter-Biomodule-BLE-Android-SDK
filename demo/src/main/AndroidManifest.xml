@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cn.entertech.flowtimeble">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -39,6 +40,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="cn.entertech.flowtimeble.fileprovider"
+            tools:replace="android:authorities"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <!--指定Uri的共享路径-->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <activity
             android:name=".skin.SkinConductivityInfoActivity"
             android:exported="false" />
