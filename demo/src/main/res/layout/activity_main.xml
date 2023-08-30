@@ -28,19 +28,27 @@
                     android:onClick="onConnect"
                     android:text="@string/connect" />
                 <Button
-                    android:id="@+id/btnConnect"
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/connectBonded" />
-                <Button
                     android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDisconnect"
                     android:text="@string/disconnect" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnConnect"
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/connectBonded" />
+
                 <Button
                     android:id="@+id/btnSwapPersistenceState"
                     android:textAllCaps="false"
@@ -48,9 +56,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onSwapPersistenceState"
-                    android:text="@string/disconnect" />
+                    android:text="当前是处于非持续性实验状态" />
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,7 +222,28 @@
                     android:text="@string/remove_brain_listener" />
 
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <Button
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onAddRawListener"
+                    android:text="@string/add_skin_conductivity_listener" />
+
+                <Button
+                    android:textAllCaps="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onRemoveRawListener"
+                    android:text="@string/remove_skin_conductivity_listener" />
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -377,13 +405,13 @@
                     android:text="@string/read_device_manufacturer" />
 
             </LinearLayout>
+
             <Button
                 android:textAllCaps="false"
-                android:onClick="showLog"
+                android:onClick="goToSkinConductivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/show_log" />
-
+                android:text="@string/skin_conductivity" />
             <Button
                 android:textAllCaps="false"
                 android:onClick="onFindConnectedDevice"
@@ -398,7 +426,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/device_manager_page" />
 
-
+            <Button
+                android:textAllCaps="false"
+                android:onClick="showLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/show_log" />
         </LinearLayout>
     </ScrollView>
 

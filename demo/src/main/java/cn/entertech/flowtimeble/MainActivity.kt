@@ -414,6 +414,13 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.findConnectedDevice()
     }
 
+    fun goToSkinConductivity(view: View){
+        if (!biomoduleBleManager.isConnected()) {
+            Toast.makeText(applicationContext, "请先连接设备", Toast.LENGTH_SHORT).show()
+        }
+        startActivity(Intent(this, SkinConductivity::class.java))
+    }
+
     override fun onDestroy() {
         biomoduleBleManager.removeRawDataListener(rawListener)
         biomoduleBleManager.removeContactListener(contactListener)
