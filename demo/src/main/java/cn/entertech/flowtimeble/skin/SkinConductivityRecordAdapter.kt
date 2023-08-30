@@ -26,9 +26,7 @@ import java.util.Date
 
 class SkinConductivityRecordAdapter(val data: Array<out File>, val context: Context) :
     RecyclerView.Adapter<SkinConductivityRecordAdapter.SkinDataListVH>() {
-    private val sim by lazy {
-        SimpleDateFormat("yyyy年MM月dd日HH:mm:ss.SSS")
-    }
+
 
     class SkinDataListVH(private val rootView: View) : RecyclerView.ViewHolder(rootView) {
     }
@@ -48,12 +46,7 @@ class SkinConductivityRecordAdapter(val data: Array<out File>, val context: Cont
         if (rootView is TextView) {
             val file = data[position]
             val timeString = file.name.removeSuffix(FILE_SUFFIX)
-            val data = Date(timeString.toLong())
-            if (data != null) {
-                rootView.text = sim.format(data)
-            } else {
-                rootView.text = timeString
-            }
+            rootView.text = timeString
             rootView.setOnClickListener {
                 val intent = Intent(context, SkinConductivityInfoActivity::class.java)
                 intent.putExtra(FILE_PATH, file.path)

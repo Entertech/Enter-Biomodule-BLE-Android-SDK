@@ -8,6 +8,8 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 object SkinConductivityHelper {
@@ -16,9 +18,14 @@ object SkinConductivityHelper {
     private val skinConductivityData = ArrayList<Int>()
     private var fileName: String? = null
     const val FILE_SUFFIX = ".txt"
-
+    private val sim by lazy {
+        SimpleDateFormat("yyyy年MM月dd日HH:mm:ss.SSS")
+    }
     fun getSaveFileDirectory(context: Context): File {
-        return File(context.filesDir, "skinData")
+        return File(
+            context.getExternalFilesDir("") ?: context.filesDir,
+            "skinData"
+        )
     }
 
     fun addSkinConductivityData(data: Int, context: Context) {
@@ -47,7 +54,7 @@ object SkinConductivityHelper {
             return
         }
         listener?.start()
-        val name = System.currentTimeMillis().toString() + FILE_SUFFIX
+        val name = sim.format(Date(System.currentTimeMillis())) + FILE_SUFFIX
         if (fileName == null) {
             fileName = name
         }

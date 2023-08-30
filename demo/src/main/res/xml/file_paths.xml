@@ -6,4 +6,6 @@
     <!--    物理路径相当于Context.getFilesDir() + /path/-->
     <files-path name="name" path="skinData" />
 
+<!--    物理路径相当于Context.getExternalFilesDir(String) + /path/-->
+    <external-files-path name="name" path="skinData" />
 </paths>
