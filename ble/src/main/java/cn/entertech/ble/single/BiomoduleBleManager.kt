@@ -261,6 +261,9 @@ class BiomoduleBleManager private constructor(context: Context) {
     /**
      * 该方法为连接设备入口
      * @param connectionBleStrategy 连接策略
+     * @param successConnect 连接成功回调 mac地址
+     * @param failure 连接失败回调 失败原因
+     * @param filter 过滤逻辑， true 表示保留 false 表示舍弃 仅在[ConnectionBleStrategy.CONNECT_BONDED]模式下生效
      */
     fun connectDevice(
         successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
