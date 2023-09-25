@@ -14,40 +14,55 @@ biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 
 ### 设备连接
 
+#### 连接已匹配的设备（未知设备mac地址）
+**方法说明**
+
+连接已配对过的设备
+
+**示例代码**
+```kotlin
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.CONNECT_BONDED)
+
+```
+
 #### 连接附近信号最强的设备（未知设备mac地址）
 
 **方法说明**
 
-扫描并连接附近信号最强的设备，需传入用户id，如不需要用户绑定功能则传入固定值
+扫描并连接附近信号最强的设备
 
 **示例代码**
 
 ```kotlin
-   biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d("扫描成功")
-        }, fun(e: Exception) {
-            Logger.d("扫描失败：$e")
-        }, fun(mac: String) {
-            Logger.d("连接成功$mac")
-        }) { msg ->
-            Logger.d("连接失败")
-        }
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
 ```
 
 **参数说明**
 
-| 参数                   | 类型                | 说明         |
-| ---------------------- | ------------------- | ------------ |
-| scanSuccessCallBack    | () -> Unit          | 扫描成功回调 |
-| scanFailCallBack       | (Exception) -> Unit | 扫描失败回调 |
-| connectSuccessCallBack | (String) ->Unit     | 连接成功回调 |
-| failedCallBack         | (String)->Unit      | 失败回调     |
+| 参数                   | 类型                         | 说明        |
+| ---------------------- | ----------------------------| -----------|
+| successConnect         | ((String) -> Unit)?         | 连接成功回调 |
+| failure                | ((String) -> Unit)          | 连接失败回调 |
+| connectionBleStrategy  | ConnectionBleStrategy       | 连接类型    ｜
+| filter                 | (String?,String?) -> Boolean| 过滤逻辑    ｜
 
 #### 根据指定mac连接（已知设备mac地址）
 
 **方法说明**
 
-连接指定mac地址设备，需要传入用户id、mac地址
+连接指定mac地址设备，需要传入mac地址
 
 **示例代码**
 
