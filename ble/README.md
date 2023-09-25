@@ -18,7 +18,7 @@ repositories {
 在所需的module中的build.gradle文件下添加以下依赖：
 
 ```groovy
-implementation 'cn.entertech.android:biomoduleble:1.4.2'
+implementation 'cn.entertech.android:biomoduleble:1.5.5'
 ```
 
 ### 注意事项
@@ -35,20 +35,33 @@ implementation 'cn.entertech.android:biomoduleble:1.4.2'
 
 ### 1.连接设备
 
-**代码示例**
+分两种连接设备方式：扫描&连接信号最强设备；连接已配对的设备;
 
+#### 1.1 扫描&连接信号最强设备
+**代码示例**
 ```kotlin
-var biomoduleBleManager = BiomoduleBleManager.getInstance(context)
-//根据信号强弱连接最近的设备，如果需要连接指定设备可调用scanMacAndConnect方法传入mac地址连接
-biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d("扫描成功")
-        }, fun(e: Exception) {
-            Logger.d("扫描失败：$e")
-        }, fun(mac: String) {
-            Logger.d("连接成功$mac")
-        }) { msg ->
-            Logger.d("连接失败")
-        }
+val biomoduleBleManager = BiomoduleBleManager.getInstance(context)
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+
+```
+
+#### 1.2 连接已配对的设备
+**代码示例**
+```kotlin
+val biomoduleBleManager = BiomoduleBleManager.getInstance(context)
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.CONNECT_BONDED)
 ```
 
 ### 2.添加数据监听

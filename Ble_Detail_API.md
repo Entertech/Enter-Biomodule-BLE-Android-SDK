@@ -13,6 +13,24 @@ biomoduleBleManager = BiomoduleBleManager.getInstance(context)
 ```
 
 ### Device connection
+#### Connect to a matched device (unknown device mac address)
+
+**Method Description** 
+
+Connect a paired device
+
+**Sample Code**
+
+```kotlin
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.CONNECT_BONDED)
+
+```
 
 #### Connect to the device with the strongest signal nearby (unknown device mac address)
 
@@ -23,24 +41,22 @@ Scan and connect to the device with the strongest signal nearby, you need to pas
 **Sample Code**
 
 ```kotlin
-   biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d(" Scan successfully ")
-        }, fun(e: Exception) {
-            Logger.d(" Scan failed: $e")
-        }, fun(mac: String) {
-            Logger.d(" Connected successfully $mac")
-        }) {msg ->
-            Logger.d(" Connection failed ")
-        }
+  biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
 ```
 **Parameter description**
 
-| Parameter                   | Type                | Description         |
-| ---------------------- | ------------------- | ------------ |
-| scanSuccessCallBack | () -> Unit | Scan success callback |
-| scanFailCallBack | (Exception) -> Unit | Scan failed callback |
-| connectSuccessCallBack | (String) ->Unit | Connect success callback |
-| failedCallBack | (String)->Unit | Failed Callback     |
+| Parameter                   | Type                         | Description        |
+| ---------------------- | ----------------------------| -----------|
+| successConnect         | ((String) -> Unit)?         | Connect success callback |
+| failure                | ((String) -> Unit)          | Connect failed callback |
+| connectionBleStrategy  | ConnectionBleStrategy       | Connect  type  ｜
+| filter                 | (String?,String?) -> Boolean| filter logic   ｜
 
 #### According to the specified mac connection (known device mac address)
 

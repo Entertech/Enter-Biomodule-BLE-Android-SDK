@@ -17,7 +17,7 @@ repositories {
 Add the following dependencies under the build.gradle file in the required module:
 
 ```groovy
-implementation 'cn.entertech.android:biomoduleble:1.4.2'
+implementation 'cn.entertech.android:biomoduleble:1.5.5'
 ```
 
 ### Permissions
@@ -33,22 +33,39 @@ implementation 'cn.entertech.android:biomoduleble:1.4.2'
 ### 1.Connect to device
 
 **Code**
+There are two ways to connect devices: scan & connect to the device with the strongest signal; connect to a paired device
+
+#### 1.1 scan & connect to the device with the strongest signal
+
+**Code**
 
 ```kotlin
-var biomoduleBleManager = BiomoduleBleManager.getInstance(context)
-//Connect to the nearest device according to the signal strength, 
-// if you need to connect to the specified device,
-// you can call the `scanMacAndConnect` method to connect to the mac address
-biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            Logger.d("scan success")
-        }, fun(e: Exception) {
-            Logger.d("scan failed：$e")
-        }, fun(mac: String) {
-            Logger.d("connect success $mac")
-        }) { msg ->
-            Logger.d("connect failed")
-        }
+val biomoduleBleManager = BiomoduleBleManager.getInstance(context)
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+
 ```
+
+#### 1.2 Connect a paired device
+
+**Code**
+
+```kotlin
+val biomoduleBleManager = BiomoduleBleManager.getInstance(context)
+biomoduleBleManager.connectDevice(fun(mac: String) {
+            BleLogUtil.i(TAG, "connect success $mac")
+        }, 
+        { msg ->
+            BleLogUtil.i(TAG, "connect failed")
+        }, 
+        ConnectionBleStrategy.CONNECT_BONDED)
+```
+
 
 ### 2.Add data listener
 
