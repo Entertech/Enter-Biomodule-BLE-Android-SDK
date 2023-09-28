@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'custom.android.plugin'
-
-PublishInfo {
+//apply plugin: 'custom.android.plugin'
+apply from: './push.gradle'
+/*PublishInfo {
     groupId = 'cn.entertech.android' // 库的组织，使用域名表示
     artifactId = 'biomoduleble' // 库名称
     version = '1.5.5' // 库版本
-}
+}*/
 
 
 android {

@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
-apply plugin: 'custom.android.plugin'
-
-PublishInfo {
+apply from: './push.gradle'
+/*PublishInfo {
     groupId = 'cn.entertech.android' // 库的组织，使用域名表示
     artifactId = 'biomoduleble-dfu' // 库名称
     version = '1.11.0' // 库版本
-}
+}*/
 
 android {
     compileSdkVersion 32

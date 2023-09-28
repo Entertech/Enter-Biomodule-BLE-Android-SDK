@@ -1,0 +1,117 @@
+apply plugin: 'maven-publish'
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+afterEvaluate {
+    publishing {
+
+        //发布的 arr 包配置
+        publications{
+           /* //名字可以自己指定，如果有多渠道，整段多复制一个
+            uicomponent(MavenPublication){
+
+                groupId = 'cn.entertech.android'//公司域名
+                artifactId = 'biomoduleble'//该aar包的名称
+                version = '1.5.2'//版本号
+
+                // 必须有这个 否则不会上传AAR包
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+                // 多渠道，可以自行指定aar路径
+                 def projectName = project.getName()
+                 artifact "build/outputs/aar/${projectName}-release.aar"
+                // 上传source，这样使用方可以看到方法注释
+//                artifact generateSourcesJar
+                //依赖关系
+                pom.withXml{
+                    def dependenciesNode = asNode().appendNode("dependencies")
+                    configurations.implementation.allDependencies.forEach(){
+                        Dependency dependency ->
+                            if (dependency.version != "unspecified" && dependency.name != "unspecified"){
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', dependency.group)
+                                dependencyNode.appendNode('artifactId', dependency.name)
+                                dependencyNode.appendNode('version', dependency.version)
+                            }
+                    }
+                }
+            }*/
+            release(MavenPublication) {
+                from components.release
+//                artifact androidSourcesJar//源码
+                groupId = 'cn.entertech.android' // 库的组织，使用域名表示
+                artifactId = 'biomoduleble-dfu' // 库名称
+                version = '1.11.0' // 库版本
+            }
+
+        }
+        //仓库地址配置
+        repositories {
+            maven {
+                //nexus账号密码在local.properties文件中配置
+                Properties properties = new Properties()// local.properties file in the root director
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                def userName = properties.getProperty("ossrhUsername")
+                def passWord = properties.getProperty("ossrhPassword")
+                //允许使用 http
+                allowInsecureProtocol = true
+                url = "https://s01.oss.sonatype.org/content/repositories/releases/"
+                credentials {
+                    username = userName
+                    password = passWord
+                }
+            }
+        }
+    }
+}
+task printMavenLocalPath {
+        def outputFilePath = "${project.buildDir}/mavenLocalPath.txt"
+
+        outputs.file(outputFilePath).withPropertyName('mavenLocalPath')
+
+        doLast {
+            def localRepo = new File(buildDir, 'repo')
+            def outputFile = project.file(outputFilePath)
+            outputFile.parentFile.mkdirs()
+            outputFile.write(localRepo.absolutePath)
+        }
+
+}
+
+publishToMavenLocal.dependsOn printMavenLocalPath
+
+//任务名
+//uploadArchives{
+//    repositories {
+//        mavenDeployer {
+//            //nexus账号密码在local.properties文件中配置
+//            Properties properties = new Properties()// local.properties file in the root director
+//            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//            def userName = properties.getProperty("ossrhUsername")
+//            def password = properties.getProperty("ossrhPassword")
+//            //这里的url是nexus中maven-releases的路径，可以点击copy按钮查看复制
+//            repository(url: "https://s01.oss.sonatype.org/content/repositories/releases/") {
+//                authentication(userName: userName, password: password)
+//            }
+//            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+//                authentication(userName: userName, password: password)
+//            }
+//            // 下面这三项pom参数，在调用的时候是这个样子 ： compile 'com.jcking.jbottomtabbar:jbottomtabbar:0.0.1'
+//            // library的包名
+//            pom.groupId = 'cn.entertech.android'
+//            // library的项目名
+//            pom.artifactId = 'uicomponentsdk'
+//            // library的版本号
+//            pom.version = '1.4.2-alpha01'
+//
+//            pom.project {
+//                licenses {
+//                    license {
+//                        name 'The Apache Software License, Version 2.0'
+//                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
