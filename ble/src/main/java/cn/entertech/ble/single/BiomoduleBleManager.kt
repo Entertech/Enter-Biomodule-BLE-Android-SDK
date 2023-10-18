@@ -19,6 +19,7 @@ class BiomoduleBleManager private constructor(context: Context) {
     private var handler: Handler
     private var handlerThread: HandlerThread
     val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
+    val skinConductivityServiceListener=CopyOnWriteArrayList<(ByteArray) -> Unit>()
     val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
     val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
@@ -109,6 +110,9 @@ class BiomoduleBleManager private constructor(context: Context) {
                     lastNotifyBrainWaveLogTime = System.currentTimeMillis()
                 }
                 handler.post {
+                    skinConductivityServiceListener.forEach {listener->
+                        listener(it)
+                    }
                     FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it)
                     rawDataListeners.forEach { listener ->
                         listener.invoke(it)
@@ -361,6 +365,13 @@ class BiomoduleBleManager private constructor(context: Context) {
         rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE)
     }
 
+    fun addSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
+        skinConductivityServiceListener.add(listener)
+    }
+
+    fun removeSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
+        skinConductivityServiceListener.remove(listener)
+    }
     /**
      * add raw brain data listener
      */
@@ -436,6 +447,8 @@ class BiomoduleBleManager private constructor(context: Context) {
     fun addHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.add(listener)
     }
+
+    fun getDevice()=rxBleManager.getDevice()
 
     /**
      * remove device heart rate listener

@@ -7,5 +7,18 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <declare-styleable name="RealtimeAnimLineChartView">
+        <attr name="ralcv_lineColor" format="string" />
+        <attr name="ralcv_lineWidth" format="dimension" />
+        <attr name="ralcv_yAxisColor" format="color" />
+        <attr name="ralcv_gridLineColor" format="color" />
+        <attr name="ralcv_gridLineCount" format="integer" />
+        <attr name="ralcv_leftPadding" format="dimension" />
+        <attr name="ralcv_rightPadding" format="dimension" />
+        <attr name="ralcv_bgColor" format="color" />
+        <attr name="ralcv_maxValue" format="integer" />
+        <attr name="ralcv_buffer" format="integer" />
+        <attr name="ralcv_refreshTime" format="integer" />
+        <attr name="ralcv_screenPointCount" format="integer" />
+    </declare-styleable>
 </resources>

@@ -15,6 +15,8 @@
     <string name="remove_disconnect_listener">移除断开连接监听</string>
     <string name="add_brain_listener">添加原始脑波监听</string>
     <string name="remove_brain_listener">去除原始脑波监听</string>
+    <string name="add_skin_conductivity_listener" translatable="false">添加皮肤电导数据监听</string>
+    <string name="remove_skin_conductivity_listener" translatable="false">去除皮肤电导数据监听</string>
     <string name="add_hr_listener">添加心率监听</string>
     <string name="remove_hr_listener">去除心率监听</string>
     <string name="add_battery_listener">添加监听电量</string>
@@ -28,6 +30,8 @@
     <string name="read_serial_number">读取设备序列号</string>
     <string name="read_device_manufacturer">读取制造商</string>
     <string name="check_device_connected">查找已连接设备</string>
+    <string name="skin_conductivity" translatable="false">皮肤电导数据页面</string>
+    <string name="read_skin_conductivity" translatable="false">读取皮肤电导数据</string>
     <string name="show_log">查看日志</string>
     <string name="device_manager_page">设备UI入口</string>
 </resources>
