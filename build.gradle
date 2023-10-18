@@ -6,6 +6,7 @@ buildscript {
         mavenLocal()
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.1'
@@ -23,10 +24,7 @@ buildscript {
                         && !details.requested.name.contains('multidex') ) {
                     details.useVersion "27.1.1"
                 }
-                if (details.requested.group == 'androidx.core'
-                        && !details.requested.name.contains('androidx') ) {
-                    details.useVersion "1.0.1"
-                }
+
             }
         }
     }
