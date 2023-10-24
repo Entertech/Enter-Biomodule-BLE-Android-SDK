@@ -164,6 +164,8 @@ class RxBleManager constructor(context: Context) {
                                 }
                             }
                         }
+                    }else{
+                        BleLogUtil.d(TAG,"smaller than DURATION_OF_SORT")
                     }
                 }, {
             failScan?.invoke(it as Exception)
