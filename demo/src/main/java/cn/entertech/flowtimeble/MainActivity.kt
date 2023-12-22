@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import cn.entertech.ble.ConnectionBleStrategy
 import cn.entertech.ble.single.BiomoduleBleManager
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    private lateinit var btnScanConnect: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -84,6 +85,7 @@ class MainActivity : AppCompatActivity() {
             "${Environment.getExternalStorageDirectory()}/dfufile.zip",
             true
         )
+        btnScanConnect = findViewById(R.id.btnScanConnect)
         btnConnect.setOnClickListener {
             onConnectBound()
         }
@@ -146,6 +148,8 @@ class MainActivity : AppCompatActivity() {
     }
     var disConnectedListener = fun(string: String) {
         BleLogUtil.i(TAG, "disconnect $string")
+        btnConnect.setText(R.string.connectBonded)
+        btnScanConnect.setText(R.string.connect)
         reconnect()
         runOnUiThread {
             Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
@@ -163,7 +167,8 @@ class MainActivity : AppCompatActivity() {
         mainHandler.removeCallbacks(reconnectRunnable)
         biomoduleBleManager.connectDevice({
             BleLogUtil.i(TAG, "connect Bound success")
-            if(isPersistenceExperiment) {
+            btnConnect.text = it
+            if (isPersistenceExperiment) {
                 mainHandler.post(checkConnectRunnable)
                 onCollectBrainAndHeartStart()
             }
@@ -173,7 +178,7 @@ class MainActivity : AppCompatActivity() {
 
         }, {
             BleLogUtil.i(TAG, "connect Bound failed error $it ")
-            if(isPersistenceExperiment) {
+            if (isPersistenceExperiment) {
                 reconnect()
             }
             runOnUiThread {
@@ -181,9 +186,7 @@ class MainActivity : AppCompatActivity() {
                     this@MainActivity, "connect Bound failed error $it ", Toast.LENGTH_SHORT
                 ).show()
             }
-        }, ConnectionBleStrategy.CONNECT_BONDED, { name, macAdress ->
-            name?.lowercase()?.startsWith("flowtime") ?: false
-        }
+        }, ConnectionBleStrategy.CONNECT_BONDED
         )
 
     }
@@ -192,6 +195,7 @@ class MainActivity : AppCompatActivity() {
         mainHandler.removeCallbacks(reconnectRunnable)
         biomoduleBleManager.connectDevice(fun(mac: String) {
             BleLogUtil.i(TAG, "connect success $mac")
+            btnScanConnect.text = mac
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
                     .show()
@@ -224,7 +228,10 @@ class MainActivity : AppCompatActivity() {
 
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.disConnect()
+        biomoduleBleManager.disConnect{
+            btnConnect.setText(R.string.connectBonded)
+            btnScanConnect.setText(R.string.connect)
+        }
     }
 
 
@@ -272,7 +279,7 @@ class MainActivity : AppCompatActivity() {
         onCollectBrainAndHeartStart()
     }
 
-    fun onCollectBrainAndHeartStart(){
+    fun onCollectBrainAndHeartStart() {
         biomoduleBleManager.startHeartAndBrainCollection()
     }
 
@@ -417,14 +424,14 @@ class MainActivity : AppCompatActivity() {
         biomoduleBleManager.findConnectedDevice()
     }
 
-    fun goToSkinConductivity(view: View){
+    fun goToSkinConductivity(view: View) {
         if (!biomoduleBleManager.isConnected()) {
             Toast.makeText(applicationContext, "请先连接设备", Toast.LENGTH_SHORT).show()
         }
         startActivity(Intent(this, SkinConductivity::class.java))
     }
 
-    fun readSkinConductivity(view: View){
+    fun readSkinConductivity(view: View) {
         startActivity(Intent(this, SkinConductivityRecordActivity::class.java))
     }
 
@@ -441,7 +448,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        SkinConductivityHelper.saveDataIntoFile(this,object :ISaveDataListener{
+        SkinConductivityHelper.saveDataIntoFile(this, object : ISaveDataListener {
             override fun start() {
                 Toast.makeText(applicationContext, "开始准备保存数据", Toast.LENGTH_SHORT).show()
             }
@@ -450,8 +457,9 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "保存数据成功", Toast.LENGTH_SHORT).show()
             }
 
-            override fun error(errorMsg:String) {
-                Toast.makeText(applicationContext, "保存数据失败：$errorMsg", Toast.LENGTH_SHORT).show()
+            override fun error(errorMsg: String) {
+                Toast.makeText(applicationContext, "保存数据失败：$errorMsg", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }
