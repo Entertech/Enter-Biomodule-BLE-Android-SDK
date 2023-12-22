@@ -280,12 +280,17 @@ class RxBleManager constructor(context: Context) {
     /**
      * write command
      */
-    fun command(command: Command, success: ((ByteArray) -> Unit)? = null) {
+    fun command(
+        command: Command,
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
         write(NapBleCharacter.CMD_DOWNLOAD.uuid, command.value, fun(characteristicValue) {
-            BleLogUtil.i(TAG,"succ command")
+            BleLogUtil.i(TAG, "succ command")
             success?.invoke(characteristicValue)
-        }, fun(_) {
-            BleLogUtil.i(TAG,"fail command")
+        }, fun(errorMsg) {
+            BleLogUtil.i(TAG, "fail command")
+            failure?.invoke(errorMsg)
         })
     }
 
