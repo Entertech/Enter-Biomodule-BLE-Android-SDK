@@ -69,9 +69,9 @@ To connect to a device with a specified mac address, you need to pass in the use
 ```kotlin
 
   biomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
-    Logger.d(" Connected successfully $mac")
+    BleLogUtil.d(" Connected successfully $mac")
   }){msg->
-    Logger.d(" Connection failed ")
+    BleLogUtil.d(" Connection failed ")
   }
 
 ```
@@ -139,7 +139,7 @@ Add original brain wave monitoring, through which the original brain wave data c
 
   var rawDataListener = fun(data:ByteArray){
 
-        Logger.d(Arrays.toString(data))
+        BleLogUtil.d(Arrays.toString(data))
 
   }
   biomoduleBleManager.addRawDataListener(rawDataListener)
@@ -200,7 +200,7 @@ Add a heart rate monitor, through which heart rate data can be obtained from the
 ```kotlin
 
 var heartRateListener = fun(heartRate: Int) {
-    Logger.d("heart rate data is "+ heartRate)
+    BleLogUtil.d("heart rate data is "+ heartRate)
 }
 
 biomoduleBleManager.addHeartRateListener(heartRateListener)
@@ -246,7 +246,7 @@ Add this monitor, you can get the quality of equipment wearing in real time
 ```kotlin
 
 contactListener = fun(state: Int) {
-    Logger.d("Whether the wearing contact is good:"+ state == 0);
+    BleLogUtil.d("Whether the wearing contact is good:"+ state == 0);
 }
 
 biomoduleBleManager.addContactListener(contactListener)
@@ -291,7 +291,7 @@ Add battery monitor, after adding it will call back every 30 seconds
 
 var batteryListener = fun(byte: Byte) {
 
-   Logger.d("battery = $byte")
+   BleLogUtil.d("battery = $byte")
 
 }
 
@@ -332,7 +332,7 @@ Add battery voltage monitor, it will be called back every 30 seconds after addin
 
 var batteryVoltageListener = fun(voltage: Double) {
 
-   Logger.d("battery voltage = $voltage")
+   BleLogUtil.d("battery voltage = $voltage")
 
 }
 biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)

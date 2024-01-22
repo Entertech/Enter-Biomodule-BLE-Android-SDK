@@ -6,7 +6,6 @@ import android.os.HandlerThread
 import android.os.ParcelUuid
 import cn.entertech.ble.utils.*
 import cn.entertech.ble.utils.CharUtil.converUnchart
-import com.orhanobut.logger.Logger
 import com.polidea.rxandroidble2.RxBleClient
 import com.polidea.rxandroidble2.RxBleConnection
 import com.polidea.rxandroidble2.RxBleDevice
@@ -477,7 +476,7 @@ class RxBleManager constructor(context: Context) {
      */
     fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
         return notify(NapBleCharacter.CONTACT_DATE.uuid, fun(bytes: ByteArray) {
-//            Logger.d("check contact ${converUnchart(bytes[0])}")
+//            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
             onNotify.invoke(converUnchart(bytes[0]))
         }, null)
     }

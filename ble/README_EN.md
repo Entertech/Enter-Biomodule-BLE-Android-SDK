@@ -74,12 +74,12 @@ biomoduleBleManager.connectDevice(fun(mac: String) {
 ```kotlin
 //heart rate data listener
 var heartRateListener = fun(heartRate: Int) {
-    Logger.d("heart rate:" + heartRate)
+    BleLogUtil.d("heart rate:" + heartRate)
 }
 biomoduleBleManager.addHeartRateListener(heartRateListener)
 //raw brainwave data listener
 var rawDataListener = fun(data:ByteArray){
-    Logger.d(Arrays.toString(data))
+    BleLogUtil.d(Arrays.toString(data))
 }
 biomoduleBleManager.addRawDataListener(rawDataListener)
 ```

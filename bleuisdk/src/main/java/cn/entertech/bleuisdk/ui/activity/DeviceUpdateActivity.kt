@@ -3,15 +3,13 @@ package cn.entertech.bleuisdk.ui.activity
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import cn.entertech.ble.single.BiomoduleBleManager
+import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
 import cn.entertech.bleuisdk.ui.service.DfuService
 import cn.entertech.bleuisdk.utils.Constant
 import cn.entertech.bleuisdk.utils.SettingManager
-import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_device_update.*
 import kotlinx.android.synthetic.main.layout_common_title.*
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
@@ -20,6 +18,10 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper
 
 class DeviceUpdateActivity : BaseActivity() {
 //
+    companion object{
+        private const val TAG="DeviceUpdateActivity"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initFullScreenDisplay()
@@ -31,35 +33,35 @@ class DeviceUpdateActivity : BaseActivity() {
 //
     private val mDfuProgressListener = object : DfuProgressListenerAdapter() {
         override fun onDeviceConnecting(deviceAddress: String) {
-            Log.d("onDfuUpdate", "onDeviceConnecting")
+            BleLogUtil.d(TAG, "onDeviceConnecting")
         }
 
         override fun onDfuProcessStarting(deviceAddress: String) {
-            Log.d("onDfuUpdate", "onDfuProcessStarting")
+            BleLogUtil.d(TAG, "onDfuProcessStarting")
         }
 
         override fun onEnablingDfuMode(deviceAddress: String) {
 
-            Log.d("onDfuUpdate", "onEnablingDfuMode")
+            BleLogUtil.d(TAG, "onEnablingDfuMode")
         }
 
         override fun onFirmwareValidating(deviceAddress: String) {
 
-            Log.d("onDfuUpdate", "onFirmwareValidating")
+            BleLogUtil.d(TAG, "onFirmwareValidating")
         }
 
         override fun onDeviceDisconnecting(deviceAddress: String) {
 
-            Log.d("onDfuUpdate", "onDeviceDisconnecting")
+            BleLogUtil.d(TAG, "onDeviceDisconnecting")
         }
 
         override fun onDfuCompleted(deviceAddress: String) {
-            Log.d("onDfuUpdate", "onDfuCompleted")
+            BleLogUtil.d(TAG, "onDfuCompleted")
             updateCompleted()
         }
 
         override fun onDfuAborted(deviceAddress: String) {
-            Log.d("onDfuUpdate", "onDfuAborted")
+            BleLogUtil.d(TAG, "onDfuAborted")
             updateFailed()
         }
 
@@ -71,12 +73,11 @@ class DeviceUpdateActivity : BaseActivity() {
             currentPart: Int,
             partsTotal: Int
         ) {
-            Log.d("onDfuUpdate", "onProgressChanged")
-            Logger.d("onProgressChanged percent = $percent")
+            BleLogUtil.d(TAG,"onProgressChanged percent = $percent")
         }
 
         override fun onError(deviceAddress: String, error: Int, errorType: Int, message: String) {
-            Log.d("onDfuUpdate", "onError:" + error + "::" + message + "::" + errorType)
+            BleLogUtil.d(TAG, "onError:" + error + "::" + message + "::" + errorType)
             updateFailed()
         }
     }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.Button
@@ -289,7 +288,7 @@ class MainActivity : AppCompatActivity() {
 
     var rawListener = fun(bytes: ByteArray) {
 //        BleLogUtil.d(TAG,"firmware fixing hex " + HexDump.toHexString(bytes))
-        Log.d("######", "braindata: " + HexDump.toHexString(bytes))
+        BleLogUtil.d("######", "braindata: " + HexDump.toHexString(bytes))
 //        BleLogUtil.d(TAG,"brain data is " + Arrays.toString(bytes))
     }
 

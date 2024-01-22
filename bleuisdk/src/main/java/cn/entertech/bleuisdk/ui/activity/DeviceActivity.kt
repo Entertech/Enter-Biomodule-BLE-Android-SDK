@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
+import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.R
 import cn.entertech.bleuisdk.ui.DeviceUIConfig
@@ -17,7 +18,6 @@ import cn.entertech.bleuisdk.utils.Constant.Companion.INTENT_BLE_MANAGER_INDEX
 import cn.entertech.bleuisdk.utils.Constant.Companion.INTENT_WEB_TITLE
 import cn.entertech.bleuisdk.utils.Constant.Companion.INTENT_WEB_URL
 import cn.entertech.bleuisdk.utils.SettingManager
-import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_device.*
 import kotlinx.android.synthetic.main.layout_common_title.*
 
@@ -26,6 +26,10 @@ import kotlinx.android.synthetic.main.layout_common_title.*
  */
 
 class DeviceActivity : BaseActivity() {
+    companion object{
+        private const val TAG="DeviceActivity"
+    }
+
     private lateinit var mMultipleBiomoduleBleManager: MultipleBiomoduleBleManager
     lateinit var bleDisConnectedListener: (String) -> Unit
     lateinit var bleConnectedListener: (String) -> Unit
@@ -47,7 +51,7 @@ class DeviceActivity : BaseActivity() {
 
     fun addConnectListener() {
         bleConnectedListener = fun(result: String) {
-            Logger.d("device connect success:${result}")
+            BleLogUtil.d(TAG,"device connect success:${result}")
             runOnUiThread {
                 toConnect()
                 updateDeviceInfo()
@@ -64,7 +68,7 @@ class DeviceActivity : BaseActivity() {
 
     fun addDisConnectListener() {
         bleDisConnectedListener = fun(result: String) {
-            Logger.d("connect failure:${result}")
+            BleLogUtil.d(TAG,"connect failure:${result}")
             runOnUiThread {
                 toDisConnect()
             }
@@ -181,12 +185,12 @@ class DeviceActivity : BaseActivity() {
             set.setStringValue("ble_mac_$mDeviceIndex", mac)
         }
         val failure = fun(error: String) {
-            Logger.d(error)
+            BleLogUtil.d(TAG,error)
         }
 
         Thread.sleep(100)
         mMultipleBiomoduleBleManager.readDeviceHardware(fun(msg: String) {
-            Logger.d(msg)
+            BleLogUtil.d(TAG,msg)
             set.setStringValue("ble_hardware_$mDeviceIndex", msg)
             runOnUiThread {
                 findViewById<TextView>(R.id.device_hardware).text = msg
@@ -195,7 +199,7 @@ class DeviceActivity : BaseActivity() {
 
         Thread.sleep(200)
         mMultipleBiomoduleBleManager.readDeviceFirmware(fun(msg: String) {
-            Logger.d(msg)
+            BleLogUtil.d(TAG,msg)
             set.setStringValue("ble_firmware_$mDeviceIndex", msg)
             runOnUiThread {
                 findViewById<TextView>(R.id.device_firmware).text = msg
@@ -263,7 +267,7 @@ class DeviceActivity : BaseActivity() {
         var mac = set.getStringValue("ble_mac_$mDeviceIndex")
         if (mDeviceUIConfig.isDeviceBind && mac != null && mac != "") {
             mMultipleBiomoduleBleManager.scanMacAndConnect(mac, successConnect = fun(mac: String) {
-                Logger.d("connect success mac:${mac}")
+                BleLogUtil.d(TAG,"connect success mac:${mac}")
                 runOnUiThread {
                     SettingManager.getInstance(this).isConnectBefore = true
                     toConnect()
@@ -271,7 +275,7 @@ class DeviceActivity : BaseActivity() {
                     initListview()
                 }
             },failure = fun(error: String) {
-                Logger.d("connect failure:${error}")
+                BleLogUtil.d(TAG,"connect failure:${error}")
                 runOnUiThread {
                     toDisConnect()
                 }
@@ -279,16 +283,16 @@ class DeviceActivity : BaseActivity() {
         } else {
             mMultipleBiomoduleBleManager.scanNearDeviceAndConnect(
                     fun() {
-                        Logger.d("scan succ")
+                        BleLogUtil.d(TAG,"scan succ")
                     },
                     fun(e: Exception) {
-                        Logger.d("scan error:${e}")
+                        BleLogUtil.d(TAG,"scan error:${e}")
                         runOnUiThread {
                             toDisConnect()
                         }
                     },
                     fun(mac: String) {
-                        Logger.d("connect succ shake succ" + mac)
+                        BleLogUtil.d(TAG,"connect succ shake succ" + mac)
                         runOnUiThread {
                             SettingManager.getInstance(this).isConnectBefore = true
                             toConnect()
@@ -297,7 +301,7 @@ class DeviceActivity : BaseActivity() {
                         }
                     },
                     fun(error: String) {
-                        Logger.d("connect failure:${error}")
+                        BleLogUtil.d(TAG,"connect failure:${error}")
                         runOnUiThread {
                             toDisConnect()
                         }

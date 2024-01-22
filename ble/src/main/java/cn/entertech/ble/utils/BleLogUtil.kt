@@ -1,8 +1,6 @@
 package cn.entertech.ble.utils
 
 import android.util.Log
-import com.orhanobut.logger.Logger
-import java.text.SimpleDateFormat
 
 /**
  * 蓝牙日志
@@ -24,8 +22,12 @@ object BleLogUtil {
         Log.i(tag, msg)
     }
 
-    fun e(tag: String, msg: String) {
-        Log.e(tag, msg)
+    fun w(tag: String, msg: String) {
+        Log.w(tag, msg)
+    }
+
+    fun e(tag: String, msg: String?) {
+        Log.e(tag, msg ?: "null")
     }
 
 }

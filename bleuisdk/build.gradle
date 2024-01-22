@@ -55,7 +55,6 @@ dependencies {
 //    implementation 'cn.entertech.android:biomoduleble:1.4.4-alpha01'
     implementation 'no.nordicsemi.android:dfu:1.11.0'
     implementation project(':ble')
-    implementation 'com.github.lupaulus:logger:2.3.2'
     implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
 }
 

@@ -16,9 +16,10 @@
 
 package cn.entertech.flowtimeble;
 
-import android.util.Log;
 
 import java.util.Arrays;
+
+import cn.entertech.ble.utils.BleLogUtil;
 
 public class HexDump {
     private final static char[] HEX_DIGITS = {
@@ -176,7 +177,7 @@ public class HexDump {
         } else {
             stringBuffer.append(hex.substring(0, 4));
         }
-        Log.d("###", "validate is " + stringBuffer.toString());
+        BleLogUtil.INSTANCE.d("###", "validate is " + stringBuffer.toString());
         return stringBuffer.toString();
     }
 
@@ -216,6 +217,7 @@ public class HexDump {
 
     /**
      * 字节数组转float
+     *
      * @param bytes
      * @return
      */
@@ -225,6 +227,7 @@ public class HexDump {
 
     /**
      * 字节数组转int
+     *
      * @param bytes
      * @return
      */
@@ -254,6 +257,7 @@ public class HexDump {
 
     /**
      * 合并字节数组
+     *
      * @param first
      * @param rest
      * @return

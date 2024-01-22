@@ -4,8 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import cn.entertech.ble.RxBleManager
 import cn.entertech.ble.utils.CharUtil.converUnchart
-import com.orhanobut.logger.Logger
-import java.util.concurrent.CopyOnWriteArrayList
 
 class FirmwareFixHelper constructor(var rxBleManager: RxBleManager) {
 

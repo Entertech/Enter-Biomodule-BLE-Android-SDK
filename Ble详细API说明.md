@@ -68,9 +68,9 @@ biomoduleBleManager.connectDevice(fun(mac: String) {
 
 ```kotlin
   biomoduleBleManager.scanMacAndConnect(mac, fun(mac: String) {
-    Logger.d("连接成功$mac")
+    BleLogUtil.d("连接成功$mac")
   }){msg->
-    Logger.d("连接失败")
+    BleLogUtil.d("连接失败")
   }
 ```
 
@@ -126,7 +126,7 @@ boolean isConnected = biomoduleBleManager.isConnected()
 
 ```kotlin
   var rawDataListener = fun(data:ByteArray){
-        Logger.d(Arrays.toString(data))
+        BleLogUtil.d(Arrays.toString(data))
   }
   biomoduleBleManager.addRawDataListener(rawDataListener)
 ```
@@ -179,7 +179,7 @@ biomoduleBleManager.removeRawDataListener(rawDataListener)
 
 ```kotlin
 var heartRateListener = fun(heartRate: Int) {
-    Logger.d("heart rate data is " + heartRate)
+    BleLogUtil.d("heart rate data is " + heartRate)
 }
 biomoduleBleManager.addHeartRateListener(heartRateListener)
 ```
@@ -218,7 +218,7 @@ biomoduleBleManager.removeHeartRateListener(heartRateListener)
 
 ```kotlin
 contactListener = fun(state: Int) {
-   Logger.d("Whether the wearing contact is good:"+ state == 0);
+   BleLogUtil.d("Whether the wearing contact is good:"+ state == 0);
 }
 biomoduleBleManager.addContactListener(contactListener)
     
@@ -258,7 +258,7 @@ biomoduleBleManager.removeContactListener(contactListener)
 
 ```kotlin
 var batteryListener = fun(byte: Byte) {
-   Logger.d("battery = $byte")
+   BleLogUtil.d("battery = $byte")
 }  
 biomoduleBleManager.addBatteryListener(batteryListener)
 ```
@@ -297,7 +297,7 @@ biomoduleBleManager.removeBatteryListener(batteryListener)
 
 ```kotlin
 var batteryVoltageListener = fun(voltage: Double) {
-   Logger.d("battery voltage = $voltage")
+   BleLogUtil.d("battery voltage = $voltage")
 }  
 biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
 ```
