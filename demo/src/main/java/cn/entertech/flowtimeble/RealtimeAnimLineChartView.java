@@ -13,7 +13,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -23,6 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
+
+import cn.entertech.ble.utils.BleLogUtil;
 
 
 public class RealtimeAnimLineChartView extends View {
@@ -218,7 +219,7 @@ public class RealtimeAnimLineChartView extends View {
     public synchronized void setData(int lineIndex, double data) {
         List<Double> sourceData = mSourceDataList.get(lineIndex);
         sourceData.add(data);
-        //  Log.d("cpTest11","mBuffer size "+mBuffer);
+        //  BleLogUtil.d("cpTest11","mBuffer size "+mBuffer);
         if (sourceData.size() > mBuffer) {
             for (int i = 0; i < sourceData.size() - mBuffer; i++) {
                 sourceData.remove(0);
@@ -352,7 +353,7 @@ public class RealtimeAnimLineChartView extends View {
                 continue;
             }
             mLinePathList.get(i).reset();
-//          Log.d("####", "draw data is " + drawData.toString());
+//          BleLogUtil.d("####", "draw data is " + drawData.toString());
             for (int j = 0; j < mScreenDataList.get(i).size(); j++) {
                 if (j == 0)
                     mLinePathList.get(i)
@@ -426,7 +427,7 @@ public class RealtimeAnimLineChartView extends View {
                 continue;
             }
             mLinePathList.get(i).reset();
-//        Log.d("####", "draw data is " + drawData.toString());
+//        BleLogUtil.d("####", "draw data is " + drawData.toString());
             for (int j = 0; j < mScreenSampleDataList.get(i).size(); j++) {
                 if (j == 0)
                     mLinePathList.get(i).moveTo(j * pointOffset,
@@ -489,7 +490,7 @@ public class RealtimeAnimLineChartView extends View {
     }
 
     void initRealData() {
-        Log.d("cpTest11", "mScreenPointCount " + mScreenPointCount);
+        BleLogUtil.INSTANCE.d("cpTest11", "mScreenPointCount " + mScreenPointCount);
         for (int i = 0; i < mRealDataList.size(); i++) {
             for (int j = 0; j < mScreenPointCount; j++) {
                 mRealDataList.get(i).add(0.0);

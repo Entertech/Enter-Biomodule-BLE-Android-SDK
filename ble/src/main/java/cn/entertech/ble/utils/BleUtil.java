@@ -1,20 +1,21 @@
 package cn.entertech.ble.utils;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Set;
 
 public class BleUtil {
+    @SuppressLint("MissingPermission")
     public static void removePairDevice() {
         try {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (mBluetoothAdapter != null) {
                 Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
                 for (BluetoothDevice device : bondedDevices) {
-                    if ("Flowtime".equals(device.getName())){
+                    if ("Flowtime".equals(device.getName())) {
                         unpairDevice(device);
                     }
                 }
@@ -30,7 +31,7 @@ public class BleUtil {
                     .getMethod("removeBond", (Class[]) null);
             m.invoke(device, (Object[]) null);
         } catch (Exception e) {
-            Log.e("BleUtil", e.getMessage());
+            BleLogUtil.INSTANCE.e("BleUtil", e.getMessage());
         }
     }
 }

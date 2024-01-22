@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import com.orhanobut.logger.Logger
+import cn.entertech.ble.utils.BleLogUtil
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -69,7 +68,7 @@ class ShowLogActivity : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                         if (logCacheList.size > 100) {
-                            Log.d("wk", "大于100了 ${logCacheList.size}")
+                            BleLogUtil.d("wk", "大于100了 ${logCacheList.size}")
                             sb.clear()
                             return@thread
                         }

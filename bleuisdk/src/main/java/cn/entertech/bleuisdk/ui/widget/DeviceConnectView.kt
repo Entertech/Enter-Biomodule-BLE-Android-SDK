@@ -9,10 +9,11 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import cn.entertech.ble.single.BiomoduleBleManager
+import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.bleuisdk.R
+import cn.entertech.bleuisdk.ui.activity.DeviceActivity
 import cn.entertech.bleuisdk.utils.getBatteryResId
-import com.orhanobut.logger.Logger
 
 class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet: AttributeSet? = null, def: Int = 0) :
     RelativeLayout(context, attributeSet, def) {
@@ -23,14 +24,18 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
         COLOR, WHITE
     }
 
+    companion object{
+        private const val TAG="DeviceConnectView"
+    }
+
     var connectListener = fun(str: String) {
-        Logger.d("connect success:${str}")
+        BleLogUtil.d(TAG,"connect success:${str}")
         BiomoduleBleManager.getInstance(context).readBattery(fun(napBattery: NapBattery) {
             (context as Activity).runOnUiThread {
                 image?.setImageResource(getBatteryResId(napBattery.percent, mIconType))
             }
         }, fun(error: String) {
-            Logger.d("connect error:${error}")
+            BleLogUtil.d(TAG,"connect error:${error}")
             (context as Activity).runOnUiThread {
                 image?.setImageResource(R.mipmap.ic_device_disconnect_color)
             }
@@ -38,7 +43,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
     }
 
     var disconnectListener = fun(str: String) {
-        Logger.d("disconnect:${str}")
+        BleLogUtil.d(TAG,"disconnect:${str}")
         (context as Activity).runOnUiThread {
             if (mIconType == IconType.COLOR) {
                 image?.setImageResource(R.mipmap.ic_device_disconnect_color)
@@ -78,7 +83,7 @@ class DeviceConnectView @JvmOverloads constructor(context: Context, attributeSet
                     image?.setImageResource(getBatteryResId(napBattery.percent, mIconType))
                 }
             }, fun(error: String) {
-                Logger.d("read battery error:${error}")
+                BleLogUtil.d(TAG,"read battery error:${error}")
                 (context as Activity).runOnUiThread {
                     if (mIconType == IconType.COLOR) {
                         image?.setImageResource(R.mipmap.ic_device_disconnect_color)

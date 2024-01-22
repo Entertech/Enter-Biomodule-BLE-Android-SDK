@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
