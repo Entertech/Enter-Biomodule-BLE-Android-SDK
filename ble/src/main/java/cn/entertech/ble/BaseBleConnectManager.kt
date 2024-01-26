@@ -359,6 +359,14 @@ abstract class BaseBleConnectManager constructor(context: Context) {
         }
     }
 
+    fun command(
+        byteArray: ByteArray,
+        success: () -> Unit = {},
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.command(byteArray, success, failure)
+    }
+
     /**
      * find connected device
      */
