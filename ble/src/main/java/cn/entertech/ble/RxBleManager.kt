@@ -40,10 +40,11 @@ class RxBleManager constructor(context: Context) {
     private val DURATION_OF_SORT: Long = 3000
     private val CONNECT_TASK_DELAY: Long = 1000
 
-    companion object{
+    companion object {
         val SCAN_TIMEOUT: Long = 20000
-        private const val TAG="RxBleManager"
+        private const val TAG = "RxBleManager"
     }
+
     init {
         rxBleClient = RxBleClient.create(context)
 
@@ -89,7 +90,7 @@ class RxBleManager constructor(context: Context) {
     }
 
 
-    fun getDevice():RxBleDevice?{
+    fun getDevice(): RxBleDevice? {
         return rxBleDevice
     }
 
@@ -129,8 +130,10 @@ class RxBleManager constructor(context: Context) {
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
-                                 successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+    fun scanNearDeviceAndConnect(
+        successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
+        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?
+    ) {
 
         BleUtil.removePairDevice()
         disConnect()
@@ -138,38 +141,39 @@ class RxBleManager constructor(context: Context) {
         var isScanSuccess = false
         var nearScanResult: ScanResult? = null
         scanNearSubscription = rxBleClient.scanBleDevices(
-                ScanSettings.Builder()
-                        .build(),
-                ScanFilter.Builder().setServiceUuid(ParcelUuid(UUID.fromString(NapBleDevice.NAPTIME.uuid)))
-                        .build()
+            ScanSettings.Builder()
+                .build(),
+            ScanFilter.Builder()
+                .setServiceUuid(ParcelUuid(UUID.fromString(NapBleDevice.NAPTIME.uuid)))
+                .build()
 
         ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
-                { scanResult ->
-                    if (null == nearScanResult || scanResult.rssi > nearScanResult!!.rssi) {
-                        nearScanResult = scanResult
-                    }
-                    if (System.currentTimeMillis() >= scanStartTime + DURATION_OF_SORT) {
-                        scanNearSubscription.dispose()
-                        if (!isScanSuccess) {
-                            isScanSuccess = true
-                            successScan?.invoke()
-                            Timer().schedule(CONNECT_TASK_DELAY) {
-                                handler.post {
-                                    if (null == scanResult) {
-                                        failure?.invoke("scan error 1")
-                                    } else {
-                                        connect(nearScanResult!!, successConnect, failure)
-                                    }
+            { scanResult ->
+                if (null == nearScanResult || scanResult.rssi > nearScanResult!!.rssi) {
+                    nearScanResult = scanResult
+                }
+                if (System.currentTimeMillis() >= scanStartTime + DURATION_OF_SORT) {
+                    scanNearSubscription.dispose()
+                    if (!isScanSuccess) {
+                        isScanSuccess = true
+                        successScan?.invoke()
+                        Timer().schedule(CONNECT_TASK_DELAY) {
+                            handler.post {
+                                if (null == scanResult) {
+                                    failure?.invoke("scan error 1")
+                                } else {
+                                    connect(nearScanResult!!, successConnect, failure)
                                 }
                             }
                         }
-                    }else{
-                        BleLogUtil.d(TAG,"smaller than DURATION_OF_SORT")
                     }
-                }, {
-            failScan?.invoke(it as Exception)
-            it.printStackTrace()
-        })
+                } else {
+                    BleLogUtil.d(TAG, "smaller than DURATION_OF_SORT")
+                }
+            }, {
+                failScan?.invoke(it as Exception)
+                it.printStackTrace()
+            })
     }
 
     fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
@@ -192,11 +196,16 @@ class RxBleManager constructor(context: Context) {
                 failure?.invoke("conn error:${throwable}")
             })
     }
+
     /**
      * connect device
      */
-    fun connect(scanResult: ScanResult, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
-        connect(scanResult.bleDevice,success,failure)
+    fun connect(
+        scanResult: ScanResult,
+        success: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
+    ) {
+        connect(scanResult.bleDevice, success, failure)
     }
 
 
@@ -208,6 +217,7 @@ class RxBleManager constructor(context: Context) {
     }
 
     private var isConnecting = false
+
     /**
      * connect device by mac address
      */
@@ -252,8 +262,8 @@ class RxBleManager constructor(context: Context) {
     /**
      * disconnect device
      */
-    fun disConnect(isForce:Boolean=false) {
-        BleLogUtil.d(TAG,"disConnect")
+    fun disConnect(isForce: Boolean = false) {
+        BleLogUtil.d(TAG, "disConnect")
         val isConnected = isConnected()
         subscription?.dispose()
         if (isConnected || isForce) {
@@ -293,6 +303,23 @@ class RxBleManager constructor(context: Context) {
         })
     }
 
+
+    /**
+     * write command
+     */
+    fun command(
+        bytes: ByteArray, success: (() -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        write(NapBleCharacter.CMD_DOWNLOAD.uuid, bytes, fun(characteristicValue) {
+            BleLogUtil.i(TAG, "succ command")
+            success?.invoke()
+        }, fun(errorMsg) {
+            BleLogUtil.i(TAG, "fail command")
+            failure?.invoke(errorMsg)
+        })
+    }
+
 //    /**
 //     * notify command
 //     */
@@ -325,7 +352,10 @@ class RxBleManager constructor(context: Context) {
     /**
      * notify battery voltage
      */
-    fun notifyBatteryVoltage(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+    fun notifyBatteryVoltage(
+        success: (Byte) -> Unit,
+        failure: ((String) -> Unit)? = null
+    ): Disposable? {
         return notify(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
@@ -390,7 +420,11 @@ class RxBleManager constructor(context: Context) {
     /**
      * read device info
      */
-    private fun readDeviceInfo(characterId: String, success: (String) -> Unit, failure: ((String) -> Unit)?) {
+    private fun readDeviceInfo(
+        characterId: String,
+        success: (String) -> Unit,
+        failure: ((String) -> Unit)?
+    ) {
         read(characterId, fun(bytes: ByteArray) {
             success.invoke(String(bytes, StandardCharsets.UTF_8))
         }, failure)
@@ -417,56 +451,65 @@ class RxBleManager constructor(context: Context) {
     fun read(characterId: String, success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
         rxBleConnection?.let {
             it.readCharacteristic(UUID.fromString(characterId))
-                    .subscribe(
-                            { characteristicValue ->
-                                success.invoke(characteristicValue)
-                            },
-                            { throwable ->
-                                // Handle an error here.
-                                BleLogUtil.i(TAG,"read error $throwable")
-                                failure?.invoke("read error $throwable")
-                            }
-                    )
+                .subscribe(
+                    { characteristicValue ->
+                        success.invoke(characteristicValue)
+                    },
+                    { throwable ->
+                        // Handle an error here.
+                        BleLogUtil.i(TAG, "read error $throwable")
+                        failure?.invoke("read error $throwable")
+                    }
+                )
         }
     }
 
     /**
      * write characteristic
      */
-    private fun write(characterId: String, bytes: ByteArray, success: ((ByteArray) -> Unit)? = null, failure: ((String) -> Unit)?) {
+    private fun write(
+        characterId: String,
+        bytes: ByteArray,
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)?
+    ) {
         rxBleConnection?.let {
             it.writeCharacteristic(UUID.fromString(characterId), bytes)
-                    .subscribe(
-                            { characteristicValue ->
-                                success?.invoke(characteristicValue)
-                            },
-                            { throwable ->
-                                // Handle an error here.
-                                BleLogUtil.i(TAG,"write error $throwable")
-                                failure?.invoke("write error")
-                            }
-                    )
+                .subscribe(
+                    { characteristicValue ->
+                        success?.invoke(characteristicValue)
+                    },
+                    { throwable ->
+                        // Handle an error here.
+                        BleLogUtil.i(TAG, "write error $throwable")
+                        failure?.invoke("write error")
+                    }
+                )
         }
     }
 
     /**
      * notify characteristic
      */
-    private fun notify(characterId: String, success: (ByteArray) -> Unit, failure: ((String) -> Unit)?): Disposable? {
-        BleLogUtil.d(TAG,"notify characterId ${characterId}")
+    private fun notify(
+        characterId: String,
+        success: (ByteArray) -> Unit,
+        failure: ((String) -> Unit)?
+    ): Disposable? {
+        BleLogUtil.d(TAG, "notify characterId ${characterId}")
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
-                    .flatMap({ notificationObservable -> notificationObservable })
-                    .subscribe(
-                            { characteristicValue ->
-                                success.invoke(characteristicValue)
-                            },
-                            { throwable ->
-                                // Handle an error here.
-                                BleLogUtil.d(TAG,"notify characterId  error $throwable ")
-                                failure?.invoke("notify error")
-                            }
-                    )
+                .flatMap({ notificationObservable -> notificationObservable })
+                .subscribe(
+                    { characteristicValue ->
+                        success.invoke(characteristicValue)
+                    },
+                    { throwable ->
+                        // Handle an error here.
+                        BleLogUtil.d(TAG, "notify characterId  error $throwable ")
+                        failure?.invoke("notify error")
+                    }
+                )
 
         }
     }

@@ -3,11 +3,16 @@ package cn.entertech.ble.utils
 /**
  * Created by EnterTech on 2017/10/27.
  */
-
+/**
+ * 广播
+ * */
 enum class NapBleDevice(val uuid: String) {
     NAPTIME("0000FF10-1212-abcd-1523-785feabcd123")
 }
 
+/**
+ * 广播服务 可以找到对应的[NapBleCharacter]
+ * */
 enum class NapBleService(val uuid: String) {
     CONNECT    ("0000FF10-1212-abcd-1523-785feabcd123"),
     COMMAND    ("0000FF20-1212-abcd-1523-785feabcd123"),
