@@ -36,7 +36,7 @@ class RxBleManager constructor(context: Context) {
     private var handlerThread: HandlerThread
     private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
-    private lateinit var scanSubscription: Disposable
+    private var scanSubscription: Disposable?=null
     private val DURATION_OF_SORT: Long = 3000
     private val CONNECT_TASK_DELAY: Long = 1000
 
@@ -244,9 +244,10 @@ class RxBleManager constructor(context: Context) {
                             handler.post {
                                 if (null == scanResult) {
                                     failure?.invoke("scan error 1")
+                                    scanSubscription?.dispose()
                                     isConnecting = false
                                 } else {
-                                    scanSubscription.dispose()
+                                    scanSubscription?.dispose()
                                     connect(scanResult, success, failure)
                                 }
                             }
@@ -254,6 +255,7 @@ class RxBleManager constructor(context: Context) {
                     }
                 }, {
                     isConnecting = false
+                    scanSubscription?.dispose()
                     it.printStackTrace()
                     failure?.invoke("scan error")
                 })

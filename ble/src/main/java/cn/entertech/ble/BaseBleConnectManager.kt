@@ -107,7 +107,10 @@ abstract class BaseBleConnectManager constructor(context: Context) {
                     skinConductivityServiceListener.forEach { listener ->
                         listener(it)
                     }
-                    FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it)
+                    FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it){
+                        rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT)
+                        rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT)
+                    }
                     rawDataListeners.forEach { listener ->
                         listener.invoke(it)
                     }
