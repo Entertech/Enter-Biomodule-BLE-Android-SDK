@@ -7,7 +7,7 @@ import cn.entertech.ble.uid.property.BluetoothProperty
 
 interface IEegService {
 
-    fun addEegService(deviceUuidBean:DeviceUuidBean?) {
+    fun addEegService(deviceUuidBean: DeviceUuidBean?) {
         val eegService =
             BluetoothService(BleUUIDConstants.UUID_0000FF30_1212_ABCD_1523_785FEABCD123)
         eegService.addCharacteristic(
@@ -26,4 +26,22 @@ interface IEegService {
         )
         deviceUuidBean?.addService(BleServiceConstants.BLE_SERVICE_UUID_EEG, eegService)
     }
+
+
+    fun getCharacteristicEEGUUid(): String
+
+    fun getCharacteristicEEGUUid(deviceUuidBean: DeviceUuidBean?): String {
+        return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_EEG)
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_EEG_DATA)
+            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+    }
+
+
+    fun getCharacteristicContactDateMacUUid(deviceUuidBean: DeviceUuidBean?): String {
+        return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_EEG)
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_CONTACT_DATA)
+            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+    }
+
+    fun getCharacteristicContactDateMacUUid(): String
 }

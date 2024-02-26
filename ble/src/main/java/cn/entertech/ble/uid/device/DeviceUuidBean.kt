@@ -16,4 +16,5 @@ class DeviceUuidBean(val uuid: String) {
     fun getDeviceInfoService(): BluetoothService? =
         map[BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION]
 
+    fun getService(serviceName: String): BluetoothService? = map[serviceName]
 }

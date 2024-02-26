@@ -19,4 +19,13 @@ interface IHrsService {
         )
         deviceUuidBean?.addService(BleServiceConstants.BLE_SERVICE_UUID_HRS, hrsService)
     }
+
+
+    fun getCharacteristicHrUUid(): String
+
+    fun getCharacteristicHrUUid(deviceUuidBean: DeviceUuidBean?): String {
+        return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_HRS)
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_HRS_DATA)
+            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+    }
 }

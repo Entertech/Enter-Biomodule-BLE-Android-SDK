@@ -21,4 +21,12 @@ interface IBatteryService {
         deviceUuidBean?.addService(BleServiceConstants.BLE_SERVICE_UUID_BATTERY, batteryService)
 
     }
+
+    fun getCharacteristicBatteryLevelUUid(): String
+
+    fun getCharacteristicBatteryLevelUUid(deviceUuidBean: DeviceUuidBean?): String {
+        return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_BATTERY)
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_BATTERY_LEVEL)
+            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+    }
 }

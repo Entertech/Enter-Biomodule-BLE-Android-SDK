@@ -24,43 +24,31 @@ object HeadbandUidManage : BaseBleDeviceUidManage(),
         return BleUUIDConstants.UUID_0000FF10_1212_ABCD_1523_785FEABCD123
     }
 
-    override fun getDeviceManufacturerUuid(): String {
-        return "00002A29-0000-1000-8000-00805F9B34FB"
-    }
-
-    override fun getCharacteristicCommandDownload(): String {
-        return "0000FF21-1212-abcd-1523-785feabcd123"
-    }
-
     override fun getCharacteristicBatteryLevelUUid(): String {
-        return "00002A19-0000-1000-8000-00805F9B34FB"
-    }
-
-    override fun getCharacteristicHrUUid(): String {
-        return "0000FF51-1212-abcd-1523-785feabcd123"
+        if (deviceUuidBean == null) {
+            initDeviceUuidBean()
+        }
+        return getCharacteristicBatteryLevelUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicEEGUUid(): String {
-        return "0000FF31-1212-abcd-1523-785feabcd123"
-    }
-
-    override fun getCharacteristicDeviceSerialUUid(): String {
-        return "00002A25-0000-1000-8000-00805F9B34FB"
-    }
-
-    override fun getCharacteristicDeviceFirmwareUUid(): String {
-        return "00002A26-0000-1000-8000-00805F9B34FB"
-    }
-
-    override fun getCharacteristicDeviceHardwareUUid(): String {
-        return "00002A27-0000-1000-8000-00805F9B34FB"
-    }
-
-    override fun getCharacteristicDeviceMacUUid(): String {
-        return "00002A24-0000-1000-8000-00805F9B34FB"
+        if (deviceUuidBean == null) {
+            initDeviceUuidBean()
+        }
+        return getCharacteristicEEGUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicContactDateMacUUid(): String {
-        return "0000FF32-1212-abcd-1523-785feabcd123"
+        if (deviceUuidBean == null) {
+            initDeviceUuidBean()
+        }
+        return getCharacteristicContactDateMacUUid(deviceUuidBean)
+    }
+
+    override fun getCharacteristicHrUUid(): String {
+        if (deviceUuidBean == null) {
+            initDeviceUuidBean()
+        }
+        return getCharacteristicHrUUid(deviceUuidBean)
     }
 }

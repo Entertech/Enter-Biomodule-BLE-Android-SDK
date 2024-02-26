@@ -6,6 +6,9 @@ import android.os.HandlerThread
 import android.os.ParcelUuid
 import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
 import cn.entertech.ble.uid.device.headband.HeadbandUidManage
+import cn.entertech.ble.uid.service.IBatteryService
+import cn.entertech.ble.uid.service.IEegService
+import cn.entertech.ble.uid.service.IHrsService
 import cn.entertech.ble.utils.*
 import cn.entertech.ble.utils.CharUtil.converUnchart
 import com.polidea.rxandroidble2.RxBleClient
@@ -37,23 +40,23 @@ class RxBleManager constructor(
     private var rxBleDevice: RxBleDevice? = null
     private var subscription: Disposable? = null
     private var rxBleConnection: RxBleConnection? = null
-    private var isShakeHandPassed = false
     private var handlerThread: HandlerThread
     private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
     private var scanSubscription: Disposable? = null
-
+    private val disConnectListeners = mutableListOf<(String) -> Unit>()
+    private val connectListeners = mutableListOf<(String) -> Unit>()
+    private var isConnecting = false
 
     companion object {
-        val SCAN_TIMEOUT: Long = 20000
+        const val SCAN_TIMEOUT: Long = 20000
         private const val TAG = "RxBleManager"
-        private val DURATION_OF_SORT: Long = 3000
-        private val CONNECT_TASK_DELAY: Long = 1000
+        private const val DURATION_OF_SORT: Long = 3000
+        private const val CONNECT_TASK_DELAY: Long = 1000
     }
 
     init {
         rxBleClient = RxBleClient.create(context)
-
         handlerThread = HandlerThread("shake_hand")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
@@ -61,28 +64,45 @@ class RxBleManager constructor(
             if (error is UndeliverableException && error.cause is BleException) {
                 return@setErrorHandler // ignore BleExceptions as they were surely delivered at least once
             }
-            // add other custom handlers if needed
             throw error
         }
     }
-//
-//    companion object {
-//        @Volatile
-//        private var instance: RxBleManager? = null
-//
-//        fun getInstance(context: Context): RxBleManager {
-//            if (instance == null) {
-//                synchronized(RxBleManager::class) {
-//                    if (instance == null) {
-//                        instance = RxBleManager(context.applicationContext)
-//                    }
-//                }
-//            }
-//
-//            return instance!!
-//        }
-//    }
 
+
+    /**
+     * is device connecting
+     */
+    fun isConnecting(): Boolean {
+        return isConnecting
+    }
+
+    /**
+     * add device disconnect listener
+     */
+    fun addDisConnectListener(listener: (String) -> Unit) {
+        disConnectListeners.add(listener)
+    }
+
+    /**
+     * remove device disconnect listener
+     */
+    fun removeDisConnectListener(listener: (String) -> Unit) {
+        disConnectListeners.remove(listener)
+    }
+
+    /**
+     * add device connect listener
+     */
+    fun addConnectListener(listener: (String) -> Unit) {
+        connectListeners.add(listener)
+    }
+
+    /**
+     * remove device connect listener
+     */
+    fun removeConnectListener(listener: (String) -> Unit) {
+        connectListeners.remove(listener)
+    }
 
     /**
      * is device connected
@@ -214,16 +234,6 @@ class RxBleManager constructor(
         connect(scanResult.bleDevice, success, failure)
     }
 
-
-    /**
-     * is device connecting
-     */
-    fun isConnecting(): Boolean {
-        return isConnecting
-    }
-
-    private var isConnecting = false
-
     /**
      * connect device by mac address
      */
@@ -336,16 +346,22 @@ class RxBleManager constructor(
      * read battery
      */
     fun readBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)?) {
-        read(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
+        if (uidManage is IBatteryService) {
+            read(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
 //            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
-            success.invoke(bytes[0])
-        }, failure)
+                success.invoke(bytes[0])
+            }, failure)
+        }
+
     }
 
     /**
      * notify battery
      */
     fun notifyBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+        if (uidManage !is IBatteryService) {
+            return null
+        }
         return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
@@ -359,6 +375,9 @@ class RxBleManager constructor(
         success: (Byte) -> Unit,
         failure: ((String) -> Unit)? = null
     ): Disposable? {
+        if (uidManage !is IBatteryService) {
+            return null
+        }
         return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
@@ -369,6 +388,9 @@ class RxBleManager constructor(
      * notify heart rate
      */
     fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+        if (uidManage !is IHrsService) {
+            return null
+        }
         return notify(uidManage.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
             if (bytes.isNotEmpty()) {
                 success.invoke(converUnchart(bytes[0]))
@@ -382,6 +404,9 @@ class RxBleManager constructor(
      * notify brain
      */
     fun notifyBrainWave(onNotify: (ByteArray) -> Unit): Disposable? {
+        if (uidManage !is IEegService) {
+            return null
+        }
         return notify(uidManage.getCharacteristicEEGUUid(), onNotify, null)
     }
 
@@ -434,6 +459,9 @@ class RxBleManager constructor(
     }
 
     fun readBattery(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
+        if (uidManage !is IBatteryService) {
+            return
+        }
         read(uidManage.getCharacteristicBatteryLevelUUid(), success, failure)
     }
 
@@ -491,14 +519,14 @@ class RxBleManager constructor(
         BleLogUtil.d(TAG, "notify characterId ${characterId}")
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
-                .flatMap({ notificationObservable -> notificationObservable })
+                .flatMap { notificationObservable -> notificationObservable }
                 .subscribe(
                     { characteristicValue ->
                         success.invoke(characteristicValue)
                     },
                     { throwable ->
                         // Handle an error here.
-                        BleLogUtil.d(TAG, "notify characterId  error $throwable ")
+                        BleLogUtil.e(TAG, "notify characterId  error $throwable ")
                         failure?.invoke("notify error")
                     }
                 )
@@ -510,42 +538,13 @@ class RxBleManager constructor(
      * notify contact
      */
     fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
+        if (uidManage !is IEegService) {
+            return null
+        }
         return notify(uidManage.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
 //            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
             onNotify.invoke(converUnchart(bytes[0]))
         }, null)
-    }
-
-
-    val disConnectListeners = mutableListOf<(String) -> Unit>()
-    val connectListeners = mutableListOf<(String) -> Unit>()
-
-    /**
-     * add device disconnect listener
-     */
-    fun addDisConnectListener(listener: (String) -> Unit) {
-        disConnectListeners.add(listener)
-    }
-
-    /**
-     * remove device disconnect listener
-     */
-    fun removeDisConnectListener(listener: (String) -> Unit) {
-        disConnectListeners.remove(listener)
-    }
-
-    /**
-     * add device connect listener
-     */
-    fun addConnectListener(listener: (String) -> Unit) {
-        connectListeners.add(listener)
-    }
-
-    /**
-     * remove device connect listener
-     */
-    fun removeConnectListener(listener: (String) -> Unit) {
-        connectListeners.remove(listener)
     }
 
 }

@@ -22,5 +22,7 @@ class BluetoothService(val uuid: String) {
     fun getDeviceManufacturer(): BluetoothCharacteristic? =
         characteristics[BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_MANUFACTURER_NAME_STRING]
 
+    fun getCharacteristic(characteristicName: String): BluetoothCharacteristic? =
+        characteristics[characteristicName]
 
 }
