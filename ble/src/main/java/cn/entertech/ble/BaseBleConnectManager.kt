@@ -10,7 +10,6 @@ import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.ByteArrayBean
 import cn.entertech.ble.utils.FirmwareFixHelper
 import cn.entertech.ble.utils.NapBattery
-import cn.entertech.ble.utils.NapBleCharacter
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -107,7 +106,7 @@ abstract class BaseBleConnectManager constructor(context: Context) {
                     skinConductivityServiceListener.forEach { listener ->
                         listener(it)
                     }
-                    FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it){
+                    FirmwareFixHelper.getInstance(rxBleManager).fixFirmware(it) {
                         rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT)
                         rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT)
                     }
@@ -557,7 +556,7 @@ abstract class BaseBleConnectManager constructor(context: Context) {
 
     //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
+        rxBleManager.readBattery(fun(bytes: ByteArray) {
             castBattery(bytes[0], success, failure)
         }, failure)
     }

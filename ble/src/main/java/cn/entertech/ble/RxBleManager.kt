@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.ParcelUuid
+import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
+import cn.entertech.ble.uid.device.headband.HeadbandUidManage
 import cn.entertech.ble.utils.*
 import cn.entertech.ble.utils.CharUtil.converUnchart
 import com.polidea.rxandroidble2.RxBleClient
@@ -26,7 +28,10 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by EnterTech on 2017/10/30.
  */
-class RxBleManager constructor(context: Context) {
+class RxBleManager constructor(
+    context: Context,
+    private val uidManage: BaseBleDeviceUidManage = HeadbandUidManage
+) {
 
     private var rxBleClient: RxBleClient
     private var rxBleDevice: RxBleDevice? = null
@@ -36,13 +41,14 @@ class RxBleManager constructor(context: Context) {
     private var handlerThread: HandlerThread
     private var handler: Handler
     private lateinit var scanNearSubscription: Disposable
-    private var scanSubscription: Disposable?=null
-    private val DURATION_OF_SORT: Long = 3000
-    private val CONNECT_TASK_DELAY: Long = 1000
+    private var scanSubscription: Disposable? = null
+
 
     companion object {
         val SCAN_TIMEOUT: Long = 20000
         private const val TAG = "RxBleManager"
+        private val DURATION_OF_SORT: Long = 3000
+        private val CONNECT_TASK_DELAY: Long = 1000
     }
 
     init {
@@ -144,7 +150,7 @@ class RxBleManager constructor(context: Context) {
             ScanSettings.Builder()
                 .build(),
             ScanFilter.Builder()
-                .setServiceUuid(ParcelUuid(UUID.fromString(NapBleDevice.NAPTIME.uuid)))
+                .setServiceUuid(ParcelUuid(UUID.fromString(uidManage.getBroadcastUUid())))
                 .build()
 
         ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
@@ -296,13 +302,17 @@ class RxBleManager constructor(context: Context) {
         success: ((ByteArray) -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
-        write(NapBleCharacter.CMD_DOWNLOAD.uuid, command.value, fun(characteristicValue) {
-            BleLogUtil.i(TAG, "succ command")
-            success?.invoke(characteristicValue)
-        }, fun(errorMsg) {
-            BleLogUtil.i(TAG, "fail command")
-            failure?.invoke(errorMsg)
-        })
+        write(
+            uidManage.getCharacteristicCommandDownload(),
+            command.value,
+            fun(characteristicValue) {
+                BleLogUtil.i(TAG, "succ command")
+                success?.invoke(characteristicValue)
+            },
+            fun(errorMsg) {
+                BleLogUtil.i(TAG, "fail command")
+                failure?.invoke(errorMsg)
+            })
     }
 
 
@@ -313,7 +323,7 @@ class RxBleManager constructor(context: Context) {
         bytes: ByteArray, success: (() -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
-        write(NapBleCharacter.CMD_DOWNLOAD.uuid, bytes, fun(characteristicValue) {
+        write(uidManage.getCharacteristicCommandDownload(), bytes, fun(characteristicValue) {
             BleLogUtil.i(TAG, "succ command")
             success?.invoke()
         }, fun(errorMsg) {
@@ -322,20 +332,11 @@ class RxBleManager constructor(context: Context) {
         })
     }
 
-//    /**
-//     * notify command
-//     */
-//    fun notifyCommand(command: (Command) -> Unit) {
-//        notify(NapBleCharacter.CMD_UPLOAD.uuid, fun(bytes: ByteArray) {
-//
-//        }, null)
-//    }
-
     /**
      * read battery
      */
     fun readBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)?) {
-        read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
+        read(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
 //            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
             success.invoke(bytes[0])
         }, failure)
@@ -345,7 +346,7 @@ class RxBleManager constructor(context: Context) {
      * notify battery
      */
     fun notifyBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        return notify(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
+        return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
     }
@@ -358,7 +359,7 @@ class RxBleManager constructor(context: Context) {
         success: (Byte) -> Unit,
         failure: ((String) -> Unit)? = null
     ): Disposable? {
-        return notify(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
+        return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
     }
@@ -368,7 +369,7 @@ class RxBleManager constructor(context: Context) {
      * notify heart rate
      */
     fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        return notify(NapBleCharacter.HEART_RATE.uuid, fun(bytes: ByteArray) {
+        return notify(uidManage.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
             if (bytes.isNotEmpty()) {
                 success.invoke(converUnchart(bytes[0]))
             } else {
@@ -381,42 +382,42 @@ class RxBleManager constructor(context: Context) {
      * notify brain
      */
     fun notifyBrainWave(onNotify: (ByteArray) -> Unit): Disposable? {
-        return notify(NapBleCharacter.EEG_DATA.uuid, onNotify, null)
+        return notify(uidManage.getCharacteristicEEGUUid(), onNotify, null)
     }
 
     /**
      * read device serial
      */
     fun readDeviceSerial(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(NapBleCharacter.DEVICE_SERIAL.uuid, success, failure)
+        readDeviceInfo(uidManage.getCharacteristicDeviceSerialUUid(), success, failure)
     }
 
     /**
      * read device firmware
      */
     fun readDeviceFirmware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(NapBleCharacter.DEVICE_FIRMWARE.uuid, success, failure)
+        readDeviceInfo(uidManage.getCharacteristicDeviceFirmwareUUid(), success, failure)
     }
 
     /**
      * read device hardware
      */
     fun readDeviceHardware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(NapBleCharacter.DEVICE_HARDWARE.uuid, success, failure)
+        readDeviceInfo(uidManage.getCharacteristicDeviceHardwareUUid(), success, failure)
     }
 
     /**
      * read device manufacturer
      */
     fun readDeviceManufacturer(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(NapBleCharacter.DEVICE_MANUFACTURER.uuid, success, failure)
+        readDeviceInfo(uidManage.getDeviceManufacturerUuid(), success, failure)
     }
 
     /**
      * read device mac
      */
     fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(NapBleCharacter.DEVICE_MAC.uuid, success, failure)
+        readDeviceInfo(uidManage.getCharacteristicDeviceMacUUid(), success, failure)
     }
 
     /**
@@ -432,20 +433,9 @@ class RxBleManager constructor(context: Context) {
         }, failure)
     }
 
-//    //write DFU command
-//    fun writeDFU(data: ByteArray, callback: BleCharacterCallback) {
-//        bleManager.writeDevice(NapBleService.DFU.uuid, NapBleCharacter.DFU_CTRL.uuid, data, callback)
-//    }
-//
-//    //notify DFU
-//    fun notifyDFU(callback: BleCharacterCallback) {
-//        bleManager.notify(NapBleService.DFU.uuid, NapBleCharacter.DFU_CTRL.uuid, callback)
-//    }
-//
-//    //write no response
-//    fun write(data: ByteArray) {
-//        bleManager.writeDevice(NapBleService.DFU.uuid, NapBleCharacter.DFU_PKT.uuid, data, null)
-//    }
+    fun readBattery(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
+        read(uidManage.getCharacteristicBatteryLevelUUid(), success, failure)
+    }
 
     /**
      * read characteristic
@@ -520,7 +510,7 @@ class RxBleManager constructor(context: Context) {
      * notify contact
      */
     fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
-        return notify(NapBleCharacter.CONTACT_DATE.uuid, fun(bytes: ByteArray) {
+        return notify(uidManage.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
 //            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
             onNotify.invoke(converUnchart(bytes[0]))
         }, null)
