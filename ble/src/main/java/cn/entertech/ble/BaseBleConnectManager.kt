@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
+import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
 import cn.entertech.ble.utils.BatteryUtil
 import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.ByteArrayBean
@@ -16,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 /**
  * 单设备
  * */
-abstract class BaseBleConnectManager constructor(context: Context) {
+abstract class BaseBleConnectManager constructor(context: Context,uuidManage: BaseBleDeviceUidManage) {
     private val rxBleManager: RxBleManager
     private var handler: Handler
     private var handlerThread: HandlerThread
@@ -37,7 +38,7 @@ abstract class BaseBleConnectManager constructor(context: Context) {
 
 
     init {
-        rxBleManager = RxBleManager(context)
+        rxBleManager = RxBleManager(context,uuidManage)
         handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
@@ -289,6 +290,11 @@ abstract class BaseBleConnectManager constructor(context: Context) {
                     successConnect?.invoke(it)
                 }, failure, filter)
             }
+
+            ConnectionBleStrategy.CONNECT_DEVICE_MAC->{
+
+            }
+
         }
     }
 

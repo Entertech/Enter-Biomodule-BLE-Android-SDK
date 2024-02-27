@@ -1,18 +1,16 @@
 package cn.entertech.ble.multiple
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
 import cn.entertech.ble.BaseBleConnectManager
-import cn.entertech.ble.ConnectionBleStrategy
-import cn.entertech.ble.RxBleManager
-import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
-import cn.entertech.ble.utils.*
-import io.reactivex.disposables.Disposable
-import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.Exception
+import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
+import cn.entertech.ble.uid.device.headband.HeadbandUidManage
 
 /**
  * 多设备
  * */
-class MultipleBiomoduleBleManager constructor(context: Context):BaseBleConnectManager(context)
+class MultipleBiomoduleBleManager constructor(
+    context: Context,
+    uuidManager: BaseBleDeviceUidManage
+) : BaseBleConnectManager(context, uuidManager) {
+    constructor(context: Context) : this(context, HeadbandUidManage)
+}

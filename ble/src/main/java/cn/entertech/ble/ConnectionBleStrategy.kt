@@ -7,9 +7,12 @@ package cn.entertech.ble
  *
  * 连接已配对设备方式 [CONNECT_BONDED]
  * */
-enum class ConnectionBleStrategy(val flag:Int) {
+enum class ConnectionBleStrategy(val flag: Int) {
     /**连接设备方式-扫描 高信号 设备*/
     SCAN_AND_CONNECT_HIGH_SIGNAL(0),
+
+    CONNECT_DEVICE_MAC(2),
+
     /**
      * 连接已配对的设备
      * */
@@ -24,7 +27,7 @@ enum class ConnectionBleStrategy(val flag:Int) {
         map
     }
 
-    fun getConnectionBleStrategy(flag: Int): ConnectionBleStrategy = strategyMap[flag]?:this
+    fun getConnectionBleStrategy(flag: Int): ConnectionBleStrategy = strategyMap[flag] ?: this
 
 
 }

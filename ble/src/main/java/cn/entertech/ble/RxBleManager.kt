@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
  */
 class RxBleManager constructor(
     context: Context,
-    private val uidManage: BaseBleDeviceUidManage = HeadbandUidManage
+    private val uidManage: BaseBleDeviceUidManage
 ) {
 
     private var rxBleClient: RxBleClient
@@ -200,6 +200,10 @@ class RxBleManager constructor(
                 failScan?.invoke(it as Exception)
                 it.printStackTrace()
             })
+    }
+
+    fun stopScan(){
+        scanNearSubscription.dispose()
     }
 
     fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
