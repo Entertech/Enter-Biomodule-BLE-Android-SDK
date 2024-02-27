@@ -4,6 +4,7 @@ import cn.entertech.ble.uid.BleUUIDConstants
 import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.service.IBatteryService
+import cn.entertech.ble.uid.service.IDufService
 import cn.entertech.ble.uid.service.IEegService
 import cn.entertech.ble.uid.service.IHrsService
 
@@ -11,13 +12,14 @@ import cn.entertech.ble.uid.service.IHrsService
  * 头环
  * */
 object HeadbandUidManage : BaseBleDeviceUidManage(),
-    IHrsService, IBatteryService, IEegService {
+    IHrsService, IBatteryService, IEegService, IDufService {
 
     override fun initDeviceUuidBean(deviceUuidBean: DeviceUuidBean) {
         super.initDeviceUuidBean(deviceUuidBean)
         addHrsService(deviceUuidBean)
         addBatteryService(deviceUuidBean)
         addEegService(deviceUuidBean)
+        addDufService(deviceUuidBean)
     }
 
     override fun getBroadcastUUid(): String {
