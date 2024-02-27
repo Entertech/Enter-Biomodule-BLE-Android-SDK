@@ -2,6 +2,7 @@ package cn.entertech.ble.uid.device.headband
 
 import cn.entertech.ble.uid.BleUUIDConstants
 import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
+import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.service.IBatteryService
 import cn.entertech.ble.uid.service.IEegService
 import cn.entertech.ble.uid.service.IHrsService
@@ -12,9 +13,8 @@ import cn.entertech.ble.uid.service.IHrsService
 object HeadbandUidManage : BaseBleDeviceUidManage(),
     IHrsService, IBatteryService, IEegService {
 
-
-    override fun initDeviceUuidBean() {
-        super.initDeviceUuidBean()
+    override fun initDeviceUuidBean(deviceUuidBean: DeviceUuidBean) {
+        super.initDeviceUuidBean(deviceUuidBean)
         addHrsService(deviceUuidBean)
         addBatteryService(deviceUuidBean)
         addEegService(deviceUuidBean)
@@ -25,30 +25,18 @@ object HeadbandUidManage : BaseBleDeviceUidManage(),
     }
 
     override fun getCharacteristicBatteryLevelUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return getCharacteristicBatteryLevelUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicEEGUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return getCharacteristicEEGUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicContactDateMacUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return getCharacteristicContactDateMacUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicHrUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return getCharacteristicHrUUid(deviceUuidBean)
     }
 }

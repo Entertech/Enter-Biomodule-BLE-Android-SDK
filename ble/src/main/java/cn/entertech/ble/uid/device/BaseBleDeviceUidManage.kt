@@ -10,9 +10,13 @@ import cn.entertech.ble.uid.service.BluetoothService
 /**
  * 蓝牙设备 uid 管理类
  * */
-abstract class BaseBleDeviceUidManage {
+abstract class BaseBleDeviceUidManage() {
 
-    protected var deviceUuidBean: DeviceUuidBean? = null
+    protected val deviceUuidBean by lazy {
+        val deviceUuidBean = DeviceUuidBean(getBroadcastUUid())
+        initDeviceUuidBean(deviceUuidBean)
+        deviceUuidBean
+    }
 
     /**
      * 获取广播uuid
@@ -20,14 +24,13 @@ abstract class BaseBleDeviceUidManage {
      * */
     abstract fun getBroadcastUUid(): String
 
-    protected open fun initDeviceUuidBean() {
-        deviceUuidBean = DeviceUuidBean(getBroadcastUUid())
-        addDeviceInfoService()
-        addDufService()
-        addCommandService()
+    protected open fun initDeviceUuidBean(deviceUuidBean: DeviceUuidBean) {
+        addDeviceInfoService(deviceUuidBean)
+        addDufService(deviceUuidBean)
+        addCommandService(deviceUuidBean)
     }
 
-    private fun addDeviceInfoService() {
+    private fun addDeviceInfoService(deviceUuidBean: DeviceUuidBean) {
         val deviceInfoService =
             BluetoothService(BleUUIDConstants.UUID_0000180A_0000_1000_8000_00805F9B34FB)
         deviceInfoService.apply {
@@ -79,7 +82,7 @@ abstract class BaseBleDeviceUidManage {
         )
     }
 
-    private fun addCommandService() {
+    private fun addCommandService(deviceUuidBean: DeviceUuidBean) {
         val commandService =
             BluetoothService(BleUUIDConstants.UUID_0000FF20_1212_ABCD_1523_785FEABCD123)
         commandService.addCharacteristic(
@@ -97,7 +100,7 @@ abstract class BaseBleDeviceUidManage {
 
     }
 
-    private fun addDufService() {
+    private fun addDufService(deviceUuidBean: DeviceUuidBean) {
         val dufService =
             BluetoothService(BleUUIDConstants.UUID_0000FF40_1212_ABCD_1523_785FEABCD123)
         dufService.apply {
@@ -126,54 +129,37 @@ abstract class BaseBleDeviceUidManage {
      * 制造商信息：公司ID+自定义数据
      * */
     fun getDeviceManufacturerUuid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_MANUFACTURER_NAME_STRING)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 
     fun getCharacteristicDeviceSerialUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_SERIAL_NUMBER_STRING)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 
     fun getCharacteristicDeviceFirmwareUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
+
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_FIRMWARE_REVISION_STRING)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 
     fun getCharacteristicDeviceHardwareUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_HARDWARE_REVISION_STRING)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 
     fun getCharacteristicDeviceMacUUid(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_UUID_MODEL_NUMBER_STRING_CHAR)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 
     fun getCharacteristicCommandDownload(): String {
-        if (deviceUuidBean == null) {
-            initDeviceUuidBean()
-        }
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_COMMAND)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_COMMAND_DOWNLOAD)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
