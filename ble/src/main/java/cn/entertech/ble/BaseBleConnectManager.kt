@@ -562,7 +562,7 @@ abstract class BaseBleConnectManager constructor(context: Context,uuidManage: Ba
 
     //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readBattery(fun(bytes: ByteArray) {
+        rxBleManager.readBatteryByteArray(fun(bytes: ByteArray) {
             castBattery(bytes[0], success, failure)
         }, failure)
     }

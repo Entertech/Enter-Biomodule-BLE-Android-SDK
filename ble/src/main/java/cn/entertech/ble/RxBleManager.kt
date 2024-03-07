@@ -462,7 +462,7 @@ class RxBleManager constructor(
         }, failure)
     }
 
-    fun readBattery(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
+    fun readBatteryByteArray(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
         if (uidManage !is IBatteryService) {
             return
         }
