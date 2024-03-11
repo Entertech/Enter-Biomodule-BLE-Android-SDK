@@ -8,11 +8,11 @@ object Firmware255FixHelper:BaseFirmwareFixStrategy() {
 
     private const val TAG = "Firmware255FixHelper"
 
-    private val targetSubInt by lazy {
+    private val targetSub by lazy {
         listOf(255, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255, 254)
     }
 
-    override fun getTargetSubInt()=targetSubInt
+    override fun getTargetSubInt()=targetSub
 
 
 
