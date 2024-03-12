@@ -6,7 +6,7 @@ apply from: './push.gradle'
 /*PublishInfo {
     groupId = 'cn.entertech.android' // 库的组织，使用域名表示
     artifactId = 'biomoduleble' // 库名称
-    version = '1.5.5' // 库版本
+    version = '1.5.6' // 库版本
 }*/
 
 
@@ -52,7 +52,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
-    implementation 'com.github.lupaulus:logger:2.3.2'
 }
 
 //添加
