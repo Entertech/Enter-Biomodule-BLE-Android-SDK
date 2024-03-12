@@ -32,17 +32,17 @@ class RxBleManager constructor(context: Context) {
     private var rxBleDevice: RxBleDevice? = null
     private var subscription: Disposable? = null
     private var rxBleConnection: RxBleConnection? = null
-    private var isShakeHandPassed = false
     private var handlerThread: HandlerThread
     private var handler: Handler
-    private lateinit var scanNearSubscription: Disposable
-    private var scanSubscription: Disposable?=null
-    private val DURATION_OF_SORT: Long = 3000
-    private val CONNECT_TASK_DELAY: Long = 1000
+    private var scanNearSubscription: Disposable? = null
+    private var scanSubscription: Disposable? = null
+
 
     companion object {
-        val SCAN_TIMEOUT: Long = 20000
+        const val SCAN_TIMEOUT: Long = 20000
         private const val TAG = "RxBleManager"
+        private const val DURATION_OF_SORT: Long = 3000
+        private const val CONNECT_TASK_DELAY: Long = 1000
     }
 
     init {
@@ -59,24 +59,6 @@ class RxBleManager constructor(context: Context) {
             throw error
         }
     }
-//
-//    companion object {
-//        @Volatile
-//        private var instance: RxBleManager? = null
-//
-//        fun getInstance(context: Context): RxBleManager {
-//            if (instance == null) {
-//                synchronized(RxBleManager::class) {
-//                    if (instance == null) {
-//                        instance = RxBleManager(context.applicationContext)
-//                    }
-//                }
-//            }
-//
-//            return instance!!
-//        }
-//    }
-
 
     /**
      * is device connected
@@ -137,7 +119,7 @@ class RxBleManager constructor(context: Context) {
 
         BleUtil.removePairDevice()
         disConnect()
-        var scanStartTime = System.currentTimeMillis()
+        val scanStartTime = System.currentTimeMillis()
         var isScanSuccess = false
         var nearScanResult: ScanResult? = null
         scanNearSubscription = rxBleClient.scanBleDevices(
@@ -153,7 +135,7 @@ class RxBleManager constructor(context: Context) {
                     nearScanResult = scanResult
                 }
                 if (System.currentTimeMillis() >= scanStartTime + DURATION_OF_SORT) {
-                    scanNearSubscription.dispose()
+                    scanNearSubscription?.dispose()
                     if (!isScanSuccess) {
                         isScanSuccess = true
                         successScan?.invoke()
@@ -172,9 +154,18 @@ class RxBleManager constructor(context: Context) {
                 }
             }, {
                 failScan?.invoke(it as Exception)
+                scanNearSubscription?.dispose()
                 it.printStackTrace()
             })
     }
+
+    fun stopScanNearDevice() {
+        scanNearSubscription?.dispose()
+        scanNearSubscription = null
+        scanSubscription?.dispose()
+        scanSubscription = null
+    }
+
 
     fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
         //不懂为啥要多写下面这一行
@@ -321,15 +312,6 @@ class RxBleManager constructor(context: Context) {
             failure?.invoke(errorMsg)
         })
     }
-
-//    /**
-//     * notify command
-//     */
-//    fun notifyCommand(command: (Command) -> Unit) {
-//        notify(NapBleCharacter.CMD_UPLOAD.uuid, fun(bytes: ByteArray) {
-//
-//        }, null)
-//    }
 
     /**
      * read battery
