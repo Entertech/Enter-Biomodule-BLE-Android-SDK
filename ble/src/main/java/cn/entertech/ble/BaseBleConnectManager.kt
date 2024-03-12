@@ -107,6 +107,7 @@ abstract class BaseBleConnectManager constructor(
 
     var lastNotifyBrainWaveLogTime = 0L
 
+
     /**
      * notify brain
      */
@@ -663,5 +664,9 @@ abstract class BaseBleConnectManager constructor(
         fixStrategies.forEach {
             it.startFix(callback)
         }
+    }
+
+    fun stopScanNearDevice(){
+        rxBleManager.stopScanNearDevice()
     }
 }
