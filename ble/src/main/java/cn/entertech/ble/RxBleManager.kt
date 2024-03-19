@@ -42,7 +42,7 @@ class RxBleManager constructor(
     private var rxBleConnection: RxBleConnection? = null
     private var handlerThread: HandlerThread
     private var handler: Handler
-    private lateinit var scanNearSubscription: Disposable
+    private var scanNearSubscription: Disposable? = null
     private var scanSubscription: Disposable? = null
     private val disConnectListeners = mutableListOf<(String) -> Unit>()
     private val connectListeners = mutableListOf<(String) -> Unit>()
@@ -163,7 +163,7 @@ class RxBleManager constructor(
 
         BleUtil.removePairDevice()
         disConnect()
-        var scanStartTime = System.currentTimeMillis()
+        val scanStartTime = System.currentTimeMillis()
         var isScanSuccess = false
         var nearScanResult: ScanResult? = null
         scanNearSubscription = rxBleClient.scanBleDevices(
@@ -179,7 +179,7 @@ class RxBleManager constructor(
                     nearScanResult = scanResult
                 }
                 if (System.currentTimeMillis() >= scanStartTime + DURATION_OF_SORT) {
-                    scanNearSubscription.dispose()
+                    scanNearSubscription?.dispose()
                     if (!isScanSuccess) {
                         isScanSuccess = true
                         successScan?.invoke()
@@ -198,13 +198,18 @@ class RxBleManager constructor(
                 }
             }, {
                 failScan?.invoke(it as Exception)
+                scanNearSubscription?.dispose()
                 it.printStackTrace()
             })
     }
 
-    fun stopScan(){
-        scanNearSubscription.dispose()
+    fun stopScanNearDevice() {
+        scanNearSubscription?.dispose()
+        scanNearSubscription = null
+        scanSubscription?.dispose()
+        scanSubscription = null
     }
+
 
     fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
         //不懂为啥要多写下面这一行
