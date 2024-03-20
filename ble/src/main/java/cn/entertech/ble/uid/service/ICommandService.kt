@@ -25,11 +25,11 @@ interface ICommandService {
 
     }
 
-    fun getCharacteristicCommandDownload(): String
+    fun getCharacteristicCommandUploadUUid(): String
 
-    fun getCharacteristicCommandDownload(deviceUuidBean: DeviceUuidBean): String {
+    fun getCharacteristicCommandUploadUUid(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_COMMAND)
-            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_COMMAND_DOWNLOAD)
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_COMMAND_UPLOAD)
             ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
     }
 }

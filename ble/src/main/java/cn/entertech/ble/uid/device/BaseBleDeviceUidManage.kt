@@ -25,8 +25,8 @@ abstract class BaseBleDeviceUidManage : IDeviceInfoService, ICommandService {
         addCommandService(deviceUuidBean)
     }
 
-    override fun getCharacteristicCommandDownload(): String {
-        return getCharacteristicCommandDownload(deviceUuidBean)
+    override fun getCharacteristicCommandUploadUUid(): String {
+        return getCharacteristicCommandUploadUUid(deviceUuidBean)
     }
 
     override fun getDeviceManufacturerUuid(): String {

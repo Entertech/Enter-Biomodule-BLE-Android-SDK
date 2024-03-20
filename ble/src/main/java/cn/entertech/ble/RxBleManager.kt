@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.ParcelUuid
 import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
-import cn.entertech.ble.uid.device.headband.HeadbandUidManage
 import cn.entertech.ble.uid.service.IBatteryService
 import cn.entertech.ble.uid.service.IEegService
 import cn.entertech.ble.uid.service.IHrsService
@@ -322,7 +321,7 @@ class RxBleManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         write(
-            uidManage.getCharacteristicCommandDownload(),
+            uidManage.getCharacteristicCommandUploadUUid(),
             command.value,
             fun(characteristicValue) {
                 BleLogUtil.i(TAG, "succ command")
@@ -342,7 +341,7 @@ class RxBleManager constructor(
         bytes: ByteArray, success: (() -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
-        write(uidManage.getCharacteristicCommandDownload(), bytes, fun(characteristicValue) {
+        write(uidManage.getCharacteristicCommandUploadUUid(), bytes, fun(characteristicValue) {
             BleLogUtil.i(TAG, "succ command")
             success?.invoke()
         }, fun(errorMsg) {
