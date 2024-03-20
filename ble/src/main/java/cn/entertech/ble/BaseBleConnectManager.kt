@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * */
 abstract class BaseBleConnectManager constructor(
     context: Context,
-    uuidManage: BaseBleDeviceFactory,
+    bleFactory: BaseBleDeviceFactory,
     private val fixStrategies: List<BaseFirmwareFixStrategy> = listOf(
         Firmware128FixHelper,
         Firmware255FixHelper
@@ -54,7 +54,7 @@ abstract class BaseBleConnectManager constructor(
 
 
     init {
-        rxBleManager = RxBleManager(context,uuidManage)
+        rxBleManager = RxBleManager(context,bleFactory)
         handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)

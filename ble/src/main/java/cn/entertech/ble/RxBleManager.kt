@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
  */
 class RxBleManager constructor(
     context: Context,
-    private val uidManage: BaseBleDeviceFactory
+    private val bleFactory: BaseBleDeviceFactory
 ) {
 
     private var rxBleClient: RxBleClient
@@ -169,7 +169,7 @@ class RxBleManager constructor(
             ScanSettings.Builder()
                 .build(),
             ScanFilter.Builder()
-                .setServiceUuid(ParcelUuid(UUID.fromString(uidManage.getBroadcastUUid())))
+                .setServiceUuid(ParcelUuid(UUID.fromString(bleFactory.getBroadcastUUid())))
                 .build()
 
         ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
@@ -321,7 +321,7 @@ class RxBleManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         write(
-            uidManage.getCharacteristicCommandUploadUUid(),
+            bleFactory.getCharacteristicCommandUploadUUid(),
             command.value,
             fun(characteristicValue) {
                 BleLogUtil.i(TAG, "succ command")
@@ -341,7 +341,7 @@ class RxBleManager constructor(
         bytes: ByteArray, success: (() -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
-        write(uidManage.getCharacteristicCommandUploadUUid(), bytes, fun(characteristicValue) {
+        write(bleFactory.getCharacteristicCommandUploadUUid(), bytes, fun(characteristicValue) {
             BleLogUtil.i(TAG, "succ command")
             success?.invoke()
         }, fun(errorMsg) {
@@ -354,8 +354,8 @@ class RxBleManager constructor(
      * read battery
      */
     fun readBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)?) {
-        if (uidManage is IBatteryService) {
-            read(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
+        if (bleFactory is IBatteryService) {
+            read(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
 //            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
                 success.invoke(bytes[0])
             }, failure)
@@ -367,10 +367,10 @@ class RxBleManager constructor(
      * notify battery
      */
     fun notifyBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        if (uidManage !is IBatteryService) {
+        if (bleFactory !is IBatteryService) {
             return null
         }
-        return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
+        return notify(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
     }
@@ -383,10 +383,10 @@ class RxBleManager constructor(
         success: (Byte) -> Unit,
         failure: ((String) -> Unit)? = null
     ): Disposable? {
-        if (uidManage !is IBatteryService) {
+        if (bleFactory !is IBatteryService) {
             return null
         }
-        return notify(uidManage.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
+        return notify(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             success.invoke(bytes[0])
         }, failure)
     }
@@ -396,10 +396,10 @@ class RxBleManager constructor(
      * notify heart rate
      */
     fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        if (uidManage !is IHrsService) {
+        if (bleFactory !is IHrsService) {
             return null
         }
-        return notify(uidManage.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
+        return notify(bleFactory.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
             if (bytes.isNotEmpty()) {
                 success.invoke(converUnchart(bytes[0]))
             } else {
@@ -412,45 +412,45 @@ class RxBleManager constructor(
      * notify brain
      */
     fun notifyBrainWave(onNotify: (ByteArray) -> Unit): Disposable? {
-        if (uidManage !is IEegService) {
+        if (bleFactory !is IEegService) {
             return null
         }
-        return notify(uidManage.getCharacteristicEEGUUid(), onNotify, null)
+        return notify(bleFactory.getCharacteristicEEGUUid(), onNotify, null)
     }
 
     /**
      * read device serial
      */
     fun readDeviceSerial(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(uidManage.getCharacteristicDeviceSerialUUid(), success, failure)
+        readDeviceInfo(bleFactory.getCharacteristicDeviceSerialUUid(), success, failure)
     }
 
     /**
      * read device firmware
      */
     fun readDeviceFirmware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(uidManage.getCharacteristicDeviceFirmwareUUid(), success, failure)
+        readDeviceInfo(bleFactory.getCharacteristicDeviceFirmwareUUid(), success, failure)
     }
 
     /**
      * read device hardware
      */
     fun readDeviceHardware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(uidManage.getCharacteristicDeviceHardwareUUid(), success, failure)
+        readDeviceInfo(bleFactory.getCharacteristicDeviceHardwareUUid(), success, failure)
     }
 
     /**
      * read device manufacturer
      */
     fun readDeviceManufacturer(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(uidManage.getDeviceManufacturerUuid(), success, failure)
+        readDeviceInfo(bleFactory.getDeviceManufacturerUuid(), success, failure)
     }
 
     /**
      * read device mac
      */
     fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        readDeviceInfo(uidManage.getCharacteristicDeviceMacUUid(), success, failure)
+        readDeviceInfo(bleFactory.getCharacteristicDeviceMacUUid(), success, failure)
     }
 
     /**
@@ -467,10 +467,10 @@ class RxBleManager constructor(
     }
 
     fun readBatteryByteArray(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
-        if (uidManage !is IBatteryService) {
+        if (bleFactory !is IBatteryService) {
             return
         }
-        read(uidManage.getCharacteristicBatteryLevelUUid(), success, failure)
+        read(bleFactory.getCharacteristicBatteryLevelUUid(), success, failure)
     }
 
     /**
@@ -546,10 +546,10 @@ class RxBleManager constructor(
      * notify contact
      */
     fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
-        if (uidManage !is IEegService) {
+        if (bleFactory !is IEegService) {
             return null
         }
-        return notify(uidManage.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
+        return notify(bleFactory.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
 //            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
             onNotify.invoke(converUnchart(bytes[0]))
         }, null)
