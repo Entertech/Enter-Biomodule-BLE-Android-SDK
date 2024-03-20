@@ -48,6 +48,12 @@ object BleCharacteristicConstants {
     const val BLE_CHARACTERISTIC_UUID_DFU_PKT_CHAR = "BLE_DFU_PKT_CHAR_UUID"
 
     /**
+     * dfu 控制指令
+     * */
+    const val BLE_CHARACTERISTIC_UUID_SKIN_CONDUCTANCE_DATA = "BLE_SKIN_CONDUCTANCE_DATA_UUID"
+
+
+    /**
      * 电池电量
      * */
     const val BLE_CHARACTERISTIC_UUID_BATTERY_LEVEL = "BLE_UUID_BATTERY_LEVEL_CHARACTERISTIC"
