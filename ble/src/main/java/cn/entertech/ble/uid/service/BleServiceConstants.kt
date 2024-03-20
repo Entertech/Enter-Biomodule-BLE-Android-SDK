@@ -31,5 +31,5 @@ object BleServiceConstants {
      * */
     const val BLE_SERVICE_UUID_EEG = "BLE_UUID_EEG_SERVICE"
 
-
+    const val BLE_SERVICE_UUID_SKIN_CONDUCTANCE = "BLE_SERVICE_UUID_SKIN_CONDUCTANCE"
 }
