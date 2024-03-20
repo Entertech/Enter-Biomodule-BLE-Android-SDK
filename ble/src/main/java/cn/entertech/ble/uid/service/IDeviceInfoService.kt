@@ -76,7 +76,7 @@ interface IDeviceInfoService {
     fun getCharacteristicDeviceSerialUUid(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_SERIAL_NUMBER_STRING)
-            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+            ?.uid ?: throw IllegalAccessException("do not hava DeviceSerial")
     }
 
     fun getCharacteristicDeviceFirmwareUUid(): String
@@ -84,20 +84,20 @@ interface IDeviceInfoService {
 
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_FIRMWARE_REVISION_STRING)
-            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+            ?.uid ?: throw IllegalAccessException("do not hava DeviceFirmware")
     }
 
     fun getCharacteristicDeviceHardwareUUid(): String
     fun getCharacteristicDeviceHardwareUUid(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_HARDWARE_REVISION_STRING)
-            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+            ?.uid ?: throw IllegalAccessException("do not hava DeviceHardware")
     }
 
     fun getCharacteristicDeviceMacUUid(): String
     fun getCharacteristicDeviceMacUUid(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_DEVICE_INFORMATION)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_UUID_MODEL_NUMBER_STRING_CHAR)
-            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+            ?.uid ?: throw IllegalAccessException("do not hava DeviceMac")
     }
 }

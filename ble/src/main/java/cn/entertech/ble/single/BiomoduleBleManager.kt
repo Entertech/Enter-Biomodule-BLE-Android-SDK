@@ -2,15 +2,15 @@ package cn.entertech.ble.single
 
 import android.content.Context
 import cn.entertech.ble.BaseBleConnectManager
-import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
-import cn.entertech.ble.uid.device.headband.HeadbandUidManage
+import cn.entertech.ble.uid.device.BaseBleDeviceFactory
+import cn.entertech.ble.uid.device.HeadbandFactory
 
 /**
  * 单设备
  * */
 class BiomoduleBleManager private constructor(
     context: Context,
-    uuidManager: BaseBleDeviceUidManage
+    uuidManager: BaseBleDeviceFactory
 ) : BaseBleConnectManager(context, uuidManager) {
 
     companion object {
@@ -18,13 +18,13 @@ class BiomoduleBleManager private constructor(
         var mBleDeviceManager: BiomoduleBleManager? = null
 
         fun getInstance(context: Context): BiomoduleBleManager {
-            return getInstance(context, HeadbandUidManage)
+            return getInstance(context, HeadbandFactory)
         }
 
 
         fun getInstance(
             context: Context,
-            uuidManager: BaseBleDeviceUidManage
+            uuidManager: BaseBleDeviceFactory
         ): BiomoduleBleManager {
             if (mBleDeviceManager == null) {
                 synchronized(BiomoduleBleManager::class.java) {

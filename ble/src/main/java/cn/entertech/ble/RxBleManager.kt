@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.ParcelUuid
-import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
+import cn.entertech.ble.uid.device.BaseBleDeviceFactory
 import cn.entertech.ble.uid.service.IBatteryService
 import cn.entertech.ble.uid.service.IEegService
 import cn.entertech.ble.uid.service.IHrsService
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
  */
 class RxBleManager constructor(
     context: Context,
-    private val uidManage: BaseBleDeviceUidManage
+    private val uidManage: BaseBleDeviceFactory
 ) {
 
     private var rxBleClient: RxBleClient

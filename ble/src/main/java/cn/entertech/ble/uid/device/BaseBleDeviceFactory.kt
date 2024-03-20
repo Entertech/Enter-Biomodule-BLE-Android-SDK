@@ -6,7 +6,7 @@ import cn.entertech.ble.uid.service.IDeviceInfoService
 /**
  * 蓝牙设备 uid 管理类
  * */
-abstract class BaseBleDeviceUidManage : IDeviceInfoService, ICommandService {
+abstract class BaseBleDeviceFactory : IDeviceInfoService, ICommandService {
 
     protected val deviceUuidBean by lazy {
         val deviceUuidBean = DeviceUuidBean(getBroadcastUUid())

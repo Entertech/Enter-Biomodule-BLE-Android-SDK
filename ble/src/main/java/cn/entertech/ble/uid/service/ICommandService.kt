@@ -30,6 +30,6 @@ interface ICommandService {
     fun getCharacteristicCommandUploadUUid(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_COMMAND)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_COMMAND_UPLOAD)
-            ?.uid ?: throw IllegalAccessException("do not hava Manufacturer")
+            ?.uid ?: throw IllegalAccessException("do not hava CommandUpload")
     }
 }

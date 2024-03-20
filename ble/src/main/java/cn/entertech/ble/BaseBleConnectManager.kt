@@ -7,7 +7,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
 import cn.entertech.ble.fix.BaseFirmwareFixStrategy
-import cn.entertech.ble.uid.device.BaseBleDeviceUidManage
+import cn.entertech.ble.uid.device.BaseBleDeviceFactory
 import cn.entertech.ble.utils.BatteryUtil
 import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.ByteArrayBean
@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * */
 abstract class BaseBleConnectManager constructor(
     context: Context,
-    uuidManage: BaseBleDeviceUidManage,
+    uuidManage: BaseBleDeviceFactory,
     private val fixStrategies: List<BaseFirmwareFixStrategy> = listOf(
         Firmware128FixHelper,
         Firmware255FixHelper
