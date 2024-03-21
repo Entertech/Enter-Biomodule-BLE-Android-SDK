@@ -38,8 +38,9 @@ class RxBleManager constructor(
 
     private var rxBleClient: RxBleClient
     private var rxBleDevice: RxBleDevice? = null
-    private var subscription: Disposable? = null
     private var rxBleConnection: RxBleConnection? = null
+
+    private var connectDeviceDisposable: Disposable? = null
     private var handlerThread: HandlerThread
     private var handler: Handler
     private var scanNearSubscription: Disposable? = null
@@ -183,16 +184,15 @@ class RxBleManager constructor(
                     scanNearSubscription?.dispose()
                     if (!isScanSuccess) {
                         isScanSuccess = true
-                        Timer().schedule(CONNECT_TASK_DELAY) {
-                            handler.post {
-                                if (null == scanResult) {
-                                    failure?.invoke("scan error 1")
-                                    isConnecting = false
-                                } else {
-                                    connect(nearScanResult!!, successConnect, failure)
-                                }
+                        handler.postDelayed({
+                            nearScanResult?.apply {
+                                connect(this, successConnect, failure)
+                            } ?: kotlin.run {
+                                isConnecting = false
+                                failure?.invoke("scan error 1")
                             }
-                        }
+                        }, CONNECT_TASK_DELAY)
+
                     }
                 } else {
                     BleLogUtil.d(TAG, "smaller than DURATION_OF_SORT")
@@ -209,8 +209,9 @@ class RxBleManager constructor(
         scanNearSubscription = null
         scanSubscription?.dispose()
         scanSubscription = null
-        subscription?.dispose()
-        subscription = null
+        connectDeviceDisposable?.dispose()
+        connectDeviceDisposable = null
+        handler.removeCallbacksAndMessages(null)
     }
 
 
@@ -218,8 +219,8 @@ class RxBleManager constructor(
         isConnecting = true
         //不懂为啥要多写下面这一行
         rxBleDevice = rxBleClient.getBleDevice(device.macAddress)
-        subscription = rxBleDevice!!.establishConnection(false)
-            .subscribe({ rxBleConnection ->
+        connectDeviceDisposable = rxBleDevice?.establishConnection(false)
+            ?.subscribe({ rxBleConnection ->
                 this.rxBleConnection = rxBleConnection
                 BleLogUtil.d(TAG, "conn succ")
                 isConnecting = false
@@ -267,20 +268,17 @@ class RxBleManager constructor(
         ).timeout(timeout, TimeUnit.MILLISECONDS)
             .subscribe(
                 { scanResult ->
+                    scanSubscription?.dispose()
                     if (!isScanSuccess) {
                         isScanSuccess = true
-                        Timer().schedule(CONNECT_TASK_DELAY) {
-                            handler.post {
-                                if (null == scanResult) {
-                                    failure?.invoke("scan error 1")
-                                    scanSubscription?.dispose()
-                                    isConnecting = false
-                                } else {
-                                    scanSubscription?.dispose()
-                                    connect(scanResult, success, failure)
-                                }
+                        handler.postDelayed({
+                            scanResult?.apply {
+                                connect(scanResult, success, failure)
+                            } ?: kotlin.run {
+                                isConnecting = false
+                                failure?.invoke("scan error 1")
                             }
-                        }
+                        }, CONNECT_TASK_DELAY)
                     }
                 }, {
                     isConnecting = false
@@ -296,7 +294,7 @@ class RxBleManager constructor(
     fun disConnect(isForce: Boolean = false) {
         BleLogUtil.d(TAG, "disConnect")
         val isConnected = isConnected()
-        subscription?.dispose()
+        connectDeviceDisposable?.dispose()
         if (isConnected || isForce) {
             disConnectListeners.forEach {
                 it.invoke("disconnect")
