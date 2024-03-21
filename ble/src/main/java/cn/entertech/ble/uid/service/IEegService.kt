@@ -4,7 +4,9 @@ import cn.entertech.ble.uid.BleUUIDConstants
 import cn.entertech.ble.uid.characteristic.BleCharacteristicConstants
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
-
+/**
+ * eeg数据服务
+ * */
 interface IEegService {
 
     fun addEegService(deviceUuidBean: DeviceUuidBean?) {

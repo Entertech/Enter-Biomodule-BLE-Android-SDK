@@ -5,6 +5,9 @@ import cn.entertech.ble.uid.characteristic.BleCharacteristicConstants
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
 
+/**
+ * 指令服务
+ * */
 interface ICommandService {
 
     fun addCommandService(deviceUuidBean: DeviceUuidBean) {

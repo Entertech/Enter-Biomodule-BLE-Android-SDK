@@ -5,6 +5,9 @@ import cn.entertech.ble.uid.characteristic.BleCharacteristicConstants
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
 
+/**
+ * 皮电服务
+ * */
 interface ISkinConductanceService {
 
     fun addSkinConductanceService(deviceUuidBean: DeviceUuidBean) {
@@ -29,6 +32,7 @@ interface ISkinConductanceService {
 
     fun getSkinConductanceUUId(deviceUuidBean: DeviceUuidBean): String {
         return deviceUuidBean.getService(BleServiceConstants.BLE_SERVICE_UUID_SKIN_CONDUCTANCE)
-            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_SKIN_CONDUCTANCE_DATA)?.uid?: throw IllegalAccessException("do not hava SkinConductance")
+            ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_SKIN_CONDUCTANCE_DATA)?.uid
+            ?: throw IllegalAccessException("do not hava SkinConductance")
     }
 }

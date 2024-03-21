@@ -6,6 +6,9 @@ import cn.entertech.ble.uid.characteristic.BluetoothCharacteristic
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
 
+/**
+* 设备信息服务
+* */
 interface IDeviceInfoService {
 
     fun addDeviceInfoService(deviceUuidBean: DeviceUuidBean) {

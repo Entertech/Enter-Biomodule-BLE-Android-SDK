@@ -5,6 +5,9 @@ import cn.entertech.ble.uid.characteristic.BleCharacteristicConstants
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
 
+/**
+ * 心率服务
+ * */
 interface IHrsService {
 
     fun addHrsService(deviceUuidBean: DeviceUuidBean?) {

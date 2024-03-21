@@ -5,6 +5,9 @@ import cn.entertech.ble.uid.characteristic.BleCharacteristicConstants
 import cn.entertech.ble.uid.device.DeviceUuidBean
 import cn.entertech.ble.uid.property.BluetoothProperty
 
+/**
+ * 电池服务
+ * */
 interface IBatteryService {
 
     fun addBatteryService(deviceUuidBean: DeviceUuidBean?) {
