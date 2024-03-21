@@ -18,13 +18,17 @@ enum class ConnectionBleStrategy(val flag: Int) {
      * */
     CONNECT_BONDED(1);
 
-
-    private val strategyMap: HashMap<Int, ConnectionBleStrategy> by lazy {
-        val map = HashMap<Int, ConnectionBleStrategy>()
-        values().forEach {
-            map[it.flag] = it
+    companion object {
+        private val strategyMap: HashMap<Int, ConnectionBleStrategy> by lazy {
+            val map = HashMap<Int, ConnectionBleStrategy>()
+            values().forEach {
+                map[it.flag] = it
+            }
+            map
         }
-        map
+
+        fun getConnectionBleStrategy(flag: Int): ConnectionBleStrategy =
+            strategyMap[flag] ?: SCAN_AND_CONNECT_HIGH_SIGNAL
     }
 
     fun getConnectionBleStrategy(flag: Int): ConnectionBleStrategy = strategyMap[flag] ?: this

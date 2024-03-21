@@ -14,6 +14,7 @@ import cn.entertech.ble.utils.ByteArrayBean
 import cn.entertech.ble.fix.Firmware128FixHelper
 import cn.entertech.ble.fix.Firmware255FixHelper
 import cn.entertech.ble.fix.IFixTriggerCallback
+import cn.entertech.ble.utils.CharUtil.converUnchart
 import cn.entertech.ble.utils.NapBattery
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
@@ -29,19 +30,22 @@ abstract class BaseBleConnectManager constructor(
         Firmware255FixHelper
     )
 ) : IFixTriggerCallback {
+    companion object {
+        private const val TAG = "BaseBleConnectManager"
+    }
 
-    private val rxBleManager: RxBleManager
+    private val rxBleManager: RxBleManager by lazy {
+        RxBleManager(context, bleFactory)
+    }
     private var handler: Handler
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
     }
-    private var handlerThread: HandlerThread
-    private val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
+    private val handlerThread: HandlerThread by lazy {
+        HandlerThread("notify_thread")
+    }
 
-    /**
-     * 皮肤电阻率
-     * */
-    private val skinConductivityServiceListener = CopyOnWriteArrayList<(ByteArray) -> Unit>()
+    private val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
     private val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
     private val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     private val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
@@ -54,264 +58,19 @@ abstract class BaseBleConnectManager constructor(
 
 
     init {
-        rxBleManager = RxBleManager(context,bleFactory)
-        handlerThread = HandlerThread("notify_thread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
     }
 
-    companion object {
-        private const val TAG = "BaseBleConnectManager"
-    }
-
-
-    /**
-     * is device connect
-     */
-    fun isConnected(): Boolean {
-        return rxBleManager.isConnected()
-    }
-
-    /**
-     * is device connecting
-     */
-    fun isConnecting(): Boolean {
-        return rxBleManager.isConnecting()
-    }
-
-    /**
-     * add device disconnect listener
-     */
-    fun addDisConnectListener(listener: (String) -> Unit) {
-        rxBleManager.addDisConnectListener(listener)
-    }
-
-    /**
-     * remove device disconnect listener
-     */
-    fun removeDisConnectListener(listener: (String) -> Unit) {
-        rxBleManager.removeDisConnectListener(listener)
-    }
-
-    /**
-     * add device connect listener
-     */
-    fun addConnectListener(listener: (String) -> Unit) {
-        rxBleManager.addConnectListener(listener)
-    }
-
-    /**
-     * remove device connect listener
-     */
-    fun removeConnectListener(listener: (String) -> Unit) {
-        rxBleManager.removeConnectListener(listener)
-    }
-
-    var lastNotifyBrainWaveLogTime = 0L
-
-
-    /**
-     * notify brain
-     */
-    fun notifyBrainWave() {
-        brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
-            if (System.currentTimeMillis() - lastNotifyBrainWaveLogTime > 1000 * 20L) {
-                BleLogUtil.d(TAG, "notifyBrainWave")
-                lastNotifyBrainWaveLogTime = System.currentTimeMillis()
-            }
-            handler.post {
-                skinConductivityServiceListener.forEach { listener ->
-                    listener(bytes)
-                }
-                bytes.forEach { byte ->
-                    fixStrategies.forEach {
-                        it.fixFirmware(byte)
-                    }
-                }
-                rawDataListeners.forEach { listener ->
-                    listener.invoke(bytes)
-                }
-                rawDataListeners4CSharp.forEach { listener ->
-                    listener.invoke(ByteArrayBean(bytes))
-                }
-            }
-        }
-    }
-
-    /**
-     * stop notify brain
-     */
-    fun stopNotifyBrainWave() {
-        brainWaveDisposable?.dispose()
-    }
-
-    var lastNotifyBatteryLogTime = 0L
-
-    /**
-     * notify battery
-     */
-    fun notifyBattery() {
-        batteryDisposable = rxBleManager.notifyBattery(fun(byte: Byte) {
-            handler.post {
-                if (System.currentTimeMillis() - lastNotifyBatteryLogTime > 1000 * 20L) {
-                    BleLogUtil.d(TAG, "notifyBattery")
-                    lastNotifyBatteryLogTime = System.currentTimeMillis()
-                }
-                byte.let {
-                    castBattery(it, { napBattery ->
-                        batteryListeners.forEach { listener ->
-                            listener.invoke(napBattery)
-                        }
-                    }, null)
-
-                    batteryVoltageListeners.forEach { listener ->
-                        listener.invoke(BatteryUtil.getBatteryVoltage(it))
-                    }
-                }
-            }
-        })
-    }
-
-    var lastNotifyHeartRateLogTime = 0L
-
-    /**
-     * notify heart rate
-     */
-    fun notifyHeartRate() {
-        heartRateDisposable = rxBleManager.notifyHeartRate(fun(heartRate: Int) {
-            handler.post {
-                if (System.currentTimeMillis() - lastNotifyHeartRateLogTime > 1000 * 20L) {
-                    BleLogUtil.d(TAG, "notifyHeartRate")
-                    lastNotifyHeartRateLogTime = System.currentTimeMillis()
-                }
-                heartRate.let {
-                    heartRateListeners.forEach { listener ->
-                        listener.invoke(heartRate)
-                    }
-                }
-            }
-        })
-    }
-
-    /**
-     * stop notify heart rate
-     */
-    fun stopNotifyHeartRate() {
-        heartRateDisposable?.dispose()
-    }
-
-
-    /**
-     * stop notify battery
-     */
-    fun stopNotifyBattery() {
-        batteryDisposable?.dispose()
-    }
-
-    var lastNotifyContactLogTime = 0L
-
-    /**
-     * notify contact
-     */
-    fun notifyContact() {
-        contactDisposable = rxBleManager.notifyContact { byte ->
-            handler.post {
-                byte.let {
-                    if (System.currentTimeMillis() - lastNotifyContactLogTime > 1000 * 20L) {
-                        BleLogUtil.d(TAG, "notifyContact")
-                        lastNotifyContactLogTime = System.currentTimeMillis()
-                    }
-                    contactListeners.forEach { listener ->
-                        listener.invoke(it)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * stop notify contact
-     */
-    fun stopNotifyContact() {
-        contactDisposable?.dispose()
-    }
-
-
-    /**
-     * notify after connect
-     */
-    private fun initNotifications() {
-        Thread.sleep(200)
-        notifyBrainWave()
-        Thread.sleep(100)
-        notifyBattery()
-        Thread.sleep(100)
-        notifyContact()
-        Thread.sleep(100)
-        notifyHeartRate()
-    }
-
-    /**
-     * 扫描附近的设备，选择信号最好的，然后连接
-     */
-    private fun scanNearAndConnectDevice(
-        successScan: (() -> Unit)?,
-        failScan: ((Exception) -> Unit),
-        successConnect: ((String) -> Unit)?,
-        failure: ((String) -> Unit)?
-    ) {
-        rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
-            initNotifications()
-            successConnect?.invoke(mac)
-        }, failure)
-    }
-
-    /**
-     * 连接已配对的设备
-     * */
-    private fun connectBondedDevice(
-        successConnect: ((String) -> Unit)?,
-        failure: ((String) -> Unit)?,
-        filter: (String?, String?) -> Boolean = { _, _ -> true }
-    ) {
-        rxBleManager.connectBondedDevice(successConnect, failure, filter)
-    }
-
-
-    /**
-     * 该方法为连接设备入口
-     * @param connectionBleStrategy 连接策略
-     * @param successConnect 连接成功回调 mac地址
-     * @param failure 连接失败回调 失败原因
-     * @param filter 过滤逻辑， true 表示保留 false 表示舍弃 仅在[ConnectionBleStrategy.CONNECT_BONDED]模式下生效
-     */
-    fun connectDevice(
-        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
-        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL,
-        filter: (String?, String?) -> Boolean = { _, _ -> true }
-    ) {
-        when (connectionBleStrategy) {
-            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL -> {
-                rxBleManager.scanNearDeviceAndConnect({ }, {
-                    failure?.invoke(it.message ?: "scan failure")
-                }, fun(mac: String) {
-                    initNotifications()
-                    successConnect?.invoke(mac)
-                }, failure)
-            }
-
-            ConnectionBleStrategy.CONNECT_BONDED -> {
-                connectBondedDevice({
-                    initNotifications()
-                    successConnect?.invoke(it)
-                }, failure, filter)
-            }
-
-            ConnectionBleStrategy.CONNECT_DEVICE_MAC->{
-
-            }
-
-        }
+    fun connectDevice(builder: BluetoothConnectBuilder) {
+        connectDevice(
+            builder.connectSuccess,
+            builder.connectFailure,
+            connectionBleStrategy = builder.connectionBleStrategy,
+            mac = builder.mac,
+            connectTimeOut = builder.scanTimeout,
+            filter = builder.filter
+        )
     }
 
     /**
@@ -330,6 +89,85 @@ abstract class BaseBleConnectManager constructor(
             ),
             filter
         )
+    }
+
+    /**
+     * 该方法为连接设备入口
+     * @param connectionBleStrategy 连接策略
+     * @param successConnect 连接成功回调 mac地址
+     * @param failure 连接失败回调 失败原因
+     * @param filter 过滤逻辑， true 表示保留 false 表示舍弃 仅在[ConnectionBleStrategy.CONNECT_BONDED]模式下生效
+     */
+    fun connectDevice(
+        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
+        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL,
+        mac: String = "",
+        connectTimeOut: Long = 0,
+        filter: (String?, String?) -> Boolean = { _, _ -> true }
+    ) {
+        when (connectionBleStrategy) {
+            ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL -> {
+                rxBleManager.scanNearDeviceAndConnect({ }, {
+                    failure?.invoke("scan failure ${it.message}")
+                }, successConnect, failure)
+            }
+
+            ConnectionBleStrategy.CONNECT_BONDED -> {
+                rxBleManager.connectBondedDevice(successConnect, failure, filter)
+            }
+
+            ConnectionBleStrategy.CONNECT_DEVICE_MAC -> {
+                rxBleManager.scanMacAndConnect(
+                    mac,
+                    connectTimeOut,
+                    successConnect,
+                    failure
+                )
+            }
+
+        }
+    }
+
+    /**
+     * 该方法为连接设备入口
+     * @param connectionBleStrategy 连接策略
+     * @param successConnect 连接成功回调 mac地址
+     * @param failure 连接失败回调 失败原因
+     * @param filter 过滤逻辑， true 表示保留 false 表示舍弃 仅在[ConnectionBleStrategy.CONNECT_BONDED]模式下生效
+     */
+    fun connectDevice(
+        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?,
+        connectionBleStrategy: ConnectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL,
+        filter: (String?, String?) -> Boolean = { _, _ -> true }
+    ) {
+        connectDevice(
+            successConnect,
+            failure,
+            connectionBleStrategy,
+            mac = "",
+            connectTimeOut = 0,
+            filter
+        )
+    }
+
+
+    fun stopScanNearDevice() {
+        rxBleManager.stopConnectDevice()
+    }
+
+
+    /**
+     * is device connect
+     */
+    fun isConnected(): Boolean {
+        return rxBleManager.isConnected()
+    }
+
+    /**
+     * is device connecting
+     */
+    fun isConnecting(): Boolean {
+        return rxBleManager.isConnecting()
     }
 
     /**
@@ -383,6 +221,259 @@ abstract class BaseBleConnectManager constructor(
         }
     }
 
+    /**
+     * add device disconnect listener
+     */
+    fun addDisConnectListener(listener: (String) -> Unit) {
+        rxBleManager.addDisConnectListener(listener)
+    }
+
+    /**
+     * remove device disconnect listener
+     */
+    fun removeDisConnectListener(listener: (String) -> Unit) {
+        rxBleManager.removeDisConnectListener(listener)
+    }
+
+    /**
+     * add device connect listener
+     */
+    fun addConnectListener(listener: (String) -> Unit) {
+        rxBleManager.addConnectListener(listener)
+    }
+
+    /**
+     * remove device connect listener
+     */
+    fun removeConnectListener(listener: (String) -> Unit) {
+        rxBleManager.removeConnectListener(listener)
+    }
+
+    /**
+     * notify after connect
+     */
+    private fun initNotifications() {
+        Thread.sleep(200)
+        notifyBrainWave()
+        Thread.sleep(100)
+        notifyBattery()
+        Thread.sleep(100)
+        notifyContact()
+        Thread.sleep(100)
+        notifyHeartRate()
+    }
+
+    /**
+     * start collect brain data
+     */
+    fun startBrainCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "startBrainCollection")
+        startFix(this)
+        rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT, success, failure)
+    }
+
+    /**
+     * stop collect brain data
+     */
+    fun stopBrainCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "stopBrainCollection")
+        stopFix()
+        rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT, success, failure)
+    }
+
+    /**
+     * notify brain
+     */
+    fun notifyBrainWave() {
+        brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
+            BleLogUtil.d(TAG, "notifyBrainWave")
+            handler.post {
+                bytes.forEach { byte ->
+                    fixStrategies.forEach {
+                        it.fixFirmware(byte)
+                    }
+                }
+                rawDataListeners.forEach { listener ->
+                    listener.invoke(bytes)
+                }
+                rawDataListeners4CSharp.forEach { listener ->
+                    listener.invoke(ByteArrayBean(bytes))
+                }
+            }
+        }
+    }
+
+    /**
+     * stop notify brain
+     */
+    fun stopNotifyBrainWave() {
+        brainWaveDisposable?.dispose()
+    }
+
+
+    //read battery（readDeviceInfo）
+    fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readBatteryByteArray(fun(bytes: ByteArray) {
+            castBattery(bytes[0], success, failure)
+        }, failure)
+    }
+
+    /**
+     * 电量转换
+     * */
+    private fun castBattery(
+        byte: Byte,
+        success: (NapBattery) -> Unit,
+        failure: ((String) -> Unit)?
+    ) {
+        readDeviceHardware(fun(version) {
+
+            BleLogUtil.d(TAG, "currentVersion: $version")
+            when (BatteryUtil.compareBleVersion(version, "3.0.0")) {
+                BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT -> {
+                    BleLogUtil.e(TAG, "ble version error")
+                    failure?.invoke("")
+                }
+                //当前版本小于3.0.0
+                BatteryUtil.COMPARE_VERSION_VALUE_SMALL -> {
+                    BleLogUtil.d(TAG, "use old battery")
+                    success.invoke(BatteryUtil.getMinutesLeftOld(byte))
+                }
+
+                else -> {
+                    BleLogUtil.d(TAG, "use new battery")
+                    success.invoke(BatteryUtil.getMinutesLeft(byte))
+                }
+            }
+        }) {
+            failure?.invoke("")
+        }
+    }
+
+
+    /**
+     * notify battery
+     */
+    fun notifyBattery() {
+        batteryDisposable = rxBleManager.notifyBattery(fun(byte: Byte) {
+            handler.post {
+                BleLogUtil.d(TAG, "notifyBattery")
+                byte.let {
+                    castBattery(it, { napBattery ->
+                        batteryListeners.forEach { listener ->
+                            listener.invoke(napBattery)
+                        }
+                    }, null)
+
+                    batteryVoltageListeners.forEach { listener ->
+                        listener.invoke(BatteryUtil.getBatteryVoltage(it))
+                    }
+                }
+            }
+        })
+    }
+
+
+    /**
+     * stop notify battery
+     */
+    fun stopNotifyBattery() {
+        batteryDisposable?.dispose()
+    }
+
+    /**
+     * start collect heart rate data
+     */
+    fun startHeartRateCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "startHeartRateCollection")
+        startFix(this)
+        rxBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT, success, failure)
+    }
+
+    /**
+     * stop collect heart rate data
+     */
+    fun stopHeartRateCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "stopHeartRateCollection")
+        stopFix()
+        rxBleManager.command(RxBleManager.Command.STOP_HEART_RATE_COLLECT, success, failure)
+    }
+
+
+    /**
+     * notify heart rate
+     */
+    fun notifyHeartRate() {
+        heartRateDisposable = rxBleManager.notifyHeartRate(fun(heartRate: Byte) {
+            handler.post {
+                BleLogUtil.d(TAG, "notifyHeartRate")
+                heartRateListeners.forEach { listener ->
+                    listener.invoke(converUnchart(heartRate))
+                }
+            }
+        })
+    }
+
+    /**
+     * stop notify heart rate
+     */
+    fun stopNotifyHeartRate() {
+        heartRateDisposable?.dispose()
+    }
+
+    fun startContact(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "startContact")
+        rxBleManager.command(RxBleManager.Command.START_CONTACT, success, failure)
+    }
+
+    fun stopContact(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "stopContact")
+        rxBleManager.command(RxBleManager.Command.STOP_CONTACT, success, failure)
+    }
+
+
+    /**
+     * notify contact
+     */
+    fun notifyContact() {
+        contactDisposable = rxBleManager.notifyContact { byte ->
+            handler.post {
+                byte.let {
+                    BleLogUtil.d(TAG, "notifyContact")
+                    contactListeners.forEach { listener ->
+                        listener.invoke(it)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * stop notify contact
+     */
+    fun stopNotifyContact() {
+        contactDisposable?.dispose()
+    }
+
+
     fun command(
         byteArray: ByteArray,
         success: () -> Unit = {},
@@ -399,14 +490,6 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE, success, failure)
-    }
-
-    fun addSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
-        skinConductivityServiceListener.add(listener)
-    }
-
-    fun removeSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
-        skinConductivityServiceListener.remove(listener)
     }
 
     /**
@@ -485,8 +568,6 @@ abstract class BaseBleConnectManager constructor(
         heartRateListeners.add(listener)
     }
 
-    fun getDevice() = rxBleManager.getDevice()
-
     /**
      * remove device heart rate listener
      */
@@ -494,69 +575,8 @@ abstract class BaseBleConnectManager constructor(
         heartRateListeners.remove(listener)
     }
 
-    fun startContact(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startContact")
-        rxBleManager.command(RxBleManager.Command.START_CONTACT, success, failure)
-    }
+    fun getDevice() = rxBleManager.getDevice()
 
-    fun stopContact(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopContact")
-        rxBleManager.command(RxBleManager.Command.STOP_CONTACT, success, failure)
-    }
-
-    /**
-     * start collect brain data
-     */
-    fun startBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startBrainCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * stop collect brain data
-     */
-    fun stopBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopBrainCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * start collect heart rate data
-     */
-    fun startHeartRateCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startHeartRateCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT, success, failure)
-    }
-
-    /**
-     * stop collect heart rate data
-     */
-    fun stopHeartRateCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopHeartRateCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_HEART_RATE_COLLECT, success, failure)
-    }
 
     /**
      * start collect all data
@@ -581,46 +601,6 @@ abstract class BaseBleConnectManager constructor(
         stopFix()
         rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT, success, failure)
     }
-
-    //read battery（readDeviceInfo）
-    fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readBatteryByteArray(fun(bytes: ByteArray) {
-            castBattery(bytes[0], success, failure)
-        }, failure)
-    }
-
-    /**
-     * 电量转换
-     * */
-    private fun castBattery(
-        byte: Byte,
-        success: (NapBattery) -> Unit,
-        failure: ((String) -> Unit)?
-    ) {
-        readDeviceHardware(fun(version) {
-
-            BleLogUtil.d(TAG, "currentVersion: $version")
-            when (BatteryUtil.compareBleVersion(version, "3.0.0")) {
-                BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT -> {
-                    BleLogUtil.e(TAG, "ble version error")
-                    failure?.invoke("")
-                }
-                //当前版本小于3.0.0
-                BatteryUtil.COMPARE_VERSION_VALUE_SMALL -> {
-                    BleLogUtil.d(TAG, "use old battery")
-                    success.invoke(BatteryUtil.getMinutesLeftOld(byte))
-                }
-
-                else -> {
-                    BleLogUtil.d(TAG, "use new battery")
-                    success.invoke(BatteryUtil.getMinutesLeft(byte))
-                }
-            }
-        }) {
-            failure?.invoke("")
-        }
-    }
-
 
     /**
      * read device serial（readDeviceInfo）
@@ -661,19 +641,15 @@ abstract class BaseBleConnectManager constructor(
         }
     }
 
-    private fun stopFix(){
+    private fun stopFix() {
         fixStrategies.forEach {
             it.stopFix()
         }
     }
 
-    private fun startFix(callback: IFixTriggerCallback){
+    private fun startFix(callback: IFixTriggerCallback) {
         fixStrategies.forEach {
             it.startFix(callback)
         }
-    }
-
-    fun stopScanNearDevice(){
-        rxBleManager.stopScanNearDevice()
     }
 }

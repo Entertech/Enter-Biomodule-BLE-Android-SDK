@@ -165,6 +165,7 @@ class RxBleManager constructor(
         val scanStartTime = System.currentTimeMillis()
         var isScanSuccess = false
         var nearScanResult: ScanResult? = null
+        isConnecting = true
         scanNearSubscription = rxBleClient.scanBleDevices(
             ScanSettings.Builder()
                 .build(),
@@ -186,6 +187,7 @@ class RxBleManager constructor(
                             handler.post {
                                 if (null == scanResult) {
                                     failure?.invoke("scan error 1")
+                                    isConnecting = false
                                 } else {
                                     connect(nearScanResult!!, successConnect, failure)
                                 }
@@ -202,15 +204,18 @@ class RxBleManager constructor(
             })
     }
 
-    fun stopScanNearDevice() {
+    fun stopConnectDevice() {
         scanNearSubscription?.dispose()
         scanNearSubscription = null
         scanSubscription?.dispose()
         scanSubscription = null
+        subscription?.dispose()
+        subscription = null
     }
 
 
     fun connect(device: RxBleDevice, success: ((String) -> Unit)?, failure: ((String) -> Unit)?) {
+        isConnecting = true
         //不懂为啥要多写下面这一行
         rxBleDevice = rxBleClient.getBleDevice(device.macAddress)
         subscription = rxBleDevice!!.establishConnection(false)
@@ -395,13 +400,13 @@ class RxBleManager constructor(
     /**
      * notify heart rate
      */
-    fun notifyHeartRate(success: (Int) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
+    fun notifyHeartRate(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
         if (bleFactory !is IHrsService) {
             return null
         }
         return notify(bleFactory.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
             if (bytes.isNotEmpty()) {
-                success.invoke(converUnchart(bytes[0]))
+                success.invoke(bytes[0])
             } else {
                 success.invoke(0)
             }
@@ -524,7 +529,7 @@ class RxBleManager constructor(
         success: (ByteArray) -> Unit,
         failure: ((String) -> Unit)?
     ): Disposable? {
-        BleLogUtil.d(TAG, "notify characterId ${characterId}")
+        BleLogUtil.d(TAG, "notify characterId $characterId")
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
                 .flatMap { notificationObservable -> notificationObservable }
