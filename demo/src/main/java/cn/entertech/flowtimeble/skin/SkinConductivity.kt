@@ -197,11 +197,9 @@ class SkinConductivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        bioModuleBleManager.addSkinConductivityServiceListener(skinConductivityServiceListener)
     }
 
     override fun onPause() {
         super.onPause()
-        bioModuleBleManager.removeSkinConductivityServiceListener(skinConductivityServiceListener)
     }
 }
