@@ -574,7 +574,7 @@ abstract class BaseBleConnectManager constructor(
         contactDisposable = if (bleFactory !is IEegService) {
             null
         } else {
-            notify(bleFactory.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
+            notify(bleFactory.getCharacteristicContactDataUUid(), fun(bytes: ByteArray) {
                 val byte = if (bytes.isEmpty()) {
                     0
                 } else {

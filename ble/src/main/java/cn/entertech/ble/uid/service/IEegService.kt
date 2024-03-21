@@ -37,11 +37,11 @@ interface IEegService {
     }
 
 
-    fun getCharacteristicContactDateMacUUid(deviceUuidBean: DeviceUuidBean?): String {
+    fun getCharacteristicContactDataUUid(deviceUuidBean: DeviceUuidBean?): String {
         return deviceUuidBean?.getService(BleServiceConstants.BLE_SERVICE_UUID_EEG)
             ?.getCharacteristic(BleCharacteristicConstants.BLE_CHARACTERISTIC_UUID_CONTACT_DATA)
             ?.uid ?: throw IllegalAccessException("do not hava Mac")
     }
 
-    fun getCharacteristicContactDateMacUUid(): String
+    fun getCharacteristicContactDataUUid(): String
 }

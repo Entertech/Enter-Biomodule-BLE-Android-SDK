@@ -30,8 +30,8 @@ object HeadbandFactory : BaseBleDeviceFactory(),
         return getCharacteristicEEGUUid(deviceUuidBean)
     }
 
-    override fun getCharacteristicContactDateMacUUid(): String {
-        return getCharacteristicContactDateMacUUid(deviceUuidBean)
+    override fun getCharacteristicContactDataUUid(): String {
+        return getCharacteristicContactDataUUid(deviceUuidBean)
     }
 
     override fun getCharacteristicHrUUid(): String {
