@@ -299,8 +299,8 @@ abstract class BaseBleConnectManager constructor(
     @Throws(IllegalStateException::class)
     fun notify(
         character: BluetoothCharacteristic,
-        success: (ByteArray) -> Unit,
-        failure: ((String) -> Unit)?
+        success: ((ByteArray) -> Unit) = {},
+        failure: ((String) -> Unit)? = null
     ) {
         val properties = character.properties
         if (properties.contains(BluetoothProperty.BLUETOOTH_PROPERTY_NOTIFY)) {
@@ -315,8 +315,8 @@ abstract class BaseBleConnectManager constructor(
      */
     private fun notify(
         characterId: String,
-        success: (ByteArray) -> Unit,
-        failure: ((String) -> Unit)?
+        success: ((ByteArray) -> Unit) = {},
+        failure: ((String) -> Unit)? = null
     ): Disposable? {
         BleLogUtil.d(TAG, "notify characterId $characterId")
         return rxBleConnection?.setupNotification(UUID.fromString(characterId))
@@ -375,38 +375,43 @@ abstract class BaseBleConnectManager constructor(
     /**
      * notify brain
      */
-    fun notifyBrainWave() {
+    private fun notifyBrainWave() {
         if (brainWaveDisposable != null) {
             stopNotifyBrainWave()
         }
-        brainWaveDisposable = notifyBrainWave { bytes ->
-            BleLogUtil.d(TAG, "notifyBrainWave")
-            bytes.forEach { byte ->
-                fixStrategies.forEach {
-                    it.fixFirmware(byte)
+        brainWaveDisposable = if (bleFactory !is IEegService) {
+            null
+        } else {
+            notify(bleFactory.getCharacteristicEEGUUid(), { bytes ->
+                BleLogUtil.d(TAG, "notifyBrainWave")
+                bytes.forEach { byte ->
+                    fixStrategies.forEach {
+                        it.fixFirmware(byte)
+                    }
                 }
-            }
-            rawDataListeners.forEach { listener ->
-                listener.invoke(bytes)
-            }
-            rawDataListeners4CSharp.forEach { listener ->
-                listener.invoke(ByteArrayBean(bytes))
-            }
+                rawDataListeners.forEach { listener ->
+                    listener.invoke(bytes)
+                }
+                rawDataListeners4CSharp.forEach { listener ->
+                    listener.invoke(ByteArrayBean(bytes))
+                }
+            }, null)
         }
     }
 
     /**
      * stop notify brain
      */
-    fun stopNotifyBrainWave() {
+    private fun stopNotifyBrainWave() {
         brainWaveDisposable?.dispose()
         brainWaveDisposable = null
     }
 
-
-    //read battery（readDeviceInfo）
     fun readBattery(success: (NapBattery) -> Unit, failure: ((String) -> Unit)?) {
-        readBatteryByteArray(fun(bytes: ByteArray) {
+        if (bleFactory !is IBatteryService) {
+            return
+        }
+        read(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
             castBattery(bytes[0], success, failure)
         }, failure)
     }
@@ -420,12 +425,10 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)?
     ) {
         readDeviceHardware(fun(version) {
-
             BleLogUtil.d(TAG, "currentVersion: $version")
             when (BatteryUtil.compareBleVersion(version, "3.0.0")) {
                 BatteryUtil.COMPARE_VERSION_VALUE_ERROR_FORMAT -> {
-                    BleLogUtil.e(TAG, "ble version error")
-                    failure?.invoke("")
+                    failure?.invoke("ble version error")
                 }
                 //当前版本小于3.0.0
                 BatteryUtil.COMPARE_VERSION_VALUE_SMALL -> {
@@ -439,7 +442,7 @@ abstract class BaseBleConnectManager constructor(
                 }
             }
         }) {
-            failure?.invoke("")
+            failure?.invoke("readDeviceHardware error $it")
         }
     }
 
@@ -447,31 +450,39 @@ abstract class BaseBleConnectManager constructor(
     /**
      * notify battery
      */
-    fun notifyBattery() {
+    private fun notifyBattery() {
         if (batteryDisposable != null) {
             stopNotifyBattery()
         }
-        batteryDisposable = notifyBattery(fun(byte: Byte) {
-            BleLogUtil.d(TAG, "notifyBattery")
-            byte.let {
-                castBattery(it, { napBattery ->
+
+        batteryDisposable = if (bleFactory !is IBatteryService) {
+            null
+        } else {
+            notify(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
+                val byte = if (bytes.isEmpty()) {
+                    0
+                } else {
+                    bytes[0]
+                }
+                BleLogUtil.d(TAG, "notifyBattery")
+                castBattery(byte, { napBattery ->
                     batteryListeners.forEach { listener ->
                         listener.invoke(napBattery)
                     }
                 }, null)
 
                 batteryVoltageListeners.forEach { listener ->
-                    listener.invoke(BatteryUtil.getBatteryVoltage(it))
+                    listener.invoke(BatteryUtil.getBatteryVoltage(byte))
                 }
-            }
-        })
+            })
+        }
     }
 
 
     /**
      * stop notify battery
      */
-    fun stopNotifyBattery() {
+    private fun stopNotifyBattery() {
         batteryDisposable?.dispose()
         batteryDisposable = null
     }
@@ -485,6 +496,7 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "startHeartRateCollection")
         startFix(this)
+        notifyHeartRate()
         command(Command.START_HEART_RATE_COLLECT, success, failure)
     }
 
@@ -497,6 +509,7 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "stopHeartRateCollection")
         stopFix()
+        stopNotifyHeartRate()
         command(Command.STOP_HEART_RATE_COLLECT, success, failure)
     }
 
@@ -504,16 +517,25 @@ abstract class BaseBleConnectManager constructor(
     /**
      * notify heart rate
      */
-    fun notifyHeartRate() {
+    private fun notifyHeartRate() {
         if (heartRateDisposable != null) {
             stopNotifyHeartRate()
         }
-        heartRateDisposable = notifyHeartRate(fun(heartRate: Byte) {
-            BleLogUtil.d(TAG, "notifyHeartRate")
-            heartRateListeners.forEach { listener ->
-                listener.invoke(converUnchart(heartRate))
-            }
-        })
+        heartRateDisposable = if (bleFactory !is IHrsService) {
+            null
+        } else {
+            notify(bleFactory.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
+                val hrByte = if (bytes.isNotEmpty()) {
+                    bytes[0]
+                } else {
+                    0
+                }
+                heartRateListeners.forEach { listener ->
+                    listener.invoke(converUnchart(hrByte))
+                }
+            })
+        }
+
     }
 
     /**
@@ -528,6 +550,7 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         BleLogUtil.d(TAG, "startContact")
+        notifyContact()
         command(Command.START_CONTACT, success, failure)
     }
 
@@ -536,6 +559,7 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         BleLogUtil.d(TAG, "stopContact")
+        stopNotifyContact()
         command(Command.STOP_CONTACT, success, failure)
     }
 
@@ -547,12 +571,21 @@ abstract class BaseBleConnectManager constructor(
         if (contactDisposable != null) {
             stopNotifyContact()
         }
-        contactDisposable = notifyContact { byte ->
-            BleLogUtil.d(TAG, "notifyContact")
-            contactListeners.forEach { listener ->
-                listener.invoke(byte)
-            }
+        contactDisposable = if (bleFactory !is IEegService) {
+            null
+        } else {
+            notify(bleFactory.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
+                val byte = if (bytes.isEmpty()) {
+                    0
+                } else {
+                    converUnchart(bytes[0])
+                }
+                contactListeners.forEach { listener ->
+                    listener.invoke(byte)
+                }
+            }, null)
         }
+
     }
 
     /**
@@ -582,6 +615,8 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "startHeartAndBrainCollection")
         startFix(this)
+        notifyBrainWave()
+        notifyHeartRate()
         command(Command.START_HEART_AND_BRAIN_COLLECT, success, failure)
     }
 
@@ -594,6 +629,8 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "stopHeartAndBrainCollection")
         stopFix()
+        stopNotifyBrainWave()
+        stopNotifyHeartRate()
         command(Command.STOP_HEART_AND_BRAIN_COLLECT, success, failure)
     }
 
@@ -787,7 +824,7 @@ abstract class BaseBleConnectManager constructor(
     /**
      * connect close device
      */
-    fun scanNearDeviceAndConnect(
+    private fun scanNearDeviceAndConnect(
         scanTimeout: Long = SCAN_TIMEOUT,
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?
@@ -816,7 +853,7 @@ abstract class BaseBleConnectManager constructor(
                         isScanSuccess = true
                         handler.postDelayed({
                             nearScanResult?.apply {
-                                connect(this, successConnect, failure)
+                                connect(this.bleDevice, successConnect, failure)
                             } ?: kotlin.run {
                                 isConnecting = false
                                 failure?.invoke("scan error 1")
@@ -839,8 +876,6 @@ abstract class BaseBleConnectManager constructor(
         scanNearSubscription = null
         scanSubscription?.dispose()
         scanSubscription = null
-        connectDeviceDisposable?.dispose()
-        connectDeviceDisposable = null
         handler.removeCallbacksAndMessages(null)
     }
 
@@ -852,30 +887,20 @@ abstract class BaseBleConnectManager constructor(
         connectDeviceDisposable = rxBleDevice?.establishConnection(false)
             ?.subscribe({ rxBleConnection ->
                 this.rxBleConnection = rxBleConnection
-                BleLogUtil.d(TAG, "conn succ")
                 isConnecting = false
+                stopConnectDevice()
                 success?.invoke(device.macAddress)
                 connectListeners.forEach {
                     it.invoke(device.macAddress)
                 }
             }, { throwable ->
                 isConnecting = false
+                stopConnectDevice()
+                failure?.invoke("conn error:${throwable}")
                 disConnectListeners.forEach {
                     it.invoke("conn error:${throwable}")
                 }
-                failure?.invoke("conn error:${throwable}")
             })
-    }
-
-    /**
-     * connect device
-     */
-    fun connect(
-        scanResult: ScanResult,
-        success: ((String) -> Unit)?,
-        failure: ((String) -> Unit)?
-    ) {
-        connect(scanResult.bleDevice, success, failure)
     }
 
     /**
@@ -903,7 +928,7 @@ abstract class BaseBleConnectManager constructor(
                         isScanSuccess = true
                         handler.postDelayed({
                             scanResult?.apply {
-                                connect(scanResult, success, failure)
+                                connect(scanResult.bleDevice, success, failure)
                             } ?: kotlin.run {
                                 isConnecting = false
                                 failure?.invoke("scan error 1")
@@ -948,7 +973,7 @@ abstract class BaseBleConnectManager constructor(
     /**
      * write command
      */
-    fun command(
+    private fun command(
         command: Command,
         success: ((ByteArray) -> Unit)? = null,
         failure: ((String) -> Unit)? = null
@@ -966,90 +991,18 @@ abstract class BaseBleConnectManager constructor(
             })
     }
 
-
-    /**
-     * write command
-     */
-    fun command(
-        bytes: ByteArray, success: (() -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        write(bleFactory.getCharacteristicCommandUploadUUid(), bytes, fun(characteristicValue) {
-            BleLogUtil.i(TAG, "succ command")
-            success?.invoke()
-        }, fun(errorMsg) {
-            BleLogUtil.i(TAG, "fail command")
-            failure?.invoke(errorMsg)
-        })
-    }
-
     /**
      * read battery
      */
     fun readBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)?) {
         if (bleFactory is IBatteryService) {
             read(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
-//            success.invoke(BatteryUtil.getMinutesLeft(bytes[0]).percent.toByte())
                 success.invoke(bytes[0])
             }, failure)
         }
 
     }
 
-    /**
-     * notify battery
-     */
-    fun notifyBattery(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        if (bleFactory !is IBatteryService) {
-            return null
-        }
-        return notify(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
-            success.invoke(bytes[0])
-        }, failure)
-    }
-
-
-    /**
-     * notify battery voltage
-     */
-    fun notifyBatteryVoltage(
-        success: (Byte) -> Unit,
-        failure: ((String) -> Unit)? = null
-    ): Disposable? {
-        if (bleFactory !is IBatteryService) {
-            return null
-        }
-        return notify(bleFactory.getCharacteristicBatteryLevelUUid(), fun(bytes: ByteArray) {
-            success.invoke(bytes[0])
-        }, failure)
-    }
-
-
-    /**
-     * notify heart rate
-     */
-    fun notifyHeartRate(success: (Byte) -> Unit, failure: ((String) -> Unit)? = null): Disposable? {
-        if (bleFactory !is IHrsService) {
-            return null
-        }
-        return notify(bleFactory.getCharacteristicHrUUid(), fun(bytes: ByteArray) {
-            if (bytes.isNotEmpty()) {
-                success.invoke(bytes[0])
-            } else {
-                success.invoke(0)
-            }
-        }, failure)
-    }
-
-    /**
-     * notify brain
-     */
-    fun notifyBrainWave(onNotify: (ByteArray) -> Unit): Disposable? {
-        if (bleFactory !is IEegService) {
-            return null
-        }
-        return notify(bleFactory.getCharacteristicEEGUUid(), onNotify, null)
-    }
 
     /**
      * read device serial
@@ -1099,24 +1052,4 @@ abstract class BaseBleConnectManager constructor(
         }, failure)
     }
 
-    fun readBatteryByteArray(success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
-        if (bleFactory !is IBatteryService) {
-            return
-        }
-        read(bleFactory.getCharacteristicBatteryLevelUUid(), success, failure)
-    }
-
-
-    /**
-     * notify contact
-     */
-    fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
-        if (bleFactory !is IEegService) {
-            return null
-        }
-        return notify(bleFactory.getCharacteristicContactDateMacUUid(), fun(bytes: ByteArray) {
-//            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
-            onNotify.invoke(converUnchart(bytes[0]))
-        }, null)
-    }
 }
