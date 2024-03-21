@@ -82,8 +82,8 @@ abstract class BaseBleConnectManager constructor(
     private val disConnectListeners = mutableListOf<(String) -> Unit>()
     private val connectListeners = mutableListOf<(String) -> Unit>()
     private var isConnecting = false
-    
-    
+
+
     init {
         rxBleClient = RxBleClient.create(context)
         handlerThread = HandlerThread("shake_hand")
@@ -355,6 +355,7 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "startBrainCollection")
         startFix(this)
+        notifyBrainWave()
         command(Command.START_BRAIN_COLLECT, success, failure)
     }
 
@@ -367,6 +368,7 @@ abstract class BaseBleConnectManager constructor(
     ) {
         BleLogUtil.d(TAG, "stopBrainCollection")
         stopFix()
+        stopNotifyBrainWave()
         command(Command.STOP_BRAIN_COLLECT, success, failure)
     }
 
@@ -374,6 +376,9 @@ abstract class BaseBleConnectManager constructor(
      * notify brain
      */
     fun notifyBrainWave() {
+        if (brainWaveDisposable != null) {
+            stopNotifyBrainWave()
+        }
         brainWaveDisposable = notifyBrainWave { bytes ->
             BleLogUtil.d(TAG, "notifyBrainWave")
             bytes.forEach { byte ->
@@ -395,6 +400,7 @@ abstract class BaseBleConnectManager constructor(
      */
     fun stopNotifyBrainWave() {
         brainWaveDisposable?.dispose()
+        brainWaveDisposable = null
     }
 
 
@@ -442,6 +448,9 @@ abstract class BaseBleConnectManager constructor(
      * notify battery
      */
     fun notifyBattery() {
+        if (batteryDisposable != null) {
+            stopNotifyBattery()
+        }
         batteryDisposable = notifyBattery(fun(byte: Byte) {
             BleLogUtil.d(TAG, "notifyBattery")
             byte.let {
@@ -464,6 +473,7 @@ abstract class BaseBleConnectManager constructor(
      */
     fun stopNotifyBattery() {
         batteryDisposable?.dispose()
+        batteryDisposable = null
     }
 
     /**
@@ -495,6 +505,9 @@ abstract class BaseBleConnectManager constructor(
      * notify heart rate
      */
     fun notifyHeartRate() {
+        if (heartRateDisposable != null) {
+            stopNotifyHeartRate()
+        }
         heartRateDisposable = notifyHeartRate(fun(heartRate: Byte) {
             BleLogUtil.d(TAG, "notifyHeartRate")
             heartRateListeners.forEach { listener ->
@@ -531,6 +544,9 @@ abstract class BaseBleConnectManager constructor(
      * notify contact
      */
     fun notifyContact() {
+        if (contactDisposable != null) {
+            stopNotifyContact()
+        }
         contactDisposable = notifyContact { byte ->
             BleLogUtil.d(TAG, "notifyContact")
             contactListeners.forEach { listener ->
@@ -544,15 +560,7 @@ abstract class BaseBleConnectManager constructor(
      */
     fun stopNotifyContact() {
         contactDisposable?.dispose()
-    }
-
-
-    fun command(
-        byteArray: ByteArray,
-        success: () -> Unit = {},
-        failure: ((String) -> Unit)? = null
-    ) {
-        command(byteArray, success, failure)
+        contactDisposable = null
     }
 
     /**
