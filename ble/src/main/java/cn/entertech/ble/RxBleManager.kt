@@ -156,10 +156,10 @@ class RxBleManager constructor(
      * connect close device
      */
     fun scanNearDeviceAndConnect(
-        successScan: (() -> Unit)?, failScan: ((Exception) -> Unit)?,
-        successConnect: ((String) -> Unit)?, failure: ((String) -> Unit)?
+        scanTimeout: Long = SCAN_TIMEOUT,
+        successConnect: ((String) -> Unit)?,
+        failure: ((String) -> Unit)?
     ) {
-
         BleUtil.removePairDevice()
         disConnect()
         val scanStartTime = System.currentTimeMillis()
@@ -173,7 +173,7 @@ class RxBleManager constructor(
                 .setServiceUuid(ParcelUuid(UUID.fromString(bleFactory.getBroadcastUUid())))
                 .build()
 
-        ).timeout(SCAN_TIMEOUT, TimeUnit.MILLISECONDS).subscribe(
+        ).timeout(scanTimeout, TimeUnit.MILLISECONDS).subscribe(
             { scanResult ->
                 if (null == nearScanResult || scanResult.rssi > nearScanResult!!.rssi) {
                     nearScanResult = scanResult
@@ -182,7 +182,6 @@ class RxBleManager constructor(
                     scanNearSubscription?.dispose()
                     if (!isScanSuccess) {
                         isScanSuccess = true
-                        successScan?.invoke()
                         Timer().schedule(CONNECT_TASK_DELAY) {
                             handler.post {
                                 if (null == scanResult) {
@@ -198,7 +197,7 @@ class RxBleManager constructor(
                     BleLogUtil.d(TAG, "smaller than DURATION_OF_SORT")
                 }
             }, {
-                failScan?.invoke(it as Exception)
+                failure?.invoke("scan failure ${it.message}")
                 scanNearSubscription?.dispose()
                 it.printStackTrace()
             })

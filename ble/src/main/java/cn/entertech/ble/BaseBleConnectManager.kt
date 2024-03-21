@@ -107,9 +107,8 @@ abstract class BaseBleConnectManager constructor(
     ) {
         when (connectionBleStrategy) {
             ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL -> {
-                rxBleManager.scanNearDeviceAndConnect({ }, {
-                    failure?.invoke("scan failure ${it.message}")
-                }, successConnect, failure)
+                rxBleManager.scanNearDeviceAndConnect(connectTimeOut,successConnect, failure)
+
             }
 
             ConnectionBleStrategy.CONNECT_BONDED -> {
@@ -117,7 +116,7 @@ abstract class BaseBleConnectManager constructor(
             }
 
             ConnectionBleStrategy.CONNECT_DEVICE_MAC -> {
-                rxBleManager.scanMacAndConnect(
+                scanMacAndConnect(
                     mac,
                     connectTimeOut,
                     successConnect,
@@ -148,26 +147,6 @@ abstract class BaseBleConnectManager constructor(
             connectTimeOut = 0,
             filter
         )
-    }
-
-
-    fun stopScanNearDevice() {
-        rxBleManager.stopConnectDevice()
-    }
-
-
-    /**
-     * is device connect
-     */
-    fun isConnected(): Boolean {
-        return rxBleManager.isConnected()
-    }
-
-    /**
-     * is device connecting
-     */
-    fun isConnecting(): Boolean {
-        return rxBleManager.isConnecting()
     }
 
     /**
@@ -203,10 +182,7 @@ abstract class BaseBleConnectManager constructor(
         successConnect: ((String) -> Unit)?,
         failure: ((String) -> Unit)?
     ) {
-        rxBleManager.scanMacAndConnect(mac, scanTimeout, fun(mac: String) {
-            initNotifications()
-            successConnect?.invoke(mac)
-        }, failure)
+        rxBleManager.scanMacAndConnect(mac, scanTimeout, successConnect, failure)
     }
 
     /**
@@ -219,6 +195,25 @@ abstract class BaseBleConnectManager constructor(
         }) { errorMsg ->
             failure?.invoke(errorMsg)
         }
+    }
+
+    fun stopScanNearDevice() {
+        rxBleManager.stopConnectDevice()
+    }
+
+
+    /**
+     * is device connect
+     */
+    fun isConnected(): Boolean {
+        return rxBleManager.isConnected()
+    }
+
+    /**
+     * is device connecting
+     */
+    fun isConnecting(): Boolean {
+        return rxBleManager.isConnecting()
     }
 
     /**
