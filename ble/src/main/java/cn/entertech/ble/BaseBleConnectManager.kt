@@ -37,14 +37,9 @@ abstract class BaseBleConnectManager constructor(
     private val rxBleManager: RxBleManager by lazy {
         RxBleManager(context, bleFactory)
     }
-    private var handler: Handler
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
     }
-    private val handlerThread: HandlerThread by lazy {
-        HandlerThread("notify_thread")
-    }
-
     private val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
     private val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
     private val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
@@ -55,12 +50,6 @@ abstract class BaseBleConnectManager constructor(
     private var batteryDisposable: Disposable? = null
     private var heartRateDisposable: Disposable? = null
     private var contactDisposable: Disposable? = null
-
-
-    init {
-        handlerThread.start()
-        handler = Handler(handlerThread.looper)
-    }
 
     fun connectDevice(builder: BluetoothConnectBuilder) {
         connectDevice(
@@ -107,7 +96,7 @@ abstract class BaseBleConnectManager constructor(
     ) {
         when (connectionBleStrategy) {
             ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL -> {
-                rxBleManager.scanNearDeviceAndConnect(connectTimeOut,successConnect, failure)
+                rxBleManager.scanNearDeviceAndConnect(connectTimeOut, successConnect, failure)
 
             }
 
@@ -288,18 +277,16 @@ abstract class BaseBleConnectManager constructor(
     fun notifyBrainWave() {
         brainWaveDisposable = rxBleManager.notifyBrainWave { bytes ->
             BleLogUtil.d(TAG, "notifyBrainWave")
-            handler.post {
-                bytes.forEach { byte ->
-                    fixStrategies.forEach {
-                        it.fixFirmware(byte)
-                    }
+            bytes.forEach { byte ->
+                fixStrategies.forEach {
+                    it.fixFirmware(byte)
                 }
-                rawDataListeners.forEach { listener ->
-                    listener.invoke(bytes)
-                }
-                rawDataListeners4CSharp.forEach { listener ->
-                    listener.invoke(ByteArrayBean(bytes))
-                }
+            }
+            rawDataListeners.forEach { listener ->
+                listener.invoke(bytes)
+            }
+            rawDataListeners4CSharp.forEach { listener ->
+                listener.invoke(ByteArrayBean(bytes))
             }
         }
     }
@@ -357,18 +344,16 @@ abstract class BaseBleConnectManager constructor(
      */
     fun notifyBattery() {
         batteryDisposable = rxBleManager.notifyBattery(fun(byte: Byte) {
-            handler.post {
-                BleLogUtil.d(TAG, "notifyBattery")
-                byte.let {
-                    castBattery(it, { napBattery ->
-                        batteryListeners.forEach { listener ->
-                            listener.invoke(napBattery)
-                        }
-                    }, null)
-
-                    batteryVoltageListeners.forEach { listener ->
-                        listener.invoke(BatteryUtil.getBatteryVoltage(it))
+            BleLogUtil.d(TAG, "notifyBattery")
+            byte.let {
+                castBattery(it, { napBattery ->
+                    batteryListeners.forEach { listener ->
+                        listener.invoke(napBattery)
                     }
+                }, null)
+
+                batteryVoltageListeners.forEach { listener ->
+                    listener.invoke(BatteryUtil.getBatteryVoltage(it))
                 }
             }
         })
@@ -412,11 +397,9 @@ abstract class BaseBleConnectManager constructor(
      */
     fun notifyHeartRate() {
         heartRateDisposable = rxBleManager.notifyHeartRate(fun(heartRate: Byte) {
-            handler.post {
-                BleLogUtil.d(TAG, "notifyHeartRate")
-                heartRateListeners.forEach { listener ->
-                    listener.invoke(converUnchart(heartRate))
-                }
+            BleLogUtil.d(TAG, "notifyHeartRate")
+            heartRateListeners.forEach { listener ->
+                listener.invoke(converUnchart(heartRate))
             }
         })
     }
@@ -450,13 +433,9 @@ abstract class BaseBleConnectManager constructor(
      */
     fun notifyContact() {
         contactDisposable = rxBleManager.notifyContact { byte ->
-            handler.post {
-                byte.let {
-                    BleLogUtil.d(TAG, "notifyContact")
-                    contactListeners.forEach { listener ->
-                        listener.invoke(it)
-                    }
-                }
+            BleLogUtil.d(TAG, "notifyContact")
+            contactListeners.forEach { listener ->
+                listener.invoke(byte)
             }
         }
     }
@@ -486,6 +465,84 @@ abstract class BaseBleConnectManager constructor(
     ) {
         rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE, success, failure)
     }
+
+    fun getDevice() = rxBleManager.getDevice()
+
+    /**
+     * start collect all data
+     */
+    fun startHeartAndBrainCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "startHeartAndBrainCollection")
+        startFix(this)
+        rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT, success, failure)
+    }
+
+    /**
+     * stop collect all data
+     */
+    fun stopHeartAndBrainCollection(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        BleLogUtil.d(TAG, "stopHeartAndBrainCollection")
+        stopFix()
+        rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT, success, failure)
+    }
+
+    /**
+     * read device serial（readDeviceInfo）
+     */
+    fun readDeviceSerial(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceSerial(success, failure)
+    }
+
+    /**
+     * read device firmware（readDeviceInfo）
+     */
+    fun readDeviceFirmware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceFirmware(success, failure)
+    }
+
+    /**
+     * read device hardware（readDeviceInfo）
+     */
+    fun readDeviceHardware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceHardware(success, failure)
+    }
+
+    /**
+     * read device manufacturer（readDeviceInfo）
+     */
+    fun readDeviceManufacturer(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceManufacturer(success, failure)
+    }
+
+    fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
+        rxBleManager.readDeviceMac(success, failure)
+    }
+
+    override fun fixTrigger() {
+        mainHandler.post {
+            stopHeartAndBrainCollection()
+            startHeartAndBrainCollection()
+        }
+    }
+
+    private fun stopFix() {
+        fixStrategies.forEach {
+            it.stopFix()
+        }
+    }
+
+    private fun startFix(callback: IFixTriggerCallback) {
+        fixStrategies.forEach {
+            it.startFix(callback)
+        }
+    }
+
 
     /**
      * add raw brain data listener
@@ -568,83 +625,5 @@ abstract class BaseBleConnectManager constructor(
      */
     fun removeHeartRateListener(listener: (Int) -> Unit) {
         heartRateListeners.remove(listener)
-    }
-
-    fun getDevice() = rxBleManager.getDevice()
-
-
-    /**
-     * start collect all data
-     */
-    fun startHeartAndBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startHeartAndBrainCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * stop collect all data
-     */
-    fun stopHeartAndBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopHeartAndBrainCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * read device serial（readDeviceInfo）
-     */
-    fun readDeviceSerial(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readDeviceSerial(success, failure)
-    }
-
-    /**
-     * read device firmware（readDeviceInfo）
-     */
-    fun readDeviceFirmware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readDeviceFirmware(success, failure)
-    }
-
-    /**
-     * read device hardware（readDeviceInfo）
-     */
-    fun readDeviceHardware(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readDeviceHardware(success, failure)
-    }
-
-    /**
-     * read device manufacturer（readDeviceInfo）
-     */
-    fun readDeviceManufacturer(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readDeviceManufacturer(success, failure)
-    }
-
-    fun readDeviceMac(success: (String) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleManager.readDeviceMac(success, failure)
-    }
-
-    override fun fixTrigger() {
-        mainHandler.post {
-            stopHeartAndBrainCollection()
-            startHeartAndBrainCollection()
-        }
-    }
-
-    private fun stopFix() {
-        fixStrategies.forEach {
-            it.stopFix()
-        }
-    }
-
-    private fun startFix(callback: IFixTriggerCallback) {
-        fixStrategies.forEach {
-            it.startFix(callback)
-        }
     }
 }

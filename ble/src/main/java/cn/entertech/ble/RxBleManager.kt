@@ -20,6 +20,7 @@ import com.polidea.rxandroidble2.scan.ScanSettings
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -532,6 +533,7 @@ class RxBleManager constructor(
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
                 .flatMap { notificationObservable -> notificationObservable }
+                .subscribeOn(Schedulers.io())
                 .subscribe(
                     { characteristicValue ->
                         success.invoke(characteristicValue)
