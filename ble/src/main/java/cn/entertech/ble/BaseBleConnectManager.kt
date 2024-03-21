@@ -10,7 +10,9 @@ import cn.entertech.ble.fix.BaseFirmwareFixStrategy
 import cn.entertech.ble.fix.Firmware128FixHelper
 import cn.entertech.ble.fix.Firmware255FixHelper
 import cn.entertech.ble.fix.IFixTriggerCallback
+import cn.entertech.ble.uid.characteristic.BluetoothCharacteristic
 import cn.entertech.ble.uid.device.BaseBleDeviceFactory
+import cn.entertech.ble.uid.property.BluetoothProperty
 import cn.entertech.ble.uid.service.IBatteryService
 import cn.entertech.ble.uid.service.IEegService
 import cn.entertech.ble.uid.service.IHrsService
@@ -94,7 +96,7 @@ abstract class BaseBleConnectManager constructor(
             throw error
         }
     }
-    
+
     fun connectDevice(builder: BluetoothConnectBuilder) {
         connectDevice(
             builder.connectSuccess,
@@ -219,9 +221,116 @@ abstract class BaseBleConnectManager constructor(
         }
     }
 
+    @Throws(IllegalStateException::class)
+    fun write(
+        character: BluetoothCharacteristic,
+        bytes: ByteArray,
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        val properties = character.properties
+        if (properties.contains(BluetoothProperty.BLUETOOTH_PROPERTY_WRITE) ||
+            properties.contains(BluetoothProperty.BLUETOOTH_PROPERTY_WRITE_WITHOUT_RESPONSE)
+        ) {
+            write(character.uid, bytes, success, failure)
+        } else {
+            throw IllegalStateException("character is not support write")
+        }
+    }
+
+    /**
+     * write characteristic
+     */
+    private fun write(
+        characterId: String,
+        bytes: ByteArray,
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ): Disposable? {
+        return rxBleConnection?.writeCharacteristic(UUID.fromString(characterId), bytes)
+            ?.subscribe(
+                { characteristicValue ->
+                    success?.invoke(characteristicValue)
+                },
+                { throwable ->
+                    // Handle an error here.
+                    failure?.invoke("write error $throwable")
+                }
+            )
+    }
+
+    /**
+     * read characteristic
+     */
+    @Throws(IllegalStateException::class)
+    fun read(
+        character: BluetoothCharacteristic,
+        success: (ByteArray) -> Unit,
+        failure: ((String) -> Unit)?
+    ) {
+        val properties = character.properties
+        if (properties.contains(BluetoothProperty.BLUETOOTH_PROPERTY_READ)) {
+            read(character.uid, success, failure)
+        } else {
+            throw IllegalStateException("character is not support read")
+        }
+    }
 
 
+    /**
+     * read characteristic
+     */
+    fun read(
+        characterId: String,
+        success: (ByteArray) -> Unit,
+        failure: ((String) -> Unit)?
+    ): Disposable? {
+        return rxBleConnection?.readCharacteristic(UUID.fromString(characterId))
+            ?.subscribe(
+                { characteristicValue ->
+                    success.invoke(characteristicValue)
+                },
+                { throwable ->
+                    failure?.invoke("read error $throwable")
+                }
+            )
+    }
 
+    @Throws(IllegalStateException::class)
+    fun notify(
+        character: BluetoothCharacteristic,
+        success: (ByteArray) -> Unit,
+        failure: ((String) -> Unit)?
+    ) {
+        val properties = character.properties
+        if (properties.contains(BluetoothProperty.BLUETOOTH_PROPERTY_NOTIFY)) {
+            notify(character.uid, success, failure)
+        } else {
+            throw IllegalStateException("character is not support notify")
+        }
+    }
+
+    /**
+     * notify characteristic
+     */
+    private fun notify(
+        characterId: String,
+        success: (ByteArray) -> Unit,
+        failure: ((String) -> Unit)?
+    ): Disposable? {
+        BleLogUtil.d(TAG, "notify characterId $characterId")
+        return rxBleConnection?.setupNotification(UUID.fromString(characterId))
+            ?.flatMap { notificationObservable -> notificationObservable }
+            ?.subscribeOn(Schedulers.io())
+            ?.subscribe(
+                { characteristicValue ->
+                    success.invoke(characteristicValue)
+                },
+                { throwable ->
+                    failure?.invoke("notify error ${throwable.message}")
+                }
+            )
+    }
 
     /**
      * notify after connect
@@ -989,75 +1098,6 @@ abstract class BaseBleConnectManager constructor(
         read(bleFactory.getCharacteristicBatteryLevelUUid(), success, failure)
     }
 
-    /**
-     * read characteristic
-     */
-    fun read(characterId: String, success: (ByteArray) -> Unit, failure: ((String) -> Unit)?) {
-        rxBleConnection?.let {
-            it.readCharacteristic(UUID.fromString(characterId))
-                .subscribe(
-                    { characteristicValue ->
-                        success.invoke(characteristicValue)
-                    },
-                    { throwable ->
-                        // Handle an error here.
-                        BleLogUtil.i(TAG, "read error $throwable")
-                        failure?.invoke("read error $throwable")
-                    }
-                )
-        }
-    }
-
-    /**
-     * write characteristic
-     */
-    private fun write(
-        characterId: String,
-        bytes: ByteArray,
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)?
-    ) {
-        rxBleConnection?.let {
-            it.writeCharacteristic(UUID.fromString(characterId), bytes)
-                .subscribe(
-                    { characteristicValue ->
-                        success?.invoke(characteristicValue)
-                    },
-                    { throwable ->
-                        // Handle an error here.
-                        BleLogUtil.i(TAG, "write error $throwable")
-                        failure?.invoke("write error")
-                    }
-                )
-        }
-    }
-
-    /**
-     * notify characteristic
-     */
-    private fun notify(
-        characterId: String,
-        success: (ByteArray) -> Unit,
-        failure: ((String) -> Unit)?
-    ): Disposable? {
-        BleLogUtil.d(TAG, "notify characterId $characterId")
-        return rxBleConnection?.let {
-            it.setupNotification(UUID.fromString(characterId))
-                .flatMap { notificationObservable -> notificationObservable }
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                    { characteristicValue ->
-                        success.invoke(characteristicValue)
-                    },
-                    { throwable ->
-                        // Handle an error here.
-                        BleLogUtil.e(TAG, "notify characterId  error $throwable ")
-                        failure?.invoke("notify error")
-                    }
-                )
-
-        }
-    }
 
     /**
      * notify contact
