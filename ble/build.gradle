@@ -6,7 +6,7 @@ apply from: './push.gradle'
 /*PublishInfo {
     groupId = 'cn.entertech.android' // 库的组织，使用域名表示
     artifactId = 'biomoduleble' // 库名称
-    version = '1.5.6' // 库版本
+    version = '1.5.7' // 库版本
 }*/
 
 
