@@ -6,7 +6,7 @@ abstract class BaseFirmwareFixStrategy {
 
     companion object {
         @JvmStatic
-        protected val RECORD_COUNT_TARGET = 100
+        protected val RECORD_COUNT_TARGET = 500
     }
 
     private var recordCount = 0
