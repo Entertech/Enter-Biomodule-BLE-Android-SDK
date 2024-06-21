@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 
-import cn.entertech.ble.utils.BleLogUtil;
+import cn.entertech.ble.log.BleLogUtil;
+import cn.entertech.flowtimeble.R;
 
 
 public class RealtimeAnimLineChartView extends View {

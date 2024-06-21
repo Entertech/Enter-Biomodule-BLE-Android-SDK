@@ -4,29 +4,84 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.*
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import android.view.View
-import android.widget.Button
-import android.widget.Toast
-import cn.entertech.ble.ConnectionBleStrategy
-import cn.entertech.ble.single.BiomoduleBleManager
-import cn.entertech.ble.utils.BleLogUtil
-import cn.entertech.ble.utils.NapBattery
-import cn.entertech.bleuisdk.ui.DeviceUIConfig
-import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
-import cn.entertech.flowtimeble.skin.ISaveDataListener
-import cn.entertech.flowtimeble.skin.SkinConductivity
-import cn.entertech.flowtimeble.skin.SkinConductivityHelper
-import cn.entertech.flowtimeble.skin.SkinConductivityRecordActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import cn.entertech.ble.BaseBleConnectManager
+import cn.entertech.ble.base.IEegFunction
+import cn.entertech.ble.base.IHrFunction
+import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.device.DeviceType
+import cn.entertech.device.api.IDeviceType
+import cn.entertech.flowtimeble.skin.ISkinFunction
+import cn.entertech.flowtimeble.skin.SkinDataHelper
+import cn.entertech.flowtimeble.skin.SkinDataType
+import cn.entertech.flowtimeble.skin.SkinDevice
+import cn.entertech.flowtimeble.skin.SkinManage
+import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var biomoduleBleManager: BiomoduleBleManager
+
+    private val deviceManageMap by lazy {
+        ConcurrentHashMap<String, BaseBleConnectManager?>()
+    }
+    private val disConnectedListenerMap by lazy {
+        ConcurrentHashMap<String, (String) -> Unit>()
+    }
+    private val rawListenerMap by lazy {
+        ConcurrentHashMap<String, (ByteArray) -> Unit>()
+    }
+
+    private val hrListenerMap by lazy {
+        ConcurrentHashMap<String, (Int) -> Unit>()
+    }
+    private val deviceSaveHelperMap by lazy {
+        ConcurrentHashMap<String, SkinDataHelper>()
+    }
+
+    private val hasNotifyMap by lazy {
+        ConcurrentHashMap<String, Boolean>()
+    }
+    private val reconnectRunnableMap by lazy {
+        ConcurrentHashMap<String, Runnable>()
+    }
+
+    private var spinnerDeviceTypeList: Spinner? = null
+    private var cbNeedReconnected: CheckBox? = null
+    private var cbShowLog: CheckBox? = null
+    private var scrollView_logs: RecyclerView? = null
+    private var btnClearLog: Button? = null
+    private var btnConnect: Button? = null
+    private var btnScanConnect2: Button? = null
+    private var btnStartCollection2: Button? = null
+    private var btnStopCollection2: Button? = null
+    private var btnStartCollection: Button? = null
+    private var btnStopCollection: Button? = null
+    private var btnOpenFile: Button? = null
+    private var btnSwapPersistenceState: Button? = null
+    private val simple by lazy {
+        SimpleDateFormat("yyyy/MM/dd  hh:mm:ss:SSS")
+    }
+
+    private val adapter by lazy {
+        LogAdapter()
+    }
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val DEVICE1 = "device1"
+        private const val DEVICE2 = "device2"
 
         /**
          * 2s
@@ -53,45 +108,203 @@ class MainActivity : AppCompatActivity() {
      * */
     private var isPersistenceExperiment = false
 
-    private val reconnectRunnable: Runnable by lazy {
-        Runnable {
-            BleLogUtil.i(TAG, "reconnectRunnable")
-            onConnectBound()
-        }
+    private var needLog = false
+
+    @Volatile
+    private var needReConnected = false
+
+    private var btnScanConnect: Button? = null
+    private val deviceTypes by lazy {
+        listOf(
+            SkinDevice,
+        )
     }
 
-    private val checkConnectRunnable by lazy {
-        object : Runnable {
-            override fun run() {
-                BleLogUtil.i(
-                    TAG,
-                    "checkConnectRunnable biomoduleBleManager.isConnected()： ${biomoduleBleManager.isConnected()}"
-                )
-                mainHandler.postDelayed(this, CHECK_CONNECT_TIME)
-            }
-        }
-    }
-
-    private lateinit var btnScanConnect: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        biomoduleBleManager = BiomoduleBleManager.getInstance(this)
+        spinnerDeviceTypeList = findViewById(R.id.spinnerDeviceTypeList)
+        // 创建 ArrayAdapter
+        val arrayAdapter: ArrayAdapter<IDeviceType> =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, deviceTypes)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerDeviceTypeList?.adapter = arrayAdapter
+        spinnerDeviceTypeList?.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                initBleManager(parent?.getItemAtPosition(position) as? IDeviceType)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                initBleManager(null)
+            }
+        }
+
+        cbNeedReconnected = findViewById(R.id.cbNeedReconnected)
+        scrollView_logs = findViewById(R.id.scrollView_logs)
+        btnScanConnect2 = findViewById(R.id.btnScanConnect2)
+        btnStartCollection2 = findViewById(R.id.btnStartCollection2)
+        btnStopCollection2 = findViewById(R.id.btnStopCollection2)
+        btnStartCollection = findViewById(R.id.btnStartCollection)
+        btnStopCollection = findViewById(R.id.btnStopCollection)
+
+        btnStartCollection2?.setOnClickListener {
+            startCollectData(DEVICE2)
+        }
+        btnStopCollection2?.setOnClickListener {
+            stopCollectData(DEVICE2)
+        }
+        btnStartCollection?.setOnClickListener {
+            startCollectData(DEVICE1)
+        }
+        btnStopCollection?.setOnClickListener {
+            stopCollectData(DEVICE1)
+        }
+        btnOpenFile = findViewById(R.id.btnOpenFile)
+        btnOpenFile?.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.putExtra(
+                "android.content.extra.FOLDER_NAME", App.getInstance()
+                    .getExternalFilesDir("")?.absoluteFile
+            );
+            startActivity(Intent.createChooser(intent, "选择文件管理器"));
+        }
+        btnScanConnect2?.setOnClickListener {
+            connectDevice(DEVICE2) {
+                btnScanConnect2?.text = it
+            }
+        }
+        scrollView_logs?.adapter = adapter
+        scrollView_logs?.layoutManager = LinearLayoutManager(this)
+        btnClearLog = findViewById(R.id.btnClearLog)
+        cbShowLog = findViewById(R.id.cbStopLog)
+        btnClearLog?.setOnClickListener {
+            adapter.setData(ArrayList())
+        }
+        cbNeedReconnected?.isChecked = true
+        cbShowLog?.isChecked = true
+        needLog = cbShowLog?.isChecked ?: false
+        cbNeedReconnected?.setOnCheckedChangeListener { _, isChecked ->
+            needReConnected = isChecked
+        }
+        cbShowLog?.setOnCheckedChangeListener { _, isChecked ->
+            needLog = isChecked
+        }
+        needReConnected = cbNeedReconnected?.isChecked ?: false
+
         initPermission()
-        DeviceUIConfig.getInstance(this).init(false, false, 1)
-        DeviceUIConfig.getInstance(this).updateFirmware(
-            "1.2.0",
-            "${Environment.getExternalStorageDirectory()}/dfufile.zip",
-            true
-        )
+
         btnScanConnect = findViewById(R.id.btnScanConnect)
-        btnConnect.setOnClickListener {
-            onConnectBound()
+        btnScanConnect?.setOnClickListener {
+            connectDevice(DEVICE1) {
+                btnScanConnect?.text = it
+            }
+        }
+        btnConnect?.setOnClickListener {
+//            onConnectBound()
         }
         initPersistenceState()
-
     }
 
+    private fun initBleManager(deviceType: IDeviceType? = null, deviceName: String = "") {
+        val currentDeviceType = deviceType ?: deviceTypes[0]
+        showMsg("$deviceName 初始化")
+        var bluetoothDeviceManager: BaseBleConnectManager? = deviceManageMap[deviceName]
+        if (bluetoothDeviceManager == null) {
+            bluetoothDeviceManager = if (currentDeviceType is DeviceType) {
+                BaseBleConnectManager.getBleManagerInstance(currentDeviceType, this)
+            } else if (currentDeviceType is SkinDevice) {
+                SkinManage(this)
+            } else {
+                null
+            }
+            deviceManageMap[deviceName] = bluetoothDeviceManager
+        }
+        val disConnectedListener = initMap(disConnectedListenerMap, deviceName) {
+            fun(string: String) {
+                showMsg("$deviceName disconnect:   $string")
+                reconnect(deviceName)
+                runOnUiThread {
+                    if (deviceName == DEVICE1) {
+                        btnScanConnect?.setText(R.string.connect)
+                    }
+
+                    if (deviceName == DEVICE2) {
+                        btnScanConnect2?.setText(R.string.connect)
+                    }
+                    Toast.makeText(this@MainActivity, "$deviceName disconnect ", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+
+        val rawListener = initMap(rawListenerMap, deviceName) {
+            fun(bytes: ByteArray) {
+                val mSkinDataHelper = initMap(this@MainActivity.deviceSaveHelperMap, deviceName) {
+                    SkinDataHelper(deviceName)
+                }
+                mSkinDataHelper?.saveData(SkinDataType.BRAIN_DATA, HexDump.toHexString(bytes))
+                showMsg("braindata: " + HexDump.toHexString(bytes))
+            }
+        }
+        val hrListener = initMap(hrListenerMap, deviceName) {
+            fun(hr: Int) {
+                val mSkinDataHelper = initMap(this@MainActivity.deviceSaveHelperMap, deviceName) {
+                    SkinDataHelper(deviceName)
+                }
+                mSkinDataHelper?.saveData(SkinDataType.HR, "$hr")
+            }
+        }
+
+        bluetoothDeviceManager?.apply {
+            disConnectedListener?.let {
+                removeDisConnectListener(it)
+            }
+            rawListener?.let {
+                removeRawDataListener(it)
+            }
+            hrListener?.let {
+                (this as? IHrFunction)?.addHeartRateListener(it)
+            }
+            disConnect()
+        }
+        disConnectedListener?.let {
+            bluetoothDeviceManager?.addDisConnectListener(it)
+        }
+        rawListener?.let {
+            bluetoothDeviceManager?.addRawDataListener(it)
+        }
+        hrListener?.let {
+            (bluetoothDeviceManager as? IHrFunction)?.addHeartRateListener(it)
+        }
+    }
+
+    private fun <T> initMap(map: MutableMap<String, T>, key: String, init: () -> T): T? {
+        var value = map[key]
+        if (value == null) {
+            value = init()
+        }
+        return value
+    }
+
+
+    private fun showMsg(msg: String) {
+        BleLogUtil.d(TAG, msg)
+        if (!needLog) {
+            return
+        }
+        val realMsg = "->: ${simple.format(Date())} $msg\n"
+        runOnUiThread {
+            adapter.addItem(realMsg)
+            scrollView_logs?.scrollToPosition(adapter.itemCount - 1)
+        }
+
+    }
 
     /**
      * Android6.0 auth
@@ -131,76 +344,64 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onDeviceUI(@Suppress("UNUSED_PARAMETER") view: View) {
-        startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
-    }
 
-    var contactListener = fun(contactState: Int) {
-        BleLogUtil.i(TAG, "contace state is ${contactState}")
-    }
+    private fun reconnect(deviceName: String) {
+        val reconnectRunnable = initMap(reconnectRunnableMap, deviceName) {
+            Runnable {
+                showMsg("reconnectRunnable needReConnected:   $needReConnected")
+                if (needReConnected) {
+                    showMsg("start reconnect $deviceName")
+                    connectDevice(deviceName) {
+                        if (deviceName == DEVICE2) {
+                            btnScanConnect2?.text = it
+                        }
 
-    var connectedListener = fun(string: String) {
-        BleLogUtil.i(TAG, "connect success${string}")
-        runOnUiThread {
-            Toast.makeText(this@MainActivity, "connect success", Toast.LENGTH_SHORT).show()
+                        if (deviceName == DEVICE1) {
+                            btnScanConnect?.text = it
+                        }
+                    }
+                }
+            }
         }
-    }
-    var disConnectedListener = fun(string: String) {
-        BleLogUtil.i(TAG, "disconnect $string")
-        btnConnect.setText(R.string.connectBonded)
-        btnScanConnect.setText(R.string.connect)
-        reconnect()
-        runOnUiThread {
-            Toast.makeText(this@MainActivity, "disconnect ", Toast.LENGTH_SHORT).show()
+        reconnectRunnable?.apply {
+            mainHandler.removeCallbacks(reconnectRunnable)
+            mainHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_TIME)
         }
-    }
-
-    private fun reconnect() {
-        mainHandler.removeCallbacks(reconnectRunnable)
-        mainHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_TIME)
-    }
-
-
-    @OptIn(ExperimentalStdlibApi::class)
-    fun onConnectBound() {
-        mainHandler.removeCallbacks(reconnectRunnable)
-        biomoduleBleManager.connectDevice({
-            BleLogUtil.i(TAG, "connect Bound success")
-            btnConnect.text = it
-            if (isPersistenceExperiment) {
-                mainHandler.post(checkConnectRunnable)
-                onCollectBrainAndHeartStart()
-            }
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "connect success ", Toast.LENGTH_SHORT).show()
-            }
-
-        }, {
-            BleLogUtil.i(TAG, "connect Bound failed error $it ")
-            if (isPersistenceExperiment) {
-                reconnect()
-            }
-            runOnUiThread {
-                Toast.makeText(
-                    this@MainActivity, "connect Bound failed error $it ", Toast.LENGTH_SHORT
-                ).show()
-            }
-        }, ConnectionBleStrategy.CONNECT_BONDED
-        )
 
     }
 
-    fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        mainHandler.removeCallbacks(reconnectRunnable)
-        biomoduleBleManager.connectDevice(fun(mac: String) {
-            BleLogUtil.i(TAG, "connect success $mac")
-            btnScanConnect.text = mac
+    private fun connectDevice(deviceName: String = "", successUi: (String) -> Unit) {
+        reconnectRunnableMap[deviceName]?.apply {
+            mainHandler.removeCallbacks(this)
+        }
+        var bluetoothDeviceManager = deviceManageMap[deviceName]
+        if (bluetoothDeviceManager == null) {
+            initBleManager(deviceName = deviceName)
+            bluetoothDeviceManager = deviceManageMap[deviceName]
+        }
+        if (bluetoothDeviceManager?.isConnected() == true) {
+            showMsg("已连接  $bluetoothDeviceManager")
+            return
+        }
+
+        if (bluetoothDeviceManager?.isConnecting() == true) {
+            showMsg("正在连接中  $bluetoothDeviceManager")
+            return
+        }
+        showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
+        var skinDataHelper = deviceSaveHelperMap[deviceName]
+        if (skinDataHelper == null) {
+            skinDataHelper = SkinDataHelper(deviceName)
+            deviceSaveHelperMap[deviceName] = skinDataHelper
+        }
+        skinDataHelper.close()
+        bluetoothDeviceManager?.connectDevice(fun(mac: String) {
+            showMsg("connect success $mac")
             runOnUiThread {
-                Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
-                    .show()
+                successUi(mac)
             }
         }, { msg ->
-            BleLogUtil.i(TAG, "connect failed")
+            showMsg("connect failed $msg")
             runOnUiThread {
                 Toast.makeText(
                     this@MainActivity,
@@ -208,258 +409,163 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }, ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+        }, cn.entertech.ble.api.ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+    }
+
+    private fun startCollectData(deviceName: String, delayMillis: Long = 0) {
+        val hasNotify = hasNotifyMap[deviceName]
+        if (hasNotify == true) {
+            return
+        }
+        hasNotifyMap[deviceName] = true
+        if (deviceName == DEVICE2) {
+            btnStartCollection2?.isClickable = false
+        }
+        if (deviceName == DEVICE1) {
+            btnStartCollection?.isClickable = false
+        }
+        val skinDataHelper = initMap(deviceSaveHelperMap, deviceName) {
+            SkinDataHelper(deviceName)
+        }
+        skinDataHelper?.close()
+        skinDataHelper?.initHelper()
+        mainHandler.postDelayed({
+            startCollection(deviceName, false)
+//            startContact(deviceName)
+            notifySkinRate(deviceName)
+        }, delayMillis)
+    }
+
+    private fun stopCollectData(deviceName: String, delayMillis: Long = 0) {
+        showMsg("$deviceName 准备停止收集数据 ")
+        hasNotifyMap[deviceName] = false
+        if (deviceName == DEVICE2) {
+            btnStartCollection2?.isClickable = true
+        }
+        if (deviceName == DEVICE1) {
+            btnStartCollection?.isClickable = true
+        }
+        mainHandler.postDelayed({
+            stopCollection(deviceName)
+//            startContact(deviceName)
+            stopNotifySkinRate(deviceName)
+        }, delayMillis)
     }
 
     private fun initPersistenceState() {
-        btnSwapPersistenceState.text = if (isPersistenceExperiment) {
+        btnSwapPersistenceState?.text = if (isPersistenceExperiment) {
             "当前是处于持续性实验状态"
         } else {
             "当前是处于非持续性实验状态"
         }
     }
 
-
-    fun onSwapPersistenceState(@Suppress("UNUSED_PARAMETER") view: View) {
-        isPersistenceExperiment = !isPersistenceExperiment
-        initPersistenceState()
+    fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
+        disconnect(DEVICE1)
     }
 
+    fun disconnect(deviceName: String) {
+        deviceManageMap[deviceName]?.disConnect {
+            runOnUiThread {
+                hasNotifyMap[deviceName] = false
+                if (deviceName == DEVICE2) {
+                    btnStartCollection2?.isClickable = true
+                }
+                if (deviceName == DEVICE1) {
+                    btnStartCollection?.isClickable = true
+                }
+                if (deviceName == DEVICE2) {
+                    btnScanConnect2?.setText(R.string.connect)
+                }
 
-    fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.disConnect{
-            btnConnect.setText(R.string.connectBonded)
-            btnScanConnect.setText(R.string.connect)
+                if (deviceName == DEVICE1) {
+                    btnScanConnect?.setText(R.string.connect)
+                }
+            }
         }
     }
 
-
-    fun onAddConnectedListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addConnectListener(connectedListener)
+    private fun notifySkinRate(deviceName: String) {
+        (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
+            showMsg("皮电数据： ${HexDump.toHexString(it)}")
+            initMap(deviceSaveHelperMap, deviceName) {
+                SkinDataHelper(deviceName)
+            }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
+        }) {
+            showMsg("订阅皮电数据失败")
+        }
     }
 
-    fun onRemoveConnectedListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeConnectListener(connectedListener)
+    private fun stopNotifySkinRate(deviceName: String) {
+        (deviceManageMap[deviceName] as? ISkinFunction)?.stopNotifySkinRate()
     }
 
-    fun onAddDisconnectedListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addDisConnectListener(disConnectedListener)
-    }
 
-    fun onRemoveDisconnectedListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeDisConnectListener(disConnectedListener)
-    }
-
-    fun onStopContact(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.stopContact()
-    }
-
-    fun onStartContact(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.startContact()
-    }
-
-    fun onCollectHeartStart(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.startHeartRateCollection()
-    }
-
-    fun onCollectHeartStop(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.stopHeartRateCollection()
-    }
-
-    fun onCollectBrainStart(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.startBrainCollection()
-    }
-
-    fun onCollectBrainStop(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.stopBrainCollection()
-    }
-
-    fun onCollectBrainAndHeartStart(@Suppress("UNUSED_PARAMETER") view: View) {
-        onCollectBrainAndHeartStart()
-    }
-
-    fun onCollectBrainAndHeartStart() {
-        biomoduleBleManager.startHeartAndBrainCollection()
-    }
-
-    fun onCollectBrainAndHeartStop(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.stopHeartAndBrainCollection()
-    }
-
-    var rawListener = fun(bytes: ByteArray) {
-//        BleLogUtil.d(TAG,"firmware fixing hex " + HexDump.toHexString(bytes))
-        BleLogUtil.d("######", "braindata: " + HexDump.toHexString(bytes))
-//        BleLogUtil.d(TAG,"brain data is " + Arrays.toString(bytes))
-    }
-
-    var heartRateListener = fun(heartRate: Int) {
-        BleLogUtil.d(TAG, "heart rate data is " + heartRate)
-    }
-
-    fun onAddRawListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addRawDataListener(rawListener)
-    }
-
-    fun onRemoveRawListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeRawDataListener(rawListener)
-    }
-
-    fun onAddHeartRateListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addHeartRateListener(heartRateListener)
-    }
-
-    fun onRemoveHeartRateListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeHeartRateListener(heartRateListener)
-    }
-
-    fun onAddContactListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addContactListener(contactListener)
-    }
-
-    fun onRemoveContactListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeContactListener(contactListener)
-    }
-
-    fun onBattery(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.readBattery(fun(battery: NapBattery) {
-            BleLogUtil.d(TAG, "battery = $battery")
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "电量:$battery", Toast.LENGTH_SHORT).show()
+    private fun startContact(deviceName: String) {
+        showMsg("$deviceName 开始佩戴检测 ")
+        val currentBleManger = deviceManageMap[deviceName]
+        if (currentBleManger is IEegFunction) {
+            currentBleManger.notifyContact({
+                val result = if (it.isEmpty()) {
+                    0
+                } else {
+                    it.contentToString()
+                }
+//                showMsg("佩戴检测值： $result")
+            }) {
+                showMsg("佩戴检测失败： $it")
             }
-        }, fun(error: String) {
-            BleLogUtil.d(TAG, "error is ${error}")
-        })
+        }
+
     }
 
-    fun onGetState(@Suppress("UNUSED_PARAMETER") view: View) {
-        BleLogUtil.d(TAG, "biomoduleBleManager.isConnected()： ${biomoduleBleManager.isConnected()}")
-        Toast.makeText(
-            this, if (biomoduleBleManager.isConnected()) {
-                "connected"
-            } else {
-                "disconnect"
-            }, Toast.LENGTH_SHORT
-        ).show()
+    private fun stopContact(deviceName: String) {
+        showMsg("停止佩戴检测")
+        val currentBleManger = deviceManageMap[deviceName]
+        if (currentBleManger is IEegFunction) {
+            currentBleManger.stopNotifyContact()
+        }
     }
 
-    val batteryListener = fun(napBattery: NapBattery) {
-        BleLogUtil.d(TAG, "battery = ${napBattery}")
-    }
-    val batteryVoltageListener = fun(voltage: Double) {
-        BleLogUtil.d(TAG, "battery voltage = ${voltage}")
+    private fun startCollection(deviceName: String, needStop: Boolean = true) {
+        val bluetoothDeviceManager = deviceManageMap[deviceName]
+        if (needStop) {
+            stopCollection(deviceName, success = {
+                showMsg("$deviceName 开始停止收集数据")
+                bluetoothDeviceManager?.stopCollection({
+                    showMsg("$deviceName 停止收集数据指令发送成功 ")
+                }) {
+                    showMsg("$deviceName 停止收集数据指令发送失败 $it")
+                } ?: showMsg("$deviceName 停止收集数据指令发送失败 bluetoothDeviceManager is null")
+
+            })
+        } else {
+            showMsg("$deviceName 开始收集数据")
+            bluetoothDeviceManager?.startCollection({
+                showMsg("$deviceName 收集数据指令发送成功 ")
+            }) {
+                showMsg("$deviceName 收集数据指令发送失败 $it")
+            } ?: showMsg("$deviceName 收集数据指令发送失败 bluetoothDeviceManager is null")
+        }
     }
 
-    fun onAddBatteryListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addBatteryListener(batteryListener)
-    }
-
-    fun onRemoveBatteryListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeBatteryListener(batteryListener)
-    }
-
-    fun onAddBatteryVoltageListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.addBatteryVoltageListener(batteryVoltageListener)
-    }
-
-    fun onRemoveBatteryVoltageListener(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.removeBatteryVoltageListener(batteryVoltageListener)
-    }
-
-    fun onReadHardware(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.readDeviceHardware(fun(hardware: String) {
-            BleLogUtil.d(TAG, "hardware is " + hardware)
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "hardware is：${hardware}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }, fun(error: String) {
-            BleLogUtil.d(TAG, "error is " + error)
-        })
-    }
-
-    fun onReadFirmware(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.readDeviceFirmware(fun(firmware: String) {
-            BleLogUtil.d(TAG, "firmware is " + firmware)
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "firmware is：${firmware}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }, fun(error: String) {
-            BleLogUtil.d(TAG, "error is " + error)
-        })
-    }
-
-    fun onReadDeviceSerial(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.readDeviceSerial(fun(serial: String) {
-            BleLogUtil.d(TAG, "serial is " + serial)
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "serial is：${serial}", Toast.LENGTH_SHORT).show()
-            }
-        }, fun(error: String) {
-            BleLogUtil.d(TAG, "error is " + error)
-        })
-    }
-
-    fun oReadDeviceManufacturer(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.readDeviceManufacturer(fun(manufacturer: String) {
-            BleLogUtil.d(TAG, "manufacturer is " + manufacturer)
-            runOnUiThread {
-                Toast.makeText(
-                    this@MainActivity,
-                    "manufacturer is：${manufacturer}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }, fun(error: String) {
-            BleLogUtil.d(TAG, "error is " + error)
-        })
+    private fun stopCollection(
+        deviceName: String,
+        success: () -> Unit = {},
+        failure: (String) -> Unit = {}
+    ) {
+        val bluetoothDeviceManager = deviceManageMap[deviceName]
+        showMsg("$deviceName 停止收集数据")
+        bluetoothDeviceManager?.stopCollection({
+            showMsg("$deviceName 停止数据指令发送成功 ")
+            success()
+        }) {
+            showMsg("$deviceName 停止数据指令发送失败 $it")
+            failure(it)
+        }
     }
 
     fun showLog(view: View) {
-        startActivity(Intent(this, ShowLogActivity::class.java))
-    }
-
-    fun onFindConnectedDevice(@Suppress("UNUSED_PARAMETER") view: View) {
-        biomoduleBleManager.findConnectedDevice()
-    }
-
-    fun goToSkinConductivity(view: View) {
-        if (!biomoduleBleManager.isConnected()) {
-            Toast.makeText(applicationContext, "请先连接设备", Toast.LENGTH_SHORT).show()
-        }
-        startActivity(Intent(this, SkinConductivity::class.java))
-    }
-
-    fun readSkinConductivity(view: View) {
-        startActivity(Intent(this, SkinConductivityRecordActivity::class.java))
-    }
-
-    override fun onDestroy() {
-        biomoduleBleManager.removeRawDataListener(rawListener)
-        biomoduleBleManager.removeContactListener(contactListener)
-        biomoduleBleManager.removeBatteryListener(batteryListener)
-        biomoduleBleManager.removeHeartRateListener(heartRateListener)
-        biomoduleBleManager.stopHeartRateCollection()
-        biomoduleBleManager.stopBrainCollection()
-        biomoduleBleManager.stopHeartAndBrainCollection()
-        super.onDestroy()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        SkinConductivityHelper.saveDataIntoFile(this, object : ISaveDataListener {
-            override fun start() {
-                Toast.makeText(applicationContext, "开始准备保存数据", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun complete() {
-                Toast.makeText(applicationContext, "保存数据成功", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun error(errorMsg: String) {
-                Toast.makeText(applicationContext, "保存数据失败：$errorMsg", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        })
+//        startActivity(Intent(this, ShowLogActivity::class.java))
     }
 }

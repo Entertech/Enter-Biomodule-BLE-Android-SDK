@@ -3,7 +3,7 @@ package cn.entertech.flowtimeble.skin
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.ble.log.BleLogUtil
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
