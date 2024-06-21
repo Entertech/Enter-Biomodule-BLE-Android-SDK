@@ -1,7 +1,7 @@
 package cn.entertech.flowtimeble
 
 import android.content.Context
-import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.ble.log.BleLogUtil
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter

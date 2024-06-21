@@ -8,7 +8,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.ble.log.BleLogUtil
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader

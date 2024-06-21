@@ -2,16 +2,25 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 32
+
+    signingConfigs {
+        config {
+            keyAlias 'entertech'
+            keyPassword '123456'
+            storeFile file('../entertech.jks')
+            storePassword '123456'
+        }
+    }
+
+    compileSdkVersion 34
     defaultConfig {
         applicationId "cn.entertech.flowtimeble"
-        minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 4
-        versionName "1.2"
+        minSdkVersion 23
+        targetSdkVersion 34
+        versionCode 151
+        versionName "1.5.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     compileOptions {
@@ -38,14 +47,15 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 //    implementation 'com.orhanobut:BleLogUtil:2.2.0'
-    api project(':bleuisdk')
-    implementation project(':ble')
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'cn.entertech.android:device:0.0.1-debug'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 //    implementation 'com.orhanobut:BleLogUtil:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
 //    implementation 'cn.entertech.android:biomoduleble:1.5.5'
+    implementation 'cn.entertech.android:base:0.0.2'
+    implementation 'cn.entertech.android:biomoduleble:2.1.1'
 }
