@@ -19,6 +19,7 @@ import cn.entertech.ble.BaseBleConnectManager
 //import cn.entertech.ble.base.IEegFunction
 //import cn.entertech.ble.base.IHrFunction
 import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
 import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.device.DeviceType
 import cn.entertech.device.api.IDeviceType
@@ -217,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         showMsg("$deviceName 初始化")
         var bluetoothDeviceManager: BaseBleConnectManager? = deviceManageMap[deviceName]
         if (bluetoothDeviceManager == null) {
-            bluetoothDeviceManager = BiomoduleBleManager.getInstance(this)
+            bluetoothDeviceManager = MultipleBiomoduleBleManager(this)
               /*  if (currentDeviceType is DeviceType) {
                 
             }*/
