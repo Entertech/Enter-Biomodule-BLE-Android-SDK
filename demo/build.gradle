@@ -51,7 +51,7 @@ dependencies {
     implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'cn.entertech.android:device:0.0.1-debug'
+    implementation 'cn.entertech.android:device:0.0.1'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 //    implementation 'com.orhanobut:BleLogUtil:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
