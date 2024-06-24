@@ -16,12 +16,13 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.BaseBleConnectManager
-import cn.entertech.ble.base.IEegFunction
-import cn.entertech.ble.base.IHrFunction
+//import cn.entertech.ble.base.IEegFunction
+//import cn.entertech.ble.base.IHrFunction
 import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.ble.single.BiomoduleBleManager
 import cn.entertech.device.DeviceType
 import cn.entertech.device.api.IDeviceType
-import cn.entertech.flowtimeble.skin.ISkinFunction
+//import cn.entertech.flowtimeble.skin.ISkinFunction
 import cn.entertech.flowtimeble.skin.SkinDataHelper
 import cn.entertech.flowtimeble.skin.SkinDataType
 import cn.entertech.flowtimeble.skin.SkinDevice
@@ -216,13 +217,16 @@ class MainActivity : AppCompatActivity() {
         showMsg("$deviceName 初始化")
         var bluetoothDeviceManager: BaseBleConnectManager? = deviceManageMap[deviceName]
         if (bluetoothDeviceManager == null) {
-            bluetoothDeviceManager = if (currentDeviceType is DeviceType) {
-                BaseBleConnectManager.getBleManagerInstance(currentDeviceType, this)
+            bluetoothDeviceManager = BiomoduleBleManager.getInstance(this)
+              /*  if (currentDeviceType is DeviceType) {
+                
+            }*/
+                /*BaseBleConnectManager.getBleManagerInstance(currentDeviceType, this)
             } else if (currentDeviceType is SkinDevice) {
                 SkinManage(this)
             } else {
                 null
-            }
+            }*/
             deviceManageMap[deviceName] = bluetoothDeviceManager
         }
         val disConnectedListener = initMap(disConnectedListenerMap, deviceName) {
@@ -252,14 +256,14 @@ class MainActivity : AppCompatActivity() {
                 showMsg("braindata: " + HexDump.toHexString(bytes))
             }
         }
-        val hrListener = initMap(hrListenerMap, deviceName) {
+     /*   val hrListener = initMap(hrListenerMap, deviceName) {
             fun(hr: Int) {
                 val mSkinDataHelper = initMap(this@MainActivity.deviceSaveHelperMap, deviceName) {
                     SkinDataHelper(deviceName)
                 }
                 mSkinDataHelper?.saveData(SkinDataType.HR, "$hr")
             }
-        }
+        }*/
 
         bluetoothDeviceManager?.apply {
             disConnectedListener?.let {
@@ -268,9 +272,9 @@ class MainActivity : AppCompatActivity() {
             rawListener?.let {
                 removeRawDataListener(it)
             }
-            hrListener?.let {
+        /*    hrListener?.let {
                 (this as? IHrFunction)?.addHeartRateListener(it)
-            }
+            }*/
             disConnect()
         }
         disConnectedListener?.let {
@@ -279,9 +283,9 @@ class MainActivity : AppCompatActivity() {
         rawListener?.let {
             bluetoothDeviceManager?.addRawDataListener(it)
         }
-        hrListener?.let {
+      /*  hrListener?.let {
             (bluetoothDeviceManager as? IHrFunction)?.addHeartRateListener(it)
-        }
+        }*/
     }
 
     private fun <T> initMap(map: MutableMap<String, T>, key: String, init: () -> T): T? {
@@ -409,7 +413,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }, cn.entertech.ble.api.ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+        })
     }
 
     private fun startCollectData(deviceName: String, delayMillis: Long = 0) {
@@ -486,45 +490,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notifySkinRate(deviceName: String) {
-        (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
+      /*  (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
             showMsg("皮电数据： ${HexDump.toHexString(it)}")
             initMap(deviceSaveHelperMap, deviceName) {
                 SkinDataHelper(deviceName)
             }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
         }) {
             showMsg("订阅皮电数据失败")
-        }
+        }*/
     }
 
     private fun stopNotifySkinRate(deviceName: String) {
-        (deviceManageMap[deviceName] as? ISkinFunction)?.stopNotifySkinRate()
+//        (deviceManageMap[deviceName] as? ISkinFunction)?.stopNotifySkinRate()
     }
 
 
     private fun startContact(deviceName: String) {
         showMsg("$deviceName 开始佩戴检测 ")
         val currentBleManger = deviceManageMap[deviceName]
-        if (currentBleManger is IEegFunction) {
-            currentBleManger.notifyContact({
-                val result = if (it.isEmpty()) {
+            currentBleManger?.notifyContact({
+              /*  val result = if (it.isEmpty()) {
                     0
                 } else {
                     it.contentToString()
-                }
-//                showMsg("佩戴检测值： $result")
+                }*/
+                showMsg("佩戴检测值： $it")
             }) {
                 showMsg("佩戴检测失败： $it")
             }
-        }
 
     }
-
     private fun stopContact(deviceName: String) {
         showMsg("停止佩戴检测")
         val currentBleManger = deviceManageMap[deviceName]
-        if (currentBleManger is IEegFunction) {
+     /*   if (currentBleManger is IEegFunction) {
             currentBleManger.stopNotifyContact()
-        }
+        }*/
     }
 
     private fun startCollection(deviceName: String, needStop: Boolean = true) {
@@ -532,7 +533,7 @@ class MainActivity : AppCompatActivity() {
         if (needStop) {
             stopCollection(deviceName, success = {
                 showMsg("$deviceName 开始停止收集数据")
-                bluetoothDeviceManager?.stopCollection({
+                bluetoothDeviceManager?.stopHeartAndBrainCollection({
                     showMsg("$deviceName 停止收集数据指令发送成功 ")
                 }) {
                     showMsg("$deviceName 停止收集数据指令发送失败 $it")
@@ -541,7 +542,7 @@ class MainActivity : AppCompatActivity() {
             })
         } else {
             showMsg("$deviceName 开始收集数据")
-            bluetoothDeviceManager?.startCollection({
+            bluetoothDeviceManager?.startHeartAndBrainCollection({
                 showMsg("$deviceName 收集数据指令发送成功 ")
             }) {
                 showMsg("$deviceName 收集数据指令发送失败 $it")
@@ -556,7 +557,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         val bluetoothDeviceManager = deviceManageMap[deviceName]
         showMsg("$deviceName 停止收集数据")
-        bluetoothDeviceManager?.stopCollection({
+        bluetoothDeviceManager?.stopHeartAndBrainCollection({
             showMsg("$deviceName 停止数据指令发送成功 ")
             success()
         }) {
