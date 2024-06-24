@@ -4,23 +4,26 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.ParcelUuid
+import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.utils.*
 import cn.entertech.ble.utils.CharUtil.converUnchart
+import com.polidea.rxandroidble2.LogConstants
+import com.polidea.rxandroidble2.LogOptions
 import com.polidea.rxandroidble2.RxBleClient
 import com.polidea.rxandroidble2.RxBleConnection
 import com.polidea.rxandroidble2.RxBleDevice
 import com.polidea.rxandroidble2.exceptions.BleException
+import com.polidea.rxandroidble2.internal.RxBleLog
 import com.polidea.rxandroidble2.scan.ScanFilter
 import com.polidea.rxandroidble2.scan.ScanResult
 import com.polidea.rxandroidble2.scan.ScanSettings
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
-import java.util.*
-import kotlin.concurrent.schedule
-
 import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.schedule
 
 
 /**
@@ -43,6 +46,12 @@ class RxBleManager constructor(context: Context) {
         private const val TAG = "RxBleManager"
         private const val DURATION_OF_SORT: Long = 3000
         private const val CONNECT_TASK_DELAY: Long = 1000
+
+
+        init {
+            val newLogOptions = LogOptions.Builder().setLogLevel(LogConstants.VERBOSE).build()
+            RxBleLog.updateLogOptions(newLogOptions)
+        }
     }
 
     init {
@@ -483,7 +492,7 @@ class RxBleManager constructor(context: Context) {
         BleLogUtil.d(TAG, "notify characterId ${characterId}")
         return rxBleConnection?.let {
             it.setupNotification(UUID.fromString(characterId))
-                .flatMap({ notificationObservable -> notificationObservable })
+                .flatMap { notificationObservable -> notificationObservable }
                 .subscribe(
                     { characteristicValue ->
                         success.invoke(characteristicValue)

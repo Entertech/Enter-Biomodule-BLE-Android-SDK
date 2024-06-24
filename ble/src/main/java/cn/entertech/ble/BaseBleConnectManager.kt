@@ -8,7 +8,7 @@ import android.os.Looper
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
 import cn.entertech.ble.fix.BaseFirmwareFixStrategy
 import cn.entertech.ble.utils.BatteryUtil
-import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.utils.ByteArrayBean
 import cn.entertech.ble.fix.Firmware128FixHelper
 import cn.entertech.ble.fix.Firmware255FixHelper
@@ -211,9 +211,10 @@ abstract class BaseBleConnectManager constructor(
     /**
      * notify contact
      */
-    fun notifyContact() {
+    fun notifyContact(success: ((Int) -> Unit)? = null, failure: ((String) -> Unit)? = null) {
         contactDisposable = rxBleManager.notifyContact { byte ->
             handler.post {
+                success?.invoke(byte)
                 byte.let {
                     if (System.currentTimeMillis() - lastNotifyContactLogTime > 1000 * 20L) {
                         BleLogUtil.d(TAG, "notifyContact")
@@ -654,19 +655,19 @@ abstract class BaseBleConnectManager constructor(
         }
     }
 
-    private fun stopFix(){
-        fixStrategies.forEach { 
+    private fun stopFix() {
+        fixStrategies.forEach {
             it.stopFix()
         }
     }
-    
-    private fun startFix(callback: IFixTriggerCallback){
+
+    private fun startFix(callback: IFixTriggerCallback) {
         fixStrategies.forEach {
             it.startFix(callback)
         }
     }
 
-    fun stopScanNearDevice(){
+    fun stopScanNearDevice() {
         rxBleManager.stopScanNearDevice()
     }
 }

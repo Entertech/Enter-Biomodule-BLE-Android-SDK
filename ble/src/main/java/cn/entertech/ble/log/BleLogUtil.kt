@@ -1,4 +1,4 @@
-package cn.entertech.ble.utils
+package cn.entertech.ble.log
 
 import android.util.Log
 
