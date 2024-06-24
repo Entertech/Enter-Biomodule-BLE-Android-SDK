@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothDevice;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import cn.entertech.ble.log.BleLogUtil;
+
 public class BleUtil {
     @SuppressLint("MissingPermission")
     public static void removePairDevice() {
