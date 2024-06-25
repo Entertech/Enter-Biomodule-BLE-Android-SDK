@@ -57,6 +57,7 @@ dependencies {
 //    implementation 'com.orhanobut:BleLogUtil:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
 //    implementation 'cn.entertech.android:biomoduleble:1.5.5'
-    implementation 'cn.entertech.android:base:0.0.2'
-//    implementation 'cn.entertech.android:biomoduleble:2.1.1'
+    implementation 'cn.entertech.android:base:0.0.3'
+    implementation 'cn.entertech.android:device:0.0.1'
+    implementation 'cn.entertech.android:biomoduleble:2.1.1'
 }

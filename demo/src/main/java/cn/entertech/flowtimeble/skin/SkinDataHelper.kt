@@ -4,7 +4,6 @@ package cn.entertech.flowtimeble.skin
 import android.os.Looper
 import cn.entertech.flowtimeble.App
 import cn.entertech.flowtimeble.FileHelper
-import cn.entertech.flowtimeble.HexDump
 import java.text.SimpleDateFormat
 import java.util.Locale
 
