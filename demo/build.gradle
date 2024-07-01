@@ -39,25 +39,18 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.9.0'
-    implementation project(path: ':ble')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-//    implementation 'com.orhanobut:BleLogUtil:2.2.0'
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'cn.entertech.android:device:0.0.1'
-//    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
-//    implementation 'com.orhanobut:BleLogUtil:1.15'
-//    implementation 'cn.entertech:biomodulebleui:1.0.4'
-//    implementation 'cn.entertech.android:biomoduleble:1.5.5'
     implementation 'cn.entertech.android:base:0.0.3'
     implementation 'cn.entertech.android:device:0.0.1'
-    implementation 'cn.entertech.android:biomoduleble:2.1.1'
 }
