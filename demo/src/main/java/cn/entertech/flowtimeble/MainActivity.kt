@@ -1,7 +1,6 @@
 package cn.entertech.flowtimeble
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.*
 import android.view.View
@@ -22,8 +21,6 @@ import cn.entertech.ble.base.IEegFunction
 import cn.entertech.ble.base.IHrFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.utils.NapBattery
-import cn.entertech.bleuisdk.ui.DeviceUIConfig
-import cn.entertech.bleuisdk.ui.activity.DeviceManagerActivity
 import cn.entertech.device.DeviceType
 import cn.entertech.flowtimeble.skin.SkinDataHelper
 import cn.entertech.flowtimeble.skin.SkinDataType
@@ -62,13 +59,9 @@ class MainActivity : AppCompatActivity() {
             lastReceiveDataTime = System.currentTimeMillis()
         }
 //        BleLogUtil.d(TAG,"firmware fixing hex " + HexDump.toHexString(bytes))
-        skinDataHelper.saveData(SkinDataType.BRAIN_DATA, HexDump.toHexString(bytes))
+        skinDataHelper.saveData(SkinDataType.BRAIN_DATA, bytes)
 //        showMsg("braindata: " + HexDump.toHexString(bytes))
 //        BleLogUtil.d(TAG,"brain data is " + Arrays.toString(bytes))
-    }
-
-    private var heartRateListener = fun(heartRate: Int) {
-        BleLogUtil.d(TAG, "heart rate data is $heartRate")
     }
 
     companion object {
@@ -162,8 +155,6 @@ class MainActivity : AppCompatActivity() {
         scrollView_logs?.adapter = adapter
         scrollView_logs?.layoutManager = LinearLayoutManager(this)
         btnClearLog = findViewById(R.id.btnClearLog)
-        btnConnect = findViewById(R.id.btnConnect)
-        btnSwapPersistenceState = findViewById(R.id.btnSwapPersistenceState)
         cbShowLog = findViewById(R.id.cbStopLog)
         btnClearLog?.setOnClickListener {
             adapter.setData(ArrayList())
@@ -180,12 +171,12 @@ class MainActivity : AppCompatActivity() {
         needReConnected = cbNeedReconnected?.isChecked ?: false
 
         initPermission()
-        DeviceUIConfig.getInstance(this).init(false, false, 1)
+      /*  DeviceUIConfig.getInstance(this).init(false, false, 1)
         DeviceUIConfig.getInstance(this).updateFirmware(
             "1.2.0",
             "${Environment.getExternalStorageDirectory()}/dfufile.zip",
             true
-        )
+        )*/
         btnScanConnect = findViewById(R.id.btnScanConnect)
         btnConnect?.setOnClickListener {
             onConnectBound()
@@ -262,7 +253,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onDeviceUI(@Suppress("UNUSED_PARAMETER") view: View) {
-        startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
+//        startActivity(Intent(this@MainActivity, DeviceManagerActivity::class.java))
     }
 
     var contactListener = fun(contactState: Int) {
@@ -461,11 +452,21 @@ class MainActivity : AppCompatActivity() {
             })
         } else {
             showMsg("开始收集数据")
-            bluetoothDeviceManager?.startCollection({
-                showMsg("收集数据指令发送成功 ")
-            }) {
-                showMsg("收集数据指令发送失败 $it")
-            } ?: showMsg("收集数据指令发送失败 bluetoothDeviceManager is null")
+            bluetoothDeviceManager?.apply {
+                startCollection({
+                    showMsg("收集数据指令发送成功 ")
+                    if(this is IHrFunction<*>){
+                        stopNotifyHeartRate()
+                        notifyHeartRate({
+
+                        }){
+
+                        }
+                    }
+                }) {
+                    showMsg("收集数据指令发送失败 $it")
+                }
+            }?: showMsg("收集数据指令发送失败 bluetoothDeviceManager is null")
         }
     }
 
@@ -511,17 +512,17 @@ class MainActivity : AppCompatActivity() {
 
     fun onAddHeartRateListener(@Suppress("UNUSED_PARAMETER") view: View) {
         bluetoothDeviceManager?.apply {
-            if (this is IHrFunction) {
+           /* if (this is IHrFunction) {
                 addHeartRateListener(heartRateListener)
-            }
+            }*/
         }
     }
 
     fun onRemoveHeartRateListener(@Suppress("UNUSED_PARAMETER") view: View) {
         bluetoothDeviceManager?.apply {
-            if (this is IHrFunction) {
+          /*  if (this is IHrFunction) {
                 removeHeartRateListener(heartRateListener)
-            }
+            }*/
         }
     }
 
@@ -536,14 +537,14 @@ class MainActivity : AppCompatActivity() {
     fun onBattery(@Suppress("UNUSED_PARAMETER") view: View) {
         val currentBleManger = bluetoothDeviceManager
         if (currentBleManger is IBatteryFunction) {
-            currentBleManger.readBattery(fun(battery: NapBattery) {
+           /* currentBleManger.readBattery(fun(battery: NapBattery) {
                 BleLogUtil.d(TAG, "battery = $battery")
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "电量:$battery", Toast.LENGTH_SHORT).show()
                 }
             }, fun(error: String) {
                 BleLogUtil.d(TAG, "error is $error")
-            })
+            })*/
         } else {
             showMsg("当前连接设备不支持读取电量")
         }
@@ -682,9 +683,7 @@ class MainActivity : AppCompatActivity() {
         bluetoothDeviceManager?.apply {
             removeRawDataListener(rawListener)
             removeContactListener(contactListener)
-            if (this is IHrFunction) {
-                removeHeartRateListener(heartRateListener)
-            }
+
         }
 //        bluetoothDeviceManager?.removeBatteryListener(batteryListener)
 
