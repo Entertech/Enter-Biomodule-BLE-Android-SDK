@@ -6,28 +6,20 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
-import cn.entertech.ble.fix.BaseFirmwareFixStrategy
-import cn.entertech.ble.utils.BatteryUtil
 import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.ble.utils.BatteryUtil
 import cn.entertech.ble.utils.ByteArrayBean
-import cn.entertech.ble.fix.Firmware128FixHelper
-import cn.entertech.ble.fix.Firmware255FixHelper
-import cn.entertech.ble.fix.IFixTriggerCallback
 import cn.entertech.ble.utils.NapBattery
 import cn.entertech.ble.utils.NapBleCharacter
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * 单设备
+ *
  * */
 abstract class BaseBleConnectManager constructor(
-    context: Context,
-    private val fixStrategies: List<BaseFirmwareFixStrategy> = listOf(
-        Firmware128FixHelper,
-        Firmware255FixHelper
-    )
-) : IFixTriggerCallback {
+    context: Context
+) {
     private val rxBleManager: RxBleManager
     private var handler: Handler
     private val mainHandler by lazy {
@@ -36,10 +28,6 @@ abstract class BaseBleConnectManager constructor(
     private var handlerThread: HandlerThread
     private val rawDataListeners = CopyOnWriteArrayList<(ByteArray) -> Unit>()
 
-    /**
-     * 皮肤电阻率
-     * */
-    private val skinConductivityServiceListener = CopyOnWriteArrayList<(ByteArray) -> Unit>()
     private val rawDataListeners4CSharp = CopyOnWriteArrayList<(ByteArrayBean) -> Unit>()
     private val contactListeners = CopyOnWriteArrayList<(Int) -> Unit>()
     private val batteryListeners = CopyOnWriteArrayList<(NapBattery) -> Unit>()
@@ -58,8 +46,28 @@ abstract class BaseBleConnectManager constructor(
         handler = Handler(handlerThread.looper)
     }
 
+    enum class Mode(val byte: Byte) {
+        MODE_SLEEP(MODE_SLEEP_BYTE),
+        MODE_TRAIN(MODE_TRAIN_BYTE),
+        MODE_MEDITATE(MODE_MEDITATE_BYTE),
+    }
+
     companion object {
         private const val TAG = "BaseBleConnectManager"
+        private const val MODE_SLEEP_BYTE: Byte = 0x00
+        private const val MODE_TRAIN_BYTE: Byte = 0x10
+        private const val MODE_MEDITATE_BYTE: Byte = 0x20
+
+        /**
+         * 采集脑电波数据和心率数据采集指令
+         * */
+        private const val COMMAND_COLLECT_BRAIN_HR = 1
+
+        /**
+         * 停止采集脑电波数据和心率数据采集指令
+         * */
+        private const val COMMAND_STOP_COLLECT_BRAIN_HR = 2
+        private const val CALIBRATION_GYRO_BYTE: Byte = 0x07
     }
 
 
@@ -118,14 +126,7 @@ abstract class BaseBleConnectManager constructor(
                 lastNotifyBrainWaveLogTime = System.currentTimeMillis()
             }
             handler.post {
-                skinConductivityServiceListener.forEach { listener ->
-                    listener(bytes)
-                }
-                bytes.forEach { byte ->
-                    fixStrategies.forEach {
-                        it.fixFirmware(byte)
-                    }
-                }
+
                 rawDataListeners.forEach { listener ->
                     listener.invoke(bytes)
                 }
@@ -260,7 +261,6 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)?
     ) {
         rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
-            initNotifications()
             successConnect?.invoke(mac)
         }, failure)
     }
@@ -294,14 +294,12 @@ abstract class BaseBleConnectManager constructor(
                 rxBleManager.scanNearDeviceAndConnect({ }, {
                     failure?.invoke(it.message ?: "scan failure")
                 }, fun(mac: String) {
-                    initNotifications()
                     successConnect?.invoke(mac)
                 }, failure)
             }
 
             ConnectionBleStrategy.CONNECT_BONDED -> {
                 connectBondedDevice({
-                    initNotifications()
                     successConnect?.invoke(it)
                 }, failure, filter)
             }
@@ -360,7 +358,6 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)?
     ) {
         rxBleManager.scanMacAndConnect(mac, scanTimeout, fun(mac: String) {
-            initNotifications()
             successConnect?.invoke(mac)
         }, failure)
     }
@@ -393,14 +390,6 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)? = null
     ) {
         rxBleManager.command(RxBleManager.Command.FIND_CONNECTED_DEVICE, success, failure)
-    }
-
-    fun addSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
-        skinConductivityServiceListener.add(listener)
-    }
-
-    fun removeSkinConductivityServiceListener(listener: (ByteArray) -> Unit) {
-        skinConductivityServiceListener.remove(listener)
     }
 
     /**
@@ -505,75 +494,29 @@ abstract class BaseBleConnectManager constructor(
     }
 
     /**
-     * start collect brain data
-     */
-    fun startBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startBrainCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * stop collect brain data
-     */
-    fun stopBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopBrainCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_BRAIN_COLLECT, success, failure)
-    }
-
-    /**
-     * start collect heart rate data
-     */
-    fun startHeartRateCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "startHeartRateCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_HEART_RATE_COLLECT, success, failure)
-    }
-
-    /**
-     * stop collect heart rate data
-     */
-    fun stopHeartRateCollection(
-        success: ((ByteArray) -> Unit)? = null,
-        failure: ((String) -> Unit)? = null
-    ) {
-        BleLogUtil.d(TAG, "stopHeartRateCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_HEART_RATE_COLLECT, success, failure)
-    }
-
-    /**
      * start collect all data
      */
     fun startHeartAndBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
+        mode: Mode,
+        success: (() -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
         BleLogUtil.d(TAG, "startHeartAndBrainCollection")
-        startFix(this)
-        rxBleManager.command(RxBleManager.Command.START_HEART_AND_BRAIN_COLLECT, success, failure)
+        val byteArray = ByteArray(1) { (mode.byte + COMMAND_COLLECT_BRAIN_HR).toByte() }
+        rxBleManager.command(byteArray, success, failure)
     }
 
     /**
      * stop collect all data
      */
     fun stopHeartAndBrainCollection(
-        success: ((ByteArray) -> Unit)? = null,
+        mode: Mode,
+        success: (() -> Unit)? = null,
         failure: ((String) -> Unit)? = null
     ) {
         BleLogUtil.d(TAG, "stopHeartAndBrainCollection")
-        stopFix()
-        rxBleManager.command(RxBleManager.Command.STOP_HEART_AND_BRAIN_COLLECT, success, failure)
+        val byteArray = ByteArray(1) { (mode.byte + COMMAND_STOP_COLLECT_BRAIN_HR).toByte() }
+        rxBleManager.command(byteArray, success, failure)
     }
 
     //read battery（readDeviceInfo）
@@ -581,6 +524,33 @@ abstract class BaseBleConnectManager constructor(
         rxBleManager.read(NapBleCharacter.BATTERY_LEVEL.uuid, fun(bytes: ByteArray) {
             castBattery(bytes[0], success, failure)
         }, failure)
+    }
+
+    /**
+     * 睡眠姿势
+     * */
+    fun notifySleepPosture(
+        success: ((ByteArray) -> Unit) = {},
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.notify(NapBleCharacter.SLEEP_POSTURE.uuid, success, failure)
+    }
+
+    /**
+     * 运动数据
+     * */
+    fun notifyExerciseLevel(
+        success: ((ByteArray) -> Unit) = {},
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.notify(NapBleCharacter.EXERCISE_LEVEL.uuid, success, failure)
+    }
+
+    fun notifyTemperature(
+        success: ((ByteArray) -> Unit) = {},
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.notify(NapBleCharacter.TEMPERATURE.uuid, success, failure)
     }
 
     /**
@@ -648,24 +618,6 @@ abstract class BaseBleConnectManager constructor(
         rxBleManager.readDeviceMac(success, failure)
     }
 
-    override fun fixTrigger() {
-        mainHandler.post {
-            stopHeartAndBrainCollection()
-            startHeartAndBrainCollection()
-        }
-    }
-
-    private fun stopFix() {
-        fixStrategies.forEach {
-            it.stopFix()
-        }
-    }
-
-    private fun startFix(callback: IFixTriggerCallback) {
-        fixStrategies.forEach {
-            it.startFix(callback)
-        }
-    }
 
     fun stopScanNearDevice() {
         rxBleManager.stopScanNearDevice()
