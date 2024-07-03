@@ -36,10 +36,10 @@ public class FileHelper {
     private boolean init() {
         boolean isFirst = false;
         try {
-           /* if (currentDataPw == null) {
+            if (currentDataPw == null) {
                 currentDataPw = new FileOutputStream(filePath);
                 isFirst = true;
-            }*/
+            }
             if (printWriter == null) {
                 printWriter = new PrintWriter(filePath);
                 isFirst = true;
@@ -94,6 +94,8 @@ public class FileHelper {
                 try {
                     currentDataPw.close();
                 } catch (IOException e) {
+                } finally {
+                    currentDataPw = null;
                 }
             }
         });

@@ -35,7 +35,7 @@ class SkinDataHelper(val parentFileName: String) {
                             current,
                             "yyyy-MM-dd-HH-mm-ss"
                         )
-                    }-$session.txt"
+                    }-$session"
                 )
                 dataHelperMap[it.name] = helper
             }
@@ -43,7 +43,7 @@ class SkinDataHelper(val parentFileName: String) {
     }
 
 
-    private fun saveData(type: SkinDataType, data: ByteArray) {
+    fun saveData(type: SkinDataType, data: ByteArray) {
         dataHelperMap[type.name]?.writeData(data)
     }
 
