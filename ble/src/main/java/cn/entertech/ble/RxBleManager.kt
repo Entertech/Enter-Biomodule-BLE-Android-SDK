@@ -276,12 +276,13 @@ class RxBleManager constructor(context: Context) {
     }
 
     enum class Command(val value: ByteArray) {
-        START_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x05 }),
-        STOP_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x06 }),
         START_CONTACT(ByteArray(1) { 0x07 }),
         STOP_CONTACT(ByteArray(1) { 0x08 }),
         DISCONNECTED(ByteArray(1) { 0x49 }),
-        FIND_CONNECTED_DEVICE(ByteArray(1) { 0x79 })
+        FIND_CONNECTED_DEVICE(ByteArray(1) { 0x79 }),
+        COMMAND_COLLECT_GYRO(ByteArray(1) { 0x03 }),
+        COMMAND_STOP_COLLECT_GYRO(ByteArray(1) { 0x04 }),
+        CALIBRATION_GYRO_BYTE(ByteArray(1) { 0x07 }),
     }
 
     /**
@@ -418,21 +419,6 @@ class RxBleManager constructor(context: Context) {
             success.invoke(String(bytes, StandardCharsets.UTF_8))
         }, failure)
     }
-
-//    //write DFU command
-//    fun writeDFU(data: ByteArray, callback: BleCharacterCallback) {
-//        bleManager.writeDevice(NapBleService.DFU.uuid, NapBleCharacter.DFU_CTRL.uuid, data, callback)
-//    }
-//
-//    //notify DFU
-//    fun notifyDFU(callback: BleCharacterCallback) {
-//        bleManager.notify(NapBleService.DFU.uuid, NapBleCharacter.DFU_CTRL.uuid, callback)
-//    }
-//
-//    //write no response
-//    fun write(data: ByteArray) {
-//        bleManager.writeDevice(NapBleService.DFU.uuid, NapBleCharacter.DFU_PKT.uuid, data, null)
-//    }
 
     /**
      * read characteristic

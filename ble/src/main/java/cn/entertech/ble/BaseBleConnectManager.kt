@@ -67,7 +67,6 @@ abstract class BaseBleConnectManager constructor(
          * 停止采集脑电波数据和心率数据采集指令
          * */
         private const val COMMAND_STOP_COLLECT_BRAIN_HR = 2
-        private const val CALIBRATION_GYRO_BYTE: Byte = 0x07
     }
 
 
@@ -227,6 +226,20 @@ abstract class BaseBleConnectManager constructor(
                 }
             }
         }
+    }
+
+    fun collectGyroData(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.command(RxBleManager.Command.COMMAND_COLLECT_GYRO, success, failure)
+    }
+
+    fun stopCollectGyroData(
+        success: ((ByteArray) -> Unit)? = null,
+        failure: ((String) -> Unit)? = null
+    ) {
+        rxBleManager.command(RxBleManager.Command.COMMAND_STOP_COLLECT_GYRO, success, failure)
     }
 
     /**
@@ -505,6 +518,15 @@ abstract class BaseBleConnectManager constructor(
         val byteArray = ByteArray(1) { (mode.byte + COMMAND_COLLECT_BRAIN_HR).toByte() }
         rxBleManager.command(byteArray, success, failure)
     }
+
+    fun calibrationGyro(success: ((ByteArray) -> Unit)?, failure: ((String) -> Unit)?) {
+        rxBleManager.command(
+            RxBleManager.Command.CALIBRATION_GYRO_BYTE,
+            success,
+            failure
+        )
+    }
+
 
     /**
      * stop collect all data
