@@ -276,10 +276,6 @@ class RxBleManager constructor(context: Context) {
     }
 
     enum class Command(val value: ByteArray) {
-        START_BRAIN_COLLECT(ByteArray(1) { 0x01 }),
-        STOP_BRAIN_COLLECT(ByteArray(1) { 0x02 }),
-        START_HEART_RATE_COLLECT(ByteArray(1) { 0x03 }),
-        STOP_HEART_RATE_COLLECT(ByteArray(1) { 0x04 }),
         START_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x05 }),
         STOP_HEART_AND_BRAIN_COLLECT(ByteArray(1) { 0x06 }),
         START_CONTACT(ByteArray(1) { 0x07 }),
@@ -457,6 +453,8 @@ class RxBleManager constructor(context: Context) {
         }
     }
 
+
+
     /**
      * write characteristic
      */
@@ -484,7 +482,7 @@ class RxBleManager constructor(context: Context) {
     /**
      * notify characteristic
      */
-    private fun notify(
+    fun notify(
         characterId: String,
         success: (ByteArray) -> Unit,
         failure: ((String) -> Unit)?
