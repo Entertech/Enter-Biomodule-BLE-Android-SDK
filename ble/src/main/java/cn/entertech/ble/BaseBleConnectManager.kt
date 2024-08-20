@@ -7,6 +7,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import cn.entertech.ble.RxBleManager.Companion.SCAN_TIMEOUT
 import cn.entertech.ble.fix.BaseFirmwareFixStrategy
+import cn.entertech.ble.fix.Firmware0FixHelper
 import cn.entertech.ble.utils.BatteryUtil
 import cn.entertech.ble.utils.BleLogUtil
 import cn.entertech.ble.utils.ByteArrayBean
@@ -25,7 +26,8 @@ abstract class BaseBleConnectManager constructor(
     context: Context,
     private val fixStrategies: List<BaseFirmwareFixStrategy> = listOf(
         Firmware128FixHelper,
-        Firmware255FixHelper
+        Firmware255FixHelper,
+        Firmware0FixHelper
     )
 ) : IFixTriggerCallback {
     private val rxBleManager: RxBleManager
