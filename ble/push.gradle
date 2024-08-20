@@ -41,7 +41,7 @@ afterEvaluate {
 //                artifact androidSourcesJar//源码
                 groupId = 'cn.entertech.android' // 库的组织，使用域名表示
                 artifactId = 'biomoduleble' // 库名称
-                version = '1.5.5' // 库版本
+                version = '1.5.8' // 库版本
             }
 
         }
