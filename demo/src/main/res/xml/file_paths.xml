@@ -8,4 +8,7 @@
 
 <!--    物理路径相当于Context.getExternalFilesDir(String) + /path/-->
     <external-files-path name="name" path="skinData" />
+    <external-files-path
+        name="external_files"
+        path="." />
 </paths>

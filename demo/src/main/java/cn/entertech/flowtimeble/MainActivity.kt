@@ -21,10 +21,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.entertech.base.util.startActivity
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
 import cn.entertech.device.api.IDeviceType
+import cn.entertech.flowtimeble.data.FileListActivity
 import cn.entertech.flowtimeble.skin.SkinDataHelper
 import cn.entertech.flowtimeble.skin.SkinDataType
 import cn.entertech.flowtimeble.skin.SkinDevice
@@ -67,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     private var btnConnect: Button? = null
     private var btnScanConnect2: Button? = null
     private var btnDisconnect2: Button? = null
+    private var btnOpenLocalData: Button? = null
     private var btnStartCollection2: Button? = null
     private var btnStopCollection2: Button? = null
     private var btnStartCollection: Button? = null
@@ -149,8 +152,12 @@ class MainActivity : AppCompatActivity() {
         scrollView_logs = findViewById(R.id.scrollView_logs)
         btnScanConnect2 = findViewById(R.id.btnScanConnect2)
         btnDisconnect2 = findViewById(R.id.btnDisconnect2)
+        btnOpenLocalData = findViewById(R.id.btnOpenLocalData)
         btnDisconnect2?.setOnClickListener {
             disconnect(DEVICE2)
+        }
+        btnOpenLocalData?.setOnClickListener {
+            startActivity(FileListActivity::class.java, finishCurrent = false)
         }
         btnStartCollection2 = findViewById(R.id.btnStartCollection2)
         btnStopCollection2 = findViewById(R.id.btnStopCollection2)

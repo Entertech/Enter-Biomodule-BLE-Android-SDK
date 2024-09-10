@@ -24,9 +24,9 @@ class LogAdapter(data: MutableList<String> = ArrayList()) :
     }
 
     fun addItem(log: String) {
-        data.add(log)
-        if (data.size > 1000) {
-            data.removeAt(0)
+        originData.add(log)
+        if (originData.size > 1000) {
+            originData.removeAt(0)
         }
         notifyDataSetChanged()
     }
