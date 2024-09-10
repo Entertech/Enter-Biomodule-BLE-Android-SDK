@@ -1,9 +1,15 @@
 package cn.entertech.flowtimeble
 
+//import cn.entertech.ble.base.IEegFunction
+//import cn.entertech.ble.base.IHrFunction
+//import cn.entertech.flowtimeble.skin.ISkinFunction
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -16,20 +22,14 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.BaseBleConnectManager
-//import cn.entertech.ble.base.IEegFunction
-//import cn.entertech.ble.base.IHrFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.multiple.MultipleBiomoduleBleManager
-import cn.entertech.ble.single.BiomoduleBleManager
-import cn.entertech.device.DeviceType
 import cn.entertech.device.api.IDeviceType
-//import cn.entertech.flowtimeble.skin.ISkinFunction
 import cn.entertech.flowtimeble.skin.SkinDataHelper
 import cn.entertech.flowtimeble.skin.SkinDataType
 import cn.entertech.flowtimeble.skin.SkinDevice
-import cn.entertech.flowtimeble.skin.SkinManage
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     private var btnClearLog: Button? = null
     private var btnConnect: Button? = null
     private var btnScanConnect2: Button? = null
+    private var btnDisconnect2: Button? = null
     private var btnStartCollection2: Button? = null
     private var btnStopCollection2: Button? = null
     private var btnStartCollection: Button? = null
@@ -82,8 +83,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val DEVICE1 = "device1"
-        private const val DEVICE2 = "device2"
+        private const val DEVICE1 = "vr"
+        private const val DEVICE2 = "hand"
 
         /**
          * 2s
@@ -131,25 +132,26 @@ class MainActivity : AppCompatActivity() {
             ArrayAdapter(this, android.R.layout.simple_spinner_item, deviceTypes)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerDeviceTypeList?.adapter = arrayAdapter
-        spinnerDeviceTypeList?.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                initBleManager(parent?.getItemAtPosition(position) as? IDeviceType)
-            }
+        spinnerDeviceTypeList?.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    initBleManager(parent?.getItemAtPosition(position) as? IDeviceType)
+                }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                initBleManager(null)
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    initBleManager(null)
+                }
             }
-        }
 
         cbNeedReconnected = findViewById(R.id.cbNeedReconnected)
         scrollView_logs = findViewById(R.id.scrollView_logs)
         btnScanConnect2 = findViewById(R.id.btnScanConnect2)
+        btnDisconnect2 = findViewById(R.id.btnDisconnect2)
+        btnDisconnect2?.setOnClickListener {
+            disconnect(DEVICE2)
+        }
         btnStartCollection2 = findViewById(R.id.btnStartCollection2)
         btnStopCollection2 = findViewById(R.id.btnStopCollection2)
         btnStartCollection = findViewById(R.id.btnStartCollection)
@@ -171,8 +173,8 @@ class MainActivity : AppCompatActivity() {
         btnOpenFile?.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.putExtra(
-                "android.content.extra.FOLDER_NAME", App.getInstance()
-                    .getExternalFilesDir("")?.absoluteFile
+                "android.content.extra.FOLDER_NAME",
+                App.getInstance().getExternalFilesDir("")?.absoluteFile
             );
             startActivity(Intent.createChooser(intent, "选择文件管理器"));
         }
@@ -218,16 +220,14 @@ class MainActivity : AppCompatActivity() {
         showMsg("$deviceName 初始化")
         var bluetoothDeviceManager: BaseBleConnectManager? = deviceManageMap[deviceName]
         if (bluetoothDeviceManager == null) {
-            bluetoothDeviceManager = MultipleBiomoduleBleManager(this)
-              /*  if (currentDeviceType is DeviceType) {
-                
-            }*/
-                /*BaseBleConnectManager.getBleManagerInstance(currentDeviceType, this)
-            } else if (currentDeviceType is SkinDevice) {
-                SkinManage(this)
-            } else {
-                null
-            }*/
+            bluetoothDeviceManager = MultipleBiomoduleBleManager(this)/*  if (currentDeviceType is DeviceType) {
+
+          }*//*BaseBleConnectManager.getBleManagerInstance(currentDeviceType, this)
+        } else if (currentDeviceType is SkinDevice) {
+            SkinManage(this)
+        } else {
+            null
+        }*/
             deviceManageMap[deviceName] = bluetoothDeviceManager
         }
         val disConnectedListener = initMap(disConnectedListenerMap, deviceName) {
@@ -256,15 +256,14 @@ class MainActivity : AppCompatActivity() {
                 mSkinDataHelper?.saveData(SkinDataType.BRAIN_DATA, HexDump.toHexString(bytes))
                 showMsg("braindata: " + HexDump.toHexString(bytes))
             }
-        }
-     /*   val hrListener = initMap(hrListenerMap, deviceName) {
-            fun(hr: Int) {
-                val mSkinDataHelper = initMap(this@MainActivity.deviceSaveHelperMap, deviceName) {
-                    SkinDataHelper(deviceName)
-                }
-                mSkinDataHelper?.saveData(SkinDataType.HR, "$hr")
-            }
-        }*/
+        }/*   val hrListener = initMap(hrListenerMap, deviceName) {
+               fun(hr: Int) {
+                   val mSkinDataHelper = initMap(this@MainActivity.deviceSaveHelperMap, deviceName) {
+                       SkinDataHelper(deviceName)
+                   }
+                   mSkinDataHelper?.saveData(SkinDataType.HR, "$hr")
+               }
+           }*/
 
         bluetoothDeviceManager?.apply {
             disConnectedListener?.let {
@@ -272,10 +271,9 @@ class MainActivity : AppCompatActivity() {
             }
             rawListener?.let {
                 removeRawDataListener(it)
-            }
-        /*    hrListener?.let {
-                (this as? IHrFunction)?.addHeartRateListener(it)
-            }*/
+            }/*    hrListener?.let {
+                    (this as? IHrFunction)?.addHeartRateListener(it)
+                }*/
             disConnect()
         }
         disConnectedListener?.let {
@@ -283,10 +281,9 @@ class MainActivity : AppCompatActivity() {
         }
         rawListener?.let {
             bluetoothDeviceManager?.addRawDataListener(it)
-        }
-      /*  hrListener?.let {
-            (bluetoothDeviceManager as? IHrFunction)?.addHeartRateListener(it)
-        }*/
+        }/*  hrListener?.let {
+              (bluetoothDeviceManager as? IHrFunction)?.addHeartRateListener(it)
+          }*/
     }
 
     private fun <T> initMap(map: MutableMap<String, T>, key: String, init: () -> T): T? {
@@ -333,8 +330,7 @@ class MainActivity : AppCompatActivity() {
         val needRequestPermissions = ArrayList<String>()
         for (i in needPermission.indices) {
             if (ActivityCompat.checkSelfPermission(
-                    this,
-                    needPermission[i]
+                    this, needPermission[i]
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 needRequestPermissions.add(needPermission[i])
@@ -409,9 +405,7 @@ class MainActivity : AppCompatActivity() {
             showMsg("connect failed $msg")
             runOnUiThread {
                 Toast.makeText(
-                    this@MainActivity,
-                    "failed to connect to device：${msg}",
-                    Toast.LENGTH_SHORT
+                    this@MainActivity, "failed to connect to device：${msg}", Toast.LENGTH_SHORT
                 ).show()
             }
         })
@@ -490,15 +484,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun notifySkinRate(deviceName: String) {
-      /*  (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
-            showMsg("皮电数据： ${HexDump.toHexString(it)}")
-            initMap(deviceSaveHelperMap, deviceName) {
-                SkinDataHelper(deviceName)
-            }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
-        }) {
-            showMsg("订阅皮电数据失败")
-        }*/
+    private fun notifySkinRate(deviceName: String) {/*  (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
+              showMsg("皮电数据： ${HexDump.toHexString(it)}")
+              initMap(deviceSaveHelperMap, deviceName) {
+                  SkinDataHelper(deviceName)
+              }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
+          }) {
+              showMsg("订阅皮电数据失败")
+          }*/
     }
 
     private fun stopNotifySkinRate(deviceName: String) {
@@ -509,24 +502,24 @@ class MainActivity : AppCompatActivity() {
     private fun startContact(deviceName: String) {
         showMsg("$deviceName 开始佩戴检测 ")
         val currentBleManger = deviceManageMap[deviceName]
-            currentBleManger?.notifyContact({
-              /*  val result = if (it.isEmpty()) {
-                    0
-                } else {
-                    it.contentToString()
-                }*/
-                showMsg("佩戴检测值： $it")
-            }) {
-                showMsg("佩戴检测失败： $it")
-            }
+        currentBleManger?.notifyContact({
+            /*  val result = if (it.isEmpty()) {
+                  0
+              } else {
+                  it.contentToString()
+              }*/
+            showMsg("佩戴检测值： $it")
+        }) {
+            showMsg("佩戴检测失败： $it")
+        }
 
     }
+
     private fun stopContact(deviceName: String) {
         showMsg("停止佩戴检测")
-        val currentBleManger = deviceManageMap[deviceName]
-     /*   if (currentBleManger is IEegFunction) {
-            currentBleManger.stopNotifyContact()
-        }*/
+        val currentBleManger = deviceManageMap[deviceName]/*   if (currentBleManger is IEegFunction) {
+               currentBleManger.stopNotifyContact()
+           }*/
     }
 
     private fun startCollection(deviceName: String, needStop: Boolean = true) {
@@ -552,9 +545,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopCollection(
-        deviceName: String,
-        success: () -> Unit = {},
-        failure: (String) -> Unit = {}
+        deviceName: String, success: () -> Unit = {}, failure: (String) -> Unit = {}
     ) {
         val bluetoothDeviceManager = deviceManageMap[deviceName]
         showMsg("$deviceName 停止收集数据")
