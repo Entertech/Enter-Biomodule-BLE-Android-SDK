@@ -1,8 +1,5 @@
 package cn.entertech.flowtimeble
 
-//import cn.entertech.ble.base.IEegFunction
-//import cn.entertech.ble.base.IHrFunction
-//import cn.entertech.flowtimeble.skin.ISkinFunction
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,9 +13,11 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.base.util.startActivity
@@ -46,6 +45,11 @@ class MainActivity : AppCompatActivity() {
     private val rawListenerMap by lazy {
         ConcurrentHashMap<String, (ByteArray) -> Unit>()
     }
+
+    private val deviceContactMap by lazy {
+        ConcurrentHashMap<String, Int>()
+    }
+
 
     private val hrListenerMap by lazy {
         ConcurrentHashMap<String, (Int) -> Unit>()
@@ -76,6 +80,9 @@ class MainActivity : AppCompatActivity() {
     private var btnStopCollection: Button? = null
     private var btnOpenFile: Button? = null
     private var btnSwapPersistenceState: Button? = null
+    private var tvDevice1: TextView? = null
+    private var tvDevice2: TextView? = null
+    private var tvDevice1WearStatus: TextView? = null
     private val simple by lazy {
         SimpleDateFormat("yyyy/MM/dd  hh:mm:ss:SSS")
     }
@@ -149,6 +156,9 @@ class MainActivity : AppCompatActivity() {
             }
 
         cbNeedReconnected = findViewById(R.id.cbNeedReconnected)
+        tvDevice1 = findViewById(R.id.tvDevice1)
+        tvDevice2 = findViewById(R.id.tvDevice2)
+        tvDevice1WearStatus = findViewById(R.id.tvDevice1WearStatus)
         scrollView_logs = findViewById(R.id.scrollView_logs)
         btnScanConnect2 = findViewById(R.id.btnScanConnect2)
         btnDisconnect2 = findViewById(R.id.btnDisconnect2)
@@ -437,8 +447,11 @@ class MainActivity : AppCompatActivity() {
         skinDataHelper?.initHelper()
         mainHandler.postDelayed({
             startCollection(deviceName, false)
-//            startContact(deviceName)
-            notifySkinRate(deviceName)
+            notifyData(deviceName)
+            if (deviceName == DEVICE1) {
+                startContact(deviceName)
+            }
+
         }, delayMillis)
     }
 
@@ -452,9 +465,12 @@ class MainActivity : AppCompatActivity() {
             btnStartCollection?.isClickable = true
         }
         mainHandler.postDelayed({
+            if (deviceName == DEVICE1) {
+                stopContact(DEVICE1)
+            }
+            stopNotifyData(deviceName)
             stopCollection(deviceName)
-//            startContact(deviceName)
-            stopNotifySkinRate(deviceName)
+
         }, delayMillis)
     }
 
@@ -491,42 +507,88 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun notifySkinRate(deviceName: String) {/*  (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
-              showMsg("皮电数据： ${HexDump.toHexString(it)}")
-              initMap(deviceSaveHelperMap, deviceName) {
-                  SkinDataHelper(deviceName)
-              }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
-          }) {
-              showMsg("订阅皮电数据失败")
-          }*/
+    private fun notifyData(deviceName: String) {
+        (deviceManageMap[deviceName])?.notifyBrainWave()
     }
 
-    private fun stopNotifySkinRate(deviceName: String) {
-//        (deviceManageMap[deviceName] as? ISkinFunction)?.stopNotifySkinRate()
+    private fun stopNotifyData(deviceName: String) {
+        (deviceManageMap[deviceName])?.stopNotifyBrainWave()
     }
 
 
     private fun startContact(deviceName: String) {
         showMsg("$deviceName 开始佩戴检测 ")
         val currentBleManger = deviceManageMap[deviceName]
-        currentBleManger?.notifyContact({
-            /*  val result = if (it.isEmpty()) {
-                  0
-              } else {
-                  it.contentToString()
-              }*/
-            showMsg("佩戴检测值： $it")
-        }) {
-            showMsg("佩戴检测失败： $it")
-        }
+        currentBleManger?.apply {
+            notifyContact({ result ->
+                BleLogUtil.d(TAG, "startContact: $result")
+                var count = deviceContactMap[deviceName]
+                if (count == null) {
+                    count = 0
+                }
+                if (result == 0) {
+                    count++
+                    if (count >= 5) {
+                        count = 5
+                    }
+                } else {
+                    count = 0
+                }
+                deviceContactMap[deviceName] = count
+                mainHandler.post {
+                    if (deviceName == DEVICE1) {
+                        tvDevice1WearStatus
+                    } else {
+                        null
+                    }?.apply {
+                        if (count >= 5) {
+                            setTextColor(
+                                ContextCompat.getColor(
+                                    this@MainActivity, R.color.color_common_4cd964_ff
+                                )
+                            )
+                            text = "已佩戴"
+                        } else {
+                            setTextColor(
+                                ContextCompat.getColor(
+                                    this@MainActivity, R.color.color_common_ff0000_ff
+                                )
+                            )
+                            text = "未佩戴"
+                        }
+                    }
+                    if (deviceName == DEVICE1) {
+                        tvDevice1
+                    } else {
+                        tvDevice2
+                    }?.setTextColor(
+                        if (count >= 5) {
+                            ContextCompat.getColor(
+                                this@MainActivity, R.color.color_common_4cd964_ff
+                            )
+                        } else {
+                            ContextCompat.getColor(
+                                this@MainActivity, R.color.color_common_ff0000_ff
+                            )
+                        }
+                    )
+                }
 
+//                showMsg("佩戴检测值： $result")
+            }) {
+                showMsg("佩戴检测失败： $it")
+            }
+        } ?: kotlin.run {
+            showMsg("$deviceName startContact currentBleManger is null ")
+        }
     }
+
 
     private fun stopContact(deviceName: String) {
         showMsg("停止佩戴检测")
-        val currentBleManger = deviceManageMap[deviceName]/*   if (currentBleManger is IEegFunction) {
-               currentBleManger.stopNotifyContact()
-           }*/
+        val currentBleManger = deviceManageMap[deviceName]
+        currentBleManger?.stopNotifyContact()
+
     }
 
     private fun startCollection(deviceName: String, needStop: Boolean = true) {
