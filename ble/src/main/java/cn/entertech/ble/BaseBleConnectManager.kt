@@ -260,7 +260,7 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)?
     ) {
         rxBleManager.scanNearDeviceAndConnect(successScan, failScan, fun(mac: String) {
-            initNotifications()
+//            initNotifications()
             successConnect?.invoke(mac)
         }, failure)
     }
@@ -294,14 +294,14 @@ abstract class BaseBleConnectManager constructor(
                 rxBleManager.scanNearDeviceAndConnect({ }, {
                     failure?.invoke(it.message ?: "scan failure")
                 }, fun(mac: String) {
-                    initNotifications()
+//                    initNotifications()
                     successConnect?.invoke(mac)
                 }, failure)
             }
 
             ConnectionBleStrategy.CONNECT_BONDED -> {
                 connectBondedDevice({
-                    initNotifications()
+//                    initNotifications()
                     successConnect?.invoke(it)
                 }, failure, filter)
             }
@@ -360,7 +360,7 @@ abstract class BaseBleConnectManager constructor(
         failure: ((String) -> Unit)?
     ) {
         rxBleManager.scanMacAndConnect(mac, scanTimeout, fun(mac: String) {
-            initNotifications()
+//            initNotifications()
             successConnect?.invoke(mac)
         }, failure)
     }
