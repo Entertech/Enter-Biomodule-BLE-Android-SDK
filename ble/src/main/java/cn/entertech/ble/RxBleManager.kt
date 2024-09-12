@@ -511,9 +511,13 @@ class RxBleManager constructor(context: Context) {
      * notify contact
      */
     fun notifyContact(onNotify: (Int) -> Unit): Disposable? {
+        BleLogUtil.d(TAG,"notifyContact")
         return notify(NapBleCharacter.CONTACT_DATE.uuid, fun(bytes: ByteArray) {
-//            BleLogUtil.d("check contact ${converUnchart(bytes[0])}")
-            onNotify.invoke(converUnchart(bytes[0]))
+            if(bytes.isEmpty()){
+                onNotify.invoke(-1)
+            }else {
+                onNotify.invoke(converUnchart(bytes[0]))
+            }
         }, null)
     }
 
