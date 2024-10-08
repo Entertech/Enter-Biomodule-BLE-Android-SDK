@@ -2,6 +2,7 @@ package cn.entertech.flowtimeble
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -137,6 +138,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         spinnerDeviceTypeList = findViewById(R.id.spinnerDeviceTypeList)
         // 创建 ArrayAdapter
         val arrayAdapter: ArrayAdapter<IDeviceType> =
@@ -278,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                     SkinDataHelper(deviceName)
                 }
                 mSkinDataHelper?.saveData(SkinDataType.BRAIN_DATA, HexDump.toHexString(bytes))
-                showMsg("braindata: " + HexDump.toHexString(bytes), false)
+                showMsg("$deviceName braindata: " + HexDump.toHexString(bytes))
             }
         }/*   val hrListener = initMap(hrListenerMap, deviceName) {
                fun(hr: Int) {
