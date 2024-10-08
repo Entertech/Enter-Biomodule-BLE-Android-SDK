@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
     private var btnDisconnect2: Button? = null
     private var btnOpenLocalData: Button? = null
     private var btnStartCollection2: Button? = null
+    private var btnAllDeviceStartCollection: Button? = null
     private var btnStopCollection2: Button? = null
     private var btnStartCollection: Button? = null
     private var btnStopCollection: Button? = null
@@ -172,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         btnStartCollection2 = findViewById(R.id.btnStartCollection2)
         btnStopCollection2 = findViewById(R.id.btnStopCollection2)
         btnStartCollection = findViewById(R.id.btnStartCollection)
+        btnAllDeviceStartCollection = findViewById(R.id.btnAllDeviceStartCollection)
         btnStopCollection = findViewById(R.id.btnStopCollection)
 
         btnStartCollection2?.setOnClickListener {
@@ -179,6 +181,11 @@ class MainActivity : AppCompatActivity() {
         }
         btnStopCollection2?.setOnClickListener {
             stopCollectData(DEVICE2)
+        }
+
+        btnAllDeviceStartCollection?.setOnClickListener {
+            startCollectData(DEVICE1)
+            startCollectData(DEVICE2)
         }
         btnStartCollection?.setOnClickListener {
             startCollectData(DEVICE1)
