@@ -436,6 +436,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCollectData(deviceName: String, delayMillis: Long = 0) {
+        val bluetoothDeviceManager = deviceManageMap[deviceName]
+        if (bluetoothDeviceManager?.isConnected() != true) {
+            showMsg("$deviceName 未处于连接状态")
+            return
+        }
         val hasNotify = hasNotifyMap[deviceName]
         if (hasNotify == true) {
             return
