@@ -271,7 +271,7 @@ class MainActivity : AppCompatActivity() {
                     SkinDataHelper(deviceName)
                 }
                 mSkinDataHelper?.saveData(SkinDataType.BRAIN_DATA, HexDump.toHexString(bytes))
-                showMsg("braindata: " + HexDump.toHexString(bytes))
+                showMsg("braindata: " + HexDump.toHexString(bytes), false)
             }
         }/*   val hrListener = initMap(hrListenerMap, deviceName) {
                fun(hr: Int) {
@@ -312,9 +312,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun showMsg(msg: String) {
+    private fun showMsg(msg: String, currentLogNeedShow: Boolean = true) {
         BleLogUtil.d(TAG, msg)
-        if (!needLog) {
+        if (!needLog || !currentLogNeedShow) {
             return
         }
         val realMsg = "->: ${simple.format(Date())} $msg\n"
@@ -448,9 +448,7 @@ class MainActivity : AppCompatActivity() {
         mainHandler.postDelayed({
             startCollection(deviceName, false)
             notifyData(deviceName)
-            if (deviceName == DEVICE1) {
-                startContact(deviceName)
-            }
+            startContact(deviceName)
 
         }, delayMillis)
     }
@@ -508,6 +506,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notifyData(deviceName: String) {
+        showMsg("notifyData: $deviceName")
         (deviceManageMap[deviceName])?.notifyBrainWave()
     }
 
@@ -521,7 +520,7 @@ class MainActivity : AppCompatActivity() {
         val currentBleManger = deviceManageMap[deviceName]
         currentBleManger?.apply {
             notifyContact({ result ->
-                BleLogUtil.d(TAG, "startContact: $result")
+                showMsg("$currentBleManger startContact: $result", false)
                 var count = deviceContactMap[deviceName]
                 if (count == null) {
                     count = 0
@@ -595,21 +594,23 @@ class MainActivity : AppCompatActivity() {
         val bluetoothDeviceManager = deviceManageMap[deviceName]
         if (needStop) {
             stopCollection(deviceName, success = {
-                showMsg("$deviceName 开始停止收集数据")
+                showMsg("$deviceName $bluetoothDeviceManager 开始停止收集数据")
                 bluetoothDeviceManager?.stopHeartAndBrainCollection({
-                    showMsg("$deviceName 停止收集数据指令发送成功 ")
+                    showMsg("$deviceName $bluetoothDeviceManager 停止收集数据指令发送成功 ")
                 }) {
-                    showMsg("$deviceName 停止收集数据指令发送失败 $it")
-                } ?: showMsg("$deviceName 停止收集数据指令发送失败 bluetoothDeviceManager is null")
+                    showMsg("$deviceName $bluetoothDeviceManager 停止收集数据指令发送失败 $it")
+                }
+                    ?: showMsg("$deviceName $bluetoothDeviceManager 停止收集数据指令发送失败 bluetoothDeviceManager is null")
 
             })
         } else {
             showMsg("$deviceName 开始收集数据")
             bluetoothDeviceManager?.startHeartAndBrainCollection({
-                showMsg("$deviceName 收集数据指令发送成功 ")
+                showMsg("$deviceName $bluetoothDeviceManager 收集数据指令发送成功 ")
             }) {
-                showMsg("$deviceName 收集数据指令发送失败 $it")
-            } ?: showMsg("$deviceName 收集数据指令发送失败 bluetoothDeviceManager is null")
+                showMsg("$deviceName $bluetoothDeviceManager  收集数据指令发送失败 $it")
+            }
+                ?: showMsg("$deviceName $bluetoothDeviceManager  收集数据指令发送失败 bluetoothDeviceManager is null")
         }
     }
 
@@ -617,12 +618,12 @@ class MainActivity : AppCompatActivity() {
         deviceName: String, success: () -> Unit = {}, failure: (String) -> Unit = {}
     ) {
         val bluetoothDeviceManager = deviceManageMap[deviceName]
-        showMsg("$deviceName 停止收集数据")
+        showMsg("$deviceName $bluetoothDeviceManager 停止收集数据")
         bluetoothDeviceManager?.stopHeartAndBrainCollection({
-            showMsg("$deviceName 停止数据指令发送成功 ")
+            showMsg("$deviceName $bluetoothDeviceManager 停止数据指令发送成功 ")
             success()
         }) {
-            showMsg("$deviceName 停止数据指令发送失败 $it")
+            showMsg("$deviceName $bluetoothDeviceManager 停止数据指令发送失败 $it")
             failure(it)
         }
     }
