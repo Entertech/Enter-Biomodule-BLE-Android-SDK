@@ -19,7 +19,7 @@ package cn.entertech.flowtimeble;
 
 import java.util.Arrays;
 
-import cn.entertech.ble.utils.BleLogUtil;
+import cn.entertech.ble.log.BleLogUtil;
 
 public class HexDump {
     private final static char[] HEX_DIGITS = {

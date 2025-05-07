@@ -1,3 +1,4 @@
+/*
 apply plugin: 'maven-publish'
 task androidSourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -8,7 +9,8 @@ afterEvaluate {
 
         //发布的 arr 包配置
         publications{
-           /* //名字可以自己指定，如果有多渠道，整段多复制一个
+           */
+/* //名字可以自己指定，如果有多渠道，整段多复制一个
             uicomponent(MavenPublication){
 
                 groupId = 'cn.entertech.android'//公司域名
@@ -35,7 +37,8 @@ afterEvaluate {
                             }
                     }
                 }
-            }*/
+            }*//*
+
             release(MavenPublication) {
                 from components.release
 //                artifact androidSourcesJar//源码
@@ -115,3 +118,4 @@ publishToMavenLocal.dependsOn printMavenLocalPath
 //        }
 //    }
 //}
+*/

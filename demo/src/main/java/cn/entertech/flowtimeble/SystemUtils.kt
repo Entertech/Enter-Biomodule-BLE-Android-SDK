@@ -1,8 +1,6 @@
 package cn.entertech.flowtimeble
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -18,8 +16,7 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import android.text.format.Formatter
-import cn.entertech.ble.utils.BleLogUtil
-import cn.entertech.bleuisdk.utils.Constant
+import cn.entertech.ble.log.BleLogUtil
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*

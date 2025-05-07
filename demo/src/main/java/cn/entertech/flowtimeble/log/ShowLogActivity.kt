@@ -1,4 +1,4 @@
-package cn.entertech.flowtimeble
+package cn.entertech.flowtimeble.log
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,7 +8,9 @@ import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import cn.entertech.ble.utils.BleLogUtil
+import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.flowtimeble.App
+import cn.entertech.flowtimeble.R
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader

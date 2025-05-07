@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tvLogName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:textColor="@color/color_common_000000_ff"
+    android:minHeight="@dimen/d40dp"
+    android:paddingStart="@dimen/d20dp"
+    android:textSize="@dimen/s18sp"
+    android:paddingEnd="@dimen/d20dp"
+    android:background="@color/color_common_ffffff_ff"
+    tools:text="djkfsj" />
