@@ -24,7 +24,7 @@ class SkinDataHelper(val parentFileName: String) {
         val current = System.currentTimeMillis()
         mainHandler.post {
             dataHelperMap.clear()
-            SkinDataType.entries.forEach {
+            SkinDataType.values().forEach {
                 val helper = FileHelper()
                 val targetFile = App.getInstance()
                     .getExternalFilesDir("${parentFileName}/${getFileDirName(session)}")

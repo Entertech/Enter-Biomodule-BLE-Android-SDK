@@ -36,12 +36,9 @@ import cn.entertech.flowtimeble.data.FileListActivity
 import cn.entertech.flowtimeble.device.BaseDeviceFactory
 import cn.entertech.flowtimeble.device.BrainTagFactory
 import cn.entertech.flowtimeble.device.HandBandFactory
-import cn.entertech.flowtimeble.device.SkinDeviceFactory
 import cn.entertech.flowtimeble.log.LogAdapter
-import cn.entertech.flowtimeble.skin.ISkinFunction
 import cn.entertech.flowtimeble.skin.SkinDataHelper
 import cn.entertech.flowtimeble.skin.SkinDataType
-import cn.entertech.flowtimeble.skin.SkinDevice
 import cn.entertech.log.local.LogListActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -146,7 +143,6 @@ class MultipleDeviceActivity : AppCompatActivity() {
     private val devicesMap: Map<String, IDeviceType> by lazy {
         mapOf(
             Pair("BrainTag", DeviceType.DEVICE_TYPE_BRAIN_TAG),
-            Pair("OCD", SkinDevice),
             Pair("Handband", DeviceType.DEVICE_TYPE_HEADBAND),
         )
     }
@@ -317,9 +313,6 @@ class MultipleDeviceActivity : AppCompatActivity() {
         if (currentDeviceType == DeviceType.DEVICE_TYPE_BRAIN_TAG) {
             deviceFactory = BrainTagFactory()
         }
-        if (currentDeviceType == SkinDevice) {
-            deviceFactory = SkinDeviceFactory()
-        }
         if (currentDeviceType == DeviceType.DEVICE_TYPE_HEADBAND) {
             deviceFactory = HandBandFactory()
         }
@@ -481,7 +474,6 @@ class MultipleDeviceActivity : AppCompatActivity() {
         mainHandler.postDelayed({
             startCollection(deviceName, false)
             startContact(deviceName)
-            notifySkinRate(deviceName)
             notifyBrainData(deviceName)
             notifyHrData(deviceName)
             notifyRrData(deviceName)
@@ -511,7 +503,6 @@ class MultipleDeviceActivity : AppCompatActivity() {
             stopNotifySleepPositionData(deviceName)
             stopNotifyExerciseLevelData(deviceName)
             stopNotifyTemData(deviceName)
-            stopNotifySkinRate(deviceName)
             stopNotifyHrData(deviceName)
             stopCollection(deviceName)
         }, delayMillis)
@@ -545,23 +536,6 @@ class MultipleDeviceActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun notifySkinRate(deviceName: String) {
-        (deviceManageMap[deviceName] as? ISkinFunction)?.notifySkinRate({
-            showMsg("$deviceName 皮电数据： ${HexDump.toHexString(it)}")
-            initMap(deviceSaveHelperMap, deviceName) {
-                SkinDataHelper(deviceName)
-            }?.saveData(SkinDataType.SKIN_DATA, HexDump.toHexString(it))
-        }) {
-            showMsg("$deviceName 订阅皮电数据失败 $it")
-        } ?: kotlin.run {
-            showMsg("$deviceName 设备 不是 皮带设备")
-        }
-    }
-
-    private fun stopNotifySkinRate(deviceName: String) {
-        (deviceManageMap[deviceName] as? ISkinFunction)?.stopNotifySkinRate()
     }
 
     private fun notifyBattery(deviceName: String) {
