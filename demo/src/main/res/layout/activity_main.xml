@@ -1,14 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/spinnerDeviceTypeList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/cbNeedReconnected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spinnerDeviceTypeList"
+            android:layout_marginStart="20dp"
+            android:text="是否重连" />
+
+        <CheckBox
+            android:id="@+id/cbStopLog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cbNeedReconnected"
+            android:layout_marginStart="20dp"
+            android:text="显示日志" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/d5dp"
+            android:layout_below="@id/cbStopLog"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnClearLog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="清空日志" />
+
+            <Button
+                android:id="@+id/btnDeviceInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="前往设备信息页" />
+            <Button
+                android:id="@+id/btnOpenLocalLog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="打开本地日志目录" />
+
+            <Button
+                android:id="@+id/btnOpenLocalData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="打开本地数据目录" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/scrollView_logs"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginTop="20dp"
+        tools:ignore="MissingConstraints" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,87 +93,20 @@
 
                 <Button
                     android:id="@+id/btnScanConnect"
-                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onConnect"
-                    android:text="@string/connect" />
+                    android:text="@string/connect"
+                    android:textAllCaps="false" />
+
                 <Button
-                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDisconnect"
-                    android:text="@string/disconnect" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnConnect"
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/connectBonded" />
-
-                <Button
-                    android:id="@+id/btnSwapPersistenceState"
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onSwapPersistenceState"
-                    android:text="当前是处于非持续性实验状态" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectBrainStart"
-                    android:text="@string/start_collect" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectBrainStop"
-                    android:text="@string/stop_collect" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectHeartStart"
-                    android:text="@string/start_hr_collect" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectHeartStop"
-                    android:text="@string/stop_hr_collect" />
+                    android:text="@string/disconnect"
+                    android:textAllCaps="false" />
 
             </LinearLayout>
 
@@ -112,323 +116,47 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectBrainAndHeartStart"
-                    android:text="@string/start_brain_hr_collect" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onCollectBrainAndHeartStop"
-                    android:text="@string/stop_brain_hr_collect" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onStartContact"
-                    android:text="开启脱落检测" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onStopContact"
-                    android:text="关闭脱落检测" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddConnectedListener"
-                    android:text="@string/add_connect_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveConnectedListener"
-                    android:text="@string/remove_connect_listener" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddDisconnectedListener"
-                    android:text="@string/add_disconnect_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveDisconnectedListener"
-                    android:text="@string/remove_disconnect_listener" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddRawListener"
-                    android:text="@string/add_brain_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveRawListener"
-                    android:text="@string/remove_brain_listener" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddHeartRateListener"
-                    android:text="@string/add_hr_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveHeartRateListener"
-                    android:text="@string/remove_hr_listener" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddContactListener"
-                    android:text="添加佩戴质量监听" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveContactListener"
-                    android:text="去除佩戴质量监听" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddBatteryListener"
-                    android:text="@string/add_battery_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveBatteryListener"
-                    android:text="@string/remove_battery_listener" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onAddBatteryVoltageListener"
-                    android:text="@string/add_battery_voltage_listener" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onRemoveBatteryVoltageListener"
-                    android:text="@string/remove_battery_voltage_listener" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onGetState"
-                    android:text="@string/is_connected" />
+                    android:text="@string/is_connected"
+                    android:textAllCaps="false" />
 
                 <Button
-                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onBattery"
-                    android:text="@string/read_battery" />
+                    android:text="@string/read_battery"
+                    android:textAllCaps="false" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <Button
-                    android:textAllCaps="false"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="onReadHardware"
-                    android:text="@string/read_hardware_version" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onReadFirmware"
-                    android:text="@string/read_firmware_version" />
-
+                    android:onClick="onShutdown"
+                    android:text="关机"
+                    android:textAllCaps="false" />
             </LinearLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onReadDeviceSerial"
-                    android:text="@string/read_serial_number" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="oReadDeviceManufacturer"
-                    android:text="@string/read_device_manufacturer" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="goToSkinConductivity"
-                    android:text="@string/skin_conductivity" />
-
-                <Button
-                    android:textAllCaps="false"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="readSkinConductivity"
-                    android:text="@string/read_skin_conductivity" />
-
-            </LinearLayout>
-
             <Button
-                android:textAllCaps="false"
-                android:onClick="onFindConnectedDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/check_device_connected" />
-            <Button
-                android:textAllCaps="false"
-                android:id="@+id/btn_device_ui"
-                android:onClick="onDeviceUI"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/device_manager_page" />
-
-            <Button
-                android:textAllCaps="false"
                 android:onClick="showLog"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/show_log" />
+                android:text="@string/show_log"
+                android:textAllCaps="false"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

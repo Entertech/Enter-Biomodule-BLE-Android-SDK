@@ -37,13 +37,17 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'cn.entertech.android:device:0.0.2'
 //    implementation 'com.orhanobut:BleLogUtil:2.2.0'
-    api project(':bleuisdk')
-    implementation project(':ble')
+//    api project(':bleuisdk')
+//    implementation project(':ble')
+    implementation ("cn.entertech.android:ble-device:3.0.3-dev-local")
+    implementation ("cn.entertech.android:ble-device-api:3.0.3-dev-local")
+    implementation ("cn.entertech.android:log-local:1.1.0")
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
+//    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+//    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 //    implementation 'com.orhanobut:BleLogUtil:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
