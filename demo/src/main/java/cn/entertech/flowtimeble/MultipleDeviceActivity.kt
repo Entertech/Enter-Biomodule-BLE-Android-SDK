@@ -737,11 +737,11 @@ class MultipleDeviceActivity : AppCompatActivity() {
                     }?.setTextColor(
                         if (count >= 5) {
                             ContextCompat.getColor(
-                                this@MultipleDeviceActivity, R.color.color_common_4cd964_ff
+                                this@MultipleDeviceActivity, cn.entertech.base.R.color.color_common_4cd964_ff
                             )
                         } else {
                             ContextCompat.getColor(
-                                this@MultipleDeviceActivity, R.color.color_common_ff0000_ff
+                                this@MultipleDeviceActivity, cn.entertech.base.R.color.color_common_ff0000_ff
                             )
                         }
                     )
