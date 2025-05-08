@@ -34,7 +34,7 @@ import cn.entertech.device.DeviceType
 import cn.entertech.device.api.IDeviceType
 import cn.entertech.flowtimeble.data.FileListActivity
 import cn.entertech.flowtimeble.device.BaseDeviceFactory
-import cn.entertech.flowtimeble.device.BrainTagFactory
+import cn.entertech.flowtimeble.device.tag.BrainTagFactory
 import cn.entertech.flowtimeble.device.HandBandFactory
 import cn.entertech.flowtimeble.log.LogAdapter
 import cn.entertech.flowtimeble.skin.SkinDataHelper
