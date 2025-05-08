@@ -51,6 +51,8 @@ publish = "1.1.0-local"
 #publish = "1.0.5"
 runner = "1.0.2"
 rxandroidble = "1.17.2"
+navigationFragmentKtx = "2.8.9"
+navigationUiKtx = "2.8.9"
 
 [libraries]
 affective_sdk_api = { module = "cn.entertech.android:affective_sdk_api", version.ref = "affective_sdk_api" }
@@ -105,6 +107,8 @@ publish = { module = "cn.entertech.android:publish", version.ref = "publish" }
 recyclerview-v7 = { module = "com.android.support:recyclerview-v7", version.ref = "appcompatV7" }
 runner = { module = "com.android.support.test:runner", version.ref = "runner" }
 rxandroidble = { module = "com.polidea.rxandroidble2:rxandroidble", version.ref = "rxandroidble" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
