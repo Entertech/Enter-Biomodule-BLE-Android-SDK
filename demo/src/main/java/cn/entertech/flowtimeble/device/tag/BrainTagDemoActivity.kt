@@ -2,6 +2,7 @@ package cn.entertech.flowtimeble.device.tag
 
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.device.tag.BrainTagManager
 import cn.entertech.ble.device.tag.ITagHrFunction
@@ -14,6 +15,7 @@ import cn.entertech.ble.function.ISleepPostureFunction
 import cn.entertech.ble.function.ITemperatureFunction
 import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
 import cn.entertech.ble.function.collect.ICollectExerciseDegreeDataFunction
+import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.flowtimeble.databinding.ActivityBrainTagDemoBinding
 import cn.entertech.flowtimeble.device.BaseDeviceActivity
 import cn.entertech.flowtimeble.device.tag.BleFunctionListAdapter.IBleFunctionClick
@@ -41,12 +43,17 @@ import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCT
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE
+import java.util.Date
 
 class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
+    companion object {
+        private const val TAG = "BrainTagDemoActivity"
+    }
+
     private lateinit var binding: ActivityBrainTagDemoBinding
     private var rvBleFunction: RecyclerView? = null
-    private val adapter by lazy {
+    private val functionListAdapter by lazy {
         val adapter = BleFunctionListAdapter()
         adapter.bleFunctionClick = this
         adapter
@@ -57,12 +64,34 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
         binding = ActivityBrainTagDemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         rvBleFunction = binding.rvBleFunction
+        scrollView_logs = binding.scrollViewLogs
+        cbShowLog = binding.cbStopLog
+        scrollView_logs?.adapter = adapter
+        scrollView_logs?.layoutManager = LinearLayoutManager(this)
         rvBleFunction?.layoutManager = GridLayoutManager(this, 2)
-        rvBleFunction?.adapter = adapter
+        rvBleFunction?.adapter = functionListAdapter
         bluetoothDeviceManager = BrainTagManager(this)
+        cbShowLog?.isChecked = true
+        needLog = cbShowLog?.isChecked ?: false
+        cbShowLog?.setOnCheckedChangeListener { _, isChecked ->
+            needLog = isChecked
+        }
         initBleFunction()
+
     }
 
+    override fun showMsg(msg: String) {
+        BleLogUtil.d(TAG, msg)
+        if (!needLog) {
+            return
+        }
+        val realMsg = "->: ${simple.format(Date())} $msg\n"
+        runOnUiThread {
+            adapter.addItem(realMsg)
+            scrollView_logs?.scrollToPosition(adapter.itemCount - 1)
+        }
+
+    }
 
     private fun initBleFunction() {
         val bleFunctionList = ArrayList<BleFunctionUiBean>()
@@ -210,11 +239,33 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
         }
 
 
-        adapter.setNewData(bleFunctionList)
+        functionListAdapter.setNewData(bleFunctionList)
     }
 
     override fun onClick(bleFunctionFlag: Int) {
         when (bleFunctionFlag) {
+            BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(
+                    Unit,
+                    success = {
+                        showToast("开始收集脑波心率数据成功")
+                    },
+                    failure = { _, it ->
+                        showToast("开始收集脑波心率数据失败：$it")
+                    })
+            }
+
+            BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR -> {
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(
+                    Unit,
+                    success = {
+                        showToast("停止收集脑波心率数据成功")
+                    },
+                    failure = { _, it ->
+                        showToast("停止收集脑波心率数据失败：$it")
+                    })
+            }
+
             BLE_FUNCTION_FLAG_READ_BATTERY -> {
                 (bluetoothDeviceManager as IDeviceBatteryFunction<*>).readBatteryValue(success = {
                     if (it is Int) {
@@ -227,7 +278,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
                 (bluetoothDeviceManager as? ITagHrFunction<*>)?.notifyHRValue(success = {
-
+                    showMsg("心率数据：$it")
                 }, failure = {
                     showToast("订阅心率数据失败：$it")
                 })
@@ -284,7 +335,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE -> {
                 (bluetoothDeviceManager as IBrainWaveFunction).notifyBrainWave({ data ->
-                    showToast("脑波数据：${data[0]}")
+                    showMsg("脑波数据：${data.contentToString()}")
                 }, { error ->
                     showToast("脑波数据失败：$error")
                 })
@@ -328,6 +379,6 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
     override fun onDestroy() {
         super.onDestroy()
-        adapter.bleFunctionClick = null
+        functionListAdapter.bleFunctionClick = null
     }
 }

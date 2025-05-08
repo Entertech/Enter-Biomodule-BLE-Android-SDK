@@ -4,10 +4,14 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.flowtimeble.log.LogAdapter
+import java.text.SimpleDateFormat
 
 abstract class BaseDeviceActivity : AppCompatActivity() {
 
@@ -15,10 +19,19 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
         private const val TAG = "BaseDeviceActivity"
     }
 
+    protected var needLog = false
     protected val mainHandler by lazy {
         Handler(Looper.getMainLooper())
     }
+    protected val adapter by lazy {
+        LogAdapter()
+    }
+    protected val simple by lazy {
+        SimpleDateFormat("yyyy/MM/dd  hh:mm:ss:SSS")
+    }
+    protected var cbShowLog: CheckBox? = null
     protected var bluetoothDeviceManager: BaseBleConnectManager? = null
+    protected var scrollView_logs: RecyclerView? = null
 
     @Volatile
     protected var needReConnected = false
@@ -39,13 +52,14 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
     }
 
     protected open fun showMsg(msg: String) {
-        Log.d(TAG,"msg: $msg")
+        Log.d(TAG, "msg: $msg")
     }
 
     protected open fun deviceDisconnect() {
 
     }
-    protected open fun deviceConnect(mac:String) {
+
+    protected open fun deviceConnect(mac: String) {
 
     }
 
