@@ -44,7 +44,7 @@ class MainActivity : BaseDeviceActivity() {
     private var spinnerDeviceTypeList: Spinner? = null
     private var cbNeedReconnected: CheckBox? = null
 
-    private var btnClearLog: Button? = null
+
     private var btnOpenLocalLog: Button? = null
     private var btnOpenLocalData: Button? = null
     private var btnDeviceInfo: Button? = null

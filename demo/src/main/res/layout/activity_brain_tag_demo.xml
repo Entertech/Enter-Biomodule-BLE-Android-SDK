@@ -43,26 +43,6 @@
                 android:layout_weight="1"
                 android:text="清空日志" />
 
-            <Button
-                android:id="@+id/btnDeviceInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="前往设备信息页" />
-
-            <Button
-                android:id="@+id/btnOpenLocalLog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="打开本地日志目录" />
-
-            <Button
-                android:id="@+id/btnOpenLocalData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="打开本地数据目录" />
         </LinearLayout>
     </RelativeLayout>
 
