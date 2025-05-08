@@ -1,10 +1,12 @@
-package cn.entertech.flowtimeble.device
+package cn.entertech.flowtimeble.device.tag
 
 import android.content.Context
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.device.tag.BrainTagManager
 import cn.entertech.device.DeviceType
 import cn.entertech.device.api.IDeviceType
+import cn.entertech.flowtimeble.device.BaseDeviceFactory
+import cn.entertech.flowtimeble.device.DeviceInfo
 
 class BrainTagFactory : BaseDeviceFactory() {
     override fun getDeviceType(): IDeviceType {
