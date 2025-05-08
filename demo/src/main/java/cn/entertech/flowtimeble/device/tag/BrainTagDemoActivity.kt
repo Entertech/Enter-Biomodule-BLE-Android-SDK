@@ -56,7 +56,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
         rvBleFunction = binding.rvBleFunction
         rvBleFunction?.layoutManager = GridLayoutManager(this, 2)
         rvBleFunction?.adapter = adapter
-        bluetoothDeviceManager=BrainTagManager(this)
+        bluetoothDeviceManager = BrainTagManager(this)
         initBleFunction()
     }
 
