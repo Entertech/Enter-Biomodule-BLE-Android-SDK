@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +33,7 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
     protected var cbShowLog: CheckBox? = null
     protected var bluetoothDeviceManager: BaseBleConnectManager? = null
     protected var scrollView_logs: RecyclerView? = null
-
+    protected var btnClearLog: Button? = null
     @Volatile
     protected var needReConnected = false
     protected val reconnectRunnable: Runnable by lazy {

@@ -65,6 +65,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
         setContentView(binding.root)
         rvBleFunction = binding.rvBleFunction
         scrollView_logs = binding.scrollViewLogs
+        btnClearLog = binding.btnClearLog
         cbShowLog = binding.cbStopLog
         scrollView_logs?.adapter = adapter
         scrollView_logs?.layoutManager = LinearLayoutManager(this)
@@ -75,6 +76,9 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
         needLog = cbShowLog?.isChecked ?: false
         cbShowLog?.setOnCheckedChangeListener { _, isChecked ->
             needLog = isChecked
+        }
+        btnClearLog?.setOnClickListener {
+            adapter.setData(ArrayList())
         }
         initBleFunction()
 
@@ -245,8 +249,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
     override fun onClick(bleFunctionFlag: Int) {
         when (bleFunctionFlag) {
             BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
-                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(
-                    Unit,
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(Unit,
                     success = {
                         showToast("开始收集脑波心率数据成功")
                     },
@@ -256,8 +259,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR -> {
-                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(
-                    Unit,
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
                         showToast("停止收集脑波心率数据成功")
                     },
