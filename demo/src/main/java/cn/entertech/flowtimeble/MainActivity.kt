@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -13,7 +11,6 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -96,22 +93,9 @@ class MainActivity : BaseDeviceActivity() {
         private const val RECONNECT_DELAY_TIME = 2000L
     }
 
-    private val mainHandler by lazy {
-        Handler(Looper.getMainLooper())
-    }
-    private var needLog = false
-    private val reconnectRunnable: Runnable by lazy {
-        Runnable {
-            showMsg("reconnectRunnable needReConnected:   $needReConnected")
-            if (needReConnected) {
-                showMsg("start reconnect")
-                connectDevice()
-            }
-        }
-    }
 
-    @Volatile
-    private var needReConnected = false
+    private var needLog = false
+
 
     private val deviceTypes by lazy {
         listOf(
@@ -221,7 +205,7 @@ class MainActivity : BaseDeviceActivity() {
     }
 
 
-    private fun showMsg(msg: String) {
+    override fun showMsg(msg: String) {
         BleLogUtil.d(TAG, msg)
         if (!needLog) {
             return
@@ -232,6 +216,53 @@ class MainActivity : BaseDeviceActivity() {
             scrollView_logs?.scrollToPosition(adapter.itemCount - 1)
         }
 
+    }
+
+    override fun deviceConnect(mac: String) {
+        super.deviceConnect(mac)
+        mainHandler.postDelayed({
+            meditateDataHelper.close()
+            meditateDataHelper.initHelper()
+            startCollection(false)
+            startContact()
+            (bluetoothDeviceManager as? IDeviceTemperatureFunction<*>)?.apply {
+                notifyTemperatureValue({
+                    if (it is BrainTemperatureBean) {
+                        meditateDataHelper.saveData(
+                            cn.entertech.ble.api.bean.MeditateDataType.Temperature, it.raw
+                        )
+                    }
+                }, {
+                    showMsg("订阅温度数据失败：$it")
+                })
+            }
+            (bluetoothDeviceManager as? IDeviceGyroFunction<*, *>)?.apply {
+                notifySleepPostureValue({
+                    if (it is BrainTagSleepPostureBean) {
+                        meditateDataHelper.saveData(
+                            cn.entertech.ble.api.bean.MeditateDataType.SleepPosture, it.rawData
+                        )
+                    }
+                }, {
+                    showMsg("订阅睡眠姿态数据失败：$it")
+                })
+
+                notifyExerciseLevelValue({
+                    if (it is BrainTagExerciseLevelBean) {
+                        meditateDataHelper.saveData(
+                            cn.entertech.ble.api.bean.MeditateDataType.ExerciseLevel, it.rawData
+                        )
+                    }
+                }, {
+                    showMsg("订阅运动程度数据失败：$it")
+                })
+            }
+        }, 1000)
+        runOnUiThread {
+            btnScanConnect.text = mac
+            Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     /**
@@ -273,9 +304,7 @@ class MainActivity : BaseDeviceActivity() {
 
     var connectedListener = fun(string: String) {
         showMsg("connectedListener connect success:   $string")
-        runOnUiThread {
-            Toast.makeText(this@MainActivity, "connect success", Toast.LENGTH_SHORT).show()
-        }
+        showToast("connect success")
     }
     var disConnectedListener = fun(string: String) {
         showMsg("disconnect:   $string")
@@ -293,76 +322,7 @@ class MainActivity : BaseDeviceActivity() {
         mainHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_TIME)
     }
 
-    fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        connectDevice()
-    }
 
-    private fun connectDevice() {
-        mainHandler.removeCallbacks(reconnectRunnable)
-        if (bluetoothDeviceManager?.isConnected() == true) {
-            showMsg("已连接  $bluetoothDeviceManager")
-            return
-        }
-
-        if (bluetoothDeviceManager?.isConnecting() == true) {
-            showMsg("正在连接中  $bluetoothDeviceManager")
-            return
-        }
-        showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
-        bluetoothDeviceManager?.connectDevice(fun(mac: String) {
-            showMsg("connect success $mac")
-            mainHandler.postDelayed({
-                meditateDataHelper.close()
-                meditateDataHelper.initHelper()
-                startCollection(false)
-                startContact()
-                (bluetoothDeviceManager as? IDeviceTemperatureFunction<*>)?.apply {
-                    notifyTemperatureValue({
-                        if (it is BrainTemperatureBean) {
-                            meditateDataHelper.saveData(
-                                cn.entertech.ble.api.bean.MeditateDataType.Temperature, it.raw
-                            )
-                        }
-                    }, {
-                        showMsg("订阅温度数据失败：$it")
-                    })
-                }
-                (bluetoothDeviceManager as? IDeviceGyroFunction<*, *>)?.apply {
-                    notifySleepPostureValue({
-                        if (it is BrainTagSleepPostureBean) {
-                            meditateDataHelper.saveData(
-                                cn.entertech.ble.api.bean.MeditateDataType.SleepPosture, it.rawData
-                            )
-                        }
-                    }, {
-                        showMsg("订阅睡眠姿态数据失败：$it")
-                    })
-
-                    notifyExerciseLevelValue({
-                        if (it is BrainTagExerciseLevelBean) {
-                            meditateDataHelper.saveData(
-                                cn.entertech.ble.api.bean.MeditateDataType.ExerciseLevel, it.rawData
-                            )
-                        }
-                    }, {
-                        showMsg("订阅运动程度数据失败：$it")
-                    })
-                }
-            }, 1000)
-            runOnUiThread {
-                btnScanConnect.text = mac
-                Toast.makeText(this@MainActivity, "connect to device success", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }, { msg ->
-            showMsg("connect failed $msg")
-            runOnUiThread {
-                Toast.makeText(
-                    this@MainActivity, "failed to connect to device：${msg}", Toast.LENGTH_SHORT
-                ).show()
-            }
-        }, cn.entertech.ble.api.ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
-    }
 
     override fun deviceDisconnect() {
         btnScanConnect.setText(R.string.connect)
@@ -547,8 +507,6 @@ class MainActivity : BaseDeviceActivity() {
         }
 
     }
-
-
 
 
     fun showLog(view: View) {

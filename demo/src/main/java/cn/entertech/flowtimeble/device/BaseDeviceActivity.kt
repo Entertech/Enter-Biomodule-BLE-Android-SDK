@@ -1,5 +1,8 @@
 package cn.entertech.flowtimeble.device
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +15,22 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
         private const val TAG = "BaseDeviceActivity"
     }
 
+    protected val mainHandler by lazy {
+        Handler(Looper.getMainLooper())
+    }
     protected var bluetoothDeviceManager: BaseBleConnectManager? = null
+
+    @Volatile
+    protected var needReConnected = false
+    protected val reconnectRunnable: Runnable by lazy {
+        Runnable {
+            showMsg("reconnectRunnable needReConnected:   $needReConnected")
+            if (needReConnected) {
+                showMsg("start reconnect")
+                connectDevice()
+            }
+        }
+    }
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
         bluetoothDeviceManager?.disConnect {
@@ -20,7 +38,14 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
         }
     }
 
+    protected open fun showMsg(msg: String) {
+        Log.d(TAG,"msg: $msg")
+    }
+
     protected open fun deviceDisconnect() {
+
+    }
+    protected open fun deviceConnect(mac:String) {
 
     }
 
@@ -38,6 +63,37 @@ abstract class BaseDeviceActivity : AppCompatActivity() {
     }
 
     fun showToast(msg: String) {
-        Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
+        connectDevice()
+    }
+
+    protected fun connectDevice() {
+        mainHandler.removeCallbacks(reconnectRunnable)
+        if (bluetoothDeviceManager?.isConnected() == true) {
+            showMsg("已连接  $bluetoothDeviceManager")
+            return
+        }
+
+        if (bluetoothDeviceManager?.isConnecting() == true) {
+            showMsg("正在连接中  $bluetoothDeviceManager")
+            return
+        }
+        showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
+        bluetoothDeviceManager?.connectDevice(fun(mac: String) {
+            showMsg("connect success $mac")
+            deviceConnect(mac)
+        }, { msg ->
+            showMsg("connect failed $msg")
+            runOnUiThread {
+                Toast.makeText(
+                    this, "failed to connect to device：${msg}", Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, cn.entertech.ble.api.ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
     }
 }
