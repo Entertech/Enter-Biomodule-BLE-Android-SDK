@@ -16,6 +16,7 @@ data class BleFunctionUiBean(val functionName: String, val functionFlag: Int, va
         const val BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE = 600
         const val BLE_FUNCTION_FLAG_NOTIFY_BATTERY = 7
         const val BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY = 700
+        const val BLE_FUNCTION_FLAG_READ_BATTERY = 7000
         const val BLE_FUNCTION_FLAG_READ_FIRMWARE = 8
         const val BLE_FUNCTION_FLAG_READ_HARDWARE = 9
         const val BLE_FUNCTION_FLAG_READ_MAC = 10

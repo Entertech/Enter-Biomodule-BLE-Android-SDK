@@ -24,6 +24,7 @@ import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCT
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_HR
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE
+import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_BATTERY
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_FIRMWARE
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_HARDWARE
 import cn.entertech.flowtimeble.device.tag.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_MAC
@@ -46,7 +47,9 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
     private lateinit var binding: ActivityBrainTagDemoBinding
     private var rvBleFunction: RecyclerView? = null
     private val adapter by lazy {
-        BleFunctionListAdapter()
+        val adapter = BleFunctionListAdapter()
+        adapter.bleFunctionClick = this
+        adapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,6 +166,11 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
                     "取消订阅电量数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
                 )
             )
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    "读取电量数据", BLE_FUNCTION_FLAG_READ_BATTERY
+                )
+            )
         }
         if (bluetoothDeviceManager is ICollectExerciseDegreeDataFunction) {
             bleFunctionList.add(
@@ -207,11 +215,66 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
     override fun onClick(bleFunctionFlag: Int) {
         when (bleFunctionFlag) {
+            BLE_FUNCTION_FLAG_READ_BATTERY -> {
+                (bluetoothDeviceManager as IDeviceBatteryFunction<*>).readBatteryValue(success = {
+                    if (it is Int) {
+                        showToast("读取电量数据：$it")
+                    }
+                }, failure = {
+                    showToast("读取电量数据失败：$it")
+                })
+            }
+
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
-                (bluetoothDeviceManager as? ITagHrFunction<*>)?.notifyHRValue(success = {},
-                    failure = {
-                        showToast("订阅心率数据失败：$it")
+                (bluetoothDeviceManager as? ITagHrFunction<*>)?.notifyHRValue(success = {
+
+                }, failure = {
+                    showToast("订阅心率数据失败：$it")
+                })
+            }
+
+            BLE_FUNCTION_FLAG_READ_HARDWARE -> {
+                (bluetoothDeviceManager as? IInfoFunction)?.apply {
+                    readDeviceHardware(success = {
+                        showToast("读取Hardware数据：$it")
+                    }, failure = {
+                        showToast("读取Hardware数据失败：$it")
                     })
+                } ?: run {
+                    showToast("该设备 不支持 readDeviceHardware")
+                }
+            }
+
+            BLE_FUNCTION_FLAG_READ_MAC -> {
+                (bluetoothDeviceManager as? IInfoFunction)?.readDeviceMac(success = {
+                    showToast("读取mac数据：$it")
+                }, failure = {
+                    showToast("读取mac失败：$it")
+                })
+            }
+
+            BLE_FUNCTION_FLAG_READ_SERIAL -> {
+                (bluetoothDeviceManager as? IInfoFunction)?.readDeviceSerial(success = {
+                    showToast("读取Serial数据：$it")
+                }, failure = {
+                    showToast("读取Serial失败：$it")
+                })
+            }
+
+            BLE_FUNCTION_FLAG_READ_MANUFACTURER -> {
+                (bluetoothDeviceManager as? IInfoFunction)?.readDeviceManufacturer(success = {
+                    showToast("读取Manufacturer数据：$it")
+                }, failure = {
+                    showToast("读取Manufacturer失败：$it")
+                })
+            }
+
+            BLE_FUNCTION_FLAG_READ_FIRMWARE -> {
+                (bluetoothDeviceManager as? IInfoFunction)?.readDeviceFirmware(success = {
+                    showToast("读取Firmwar数据：$it")
+                }, failure = {
+                    showToast("读取Firmwar数据失败：$it")
+                })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_HR -> {
@@ -261,5 +324,10 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
                 }, { error -> showToast("取消订阅睡眠姿势数据失败：$error") })
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adapter.bleFunctionClick = null
     }
 }
