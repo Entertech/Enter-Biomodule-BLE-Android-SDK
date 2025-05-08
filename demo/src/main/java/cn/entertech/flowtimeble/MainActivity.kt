@@ -43,23 +43,15 @@ class MainActivity : BaseDeviceActivity() {
 
     private var spinnerDeviceTypeList: Spinner? = null
     private var cbNeedReconnected: CheckBox? = null
-    private var cbShowLog: CheckBox? = null
-    private var scrollView_logs: RecyclerView? = null
+
     private var btnClearLog: Button? = null
     private var btnOpenLocalLog: Button? = null
     private var btnOpenLocalData: Button? = null
     private var btnDeviceInfo: Button? = null
     private lateinit var btnScanConnect: Button
-
-    private val simple by lazy {
-        SimpleDateFormat("yyyy/MM/dd  hh:mm:ss:SSS")
-    }
-
     private val meditateDataHelper = MeditateDataHelper("brain_tag")
     private var lastReceiveDataTime = 0L
-    private val adapter by lazy {
-        LogAdapter()
-    }
+
 
     private val receiveDataRunnable: Runnable by lazy {
         Runnable {
@@ -92,10 +84,6 @@ class MainActivity : BaseDeviceActivity() {
          * */
         private const val RECONNECT_DELAY_TIME = 2000L
     }
-
-
-    private var needLog = false
-
 
     private val deviceTypes by lazy {
         listOf(
@@ -321,7 +309,6 @@ class MainActivity : BaseDeviceActivity() {
         mainHandler.removeCallbacks(reconnectRunnable)
         mainHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_TIME)
     }
-
 
 
     override fun deviceDisconnect() {
