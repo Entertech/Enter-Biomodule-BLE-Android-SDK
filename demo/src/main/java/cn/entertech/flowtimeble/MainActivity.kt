@@ -35,14 +35,15 @@ import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.device.DeviceType
 import cn.entertech.flowtimeble.data.FileListActivity
+import cn.entertech.flowtimeble.device.BaseDeviceActivity
 import cn.entertech.flowtimeble.log.LogAdapter
 import cn.entertech.log.local.LogListActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 
 
-class MainActivity : AppCompatActivity() {
-    private var bluetoothDeviceManager: BaseBleConnectManager? = null
+class MainActivity : BaseDeviceActivity() {
+
     private var spinnerDeviceTypeList: Spinner? = null
     private var cbNeedReconnected: CheckBox? = null
     private var cbShowLog: CheckBox? = null
@@ -313,14 +314,7 @@ class MainActivity : AppCompatActivity() {
             mainHandler.postDelayed({
                 meditateDataHelper.close()
                 meditateDataHelper.initHelper()
-                startCollection(false)/*(bluetoothDeviceManager as? BrainTagManager)?.apply {
-                    showMsg("发送收集陀螺仪数据指令")
-                    collectGyroData({
-                        showMsg("收集陀螺仪数据指令发送成功：")
-                    }) {
-                        showMsg("收集陀螺仪数据指令发送失败：$it")
-                    }
-                }*/
+                startCollection(false)
                 startContact()
                 (bluetoothDeviceManager as? IDeviceTemperatureFunction<*>)?.apply {
                     notifyTemperatureValue({
@@ -370,10 +364,8 @@ class MainActivity : AppCompatActivity() {
         }, cn.entertech.ble.api.ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
     }
 
-    fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        bluetoothDeviceManager?.disConnect {
-            btnScanConnect.setText(R.string.connect)
-        }
+    override fun deviceDisconnect() {
+        btnScanConnect.setText(R.string.connect)
     }
 
     private val onShutdown: Byte = 0x45
@@ -556,18 +548,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun onGetState(@Suppress("UNUSED_PARAMETER") view: View) {
-        BleLogUtil.d(
-            TAG, "biomoduleBleManager.isConnected()： ${bluetoothDeviceManager?.isConnected()}"
-        )
-        Toast.makeText(
-            this, if (bluetoothDeviceManager?.isConnected() == true) {
-                "connected"
-            } else {
-                "disconnect"
-            }, Toast.LENGTH_SHORT
-        ).show()
-    }
+
 
 
     fun showLog(view: View) {
