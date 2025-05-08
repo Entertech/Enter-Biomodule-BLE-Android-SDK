@@ -248,18 +248,35 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
     override fun onClick(bleFunctionFlag: Int) {
         when (bleFunctionFlag) {
-            BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
-                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(Unit,
+            BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE -> {
+                (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.startCollectExerciseDegreeData(
+                    Unit,
                     success = {
-                        showToast("开始收集脑波心率数据成功")
+                        showToast("开始收集运动数据成功")
                     },
                     failure = { _, it ->
-                        showToast("开始收集脑波心率数据失败：$it")
+                        showToast("开始收集运动数据失败：$it")
+                    })
+            }
+
+            BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE -> {
+
+            }
+
+            BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
+                (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(
+                    Unit,
+                    success = {
+                        showToast("停止收集脑波心率数据成功")
+                    },
+                    failure = { _, it ->
+                        showToast("开停止收集脑波心率数据失败：$it")
                     })
             }
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR -> {
-                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(
+                    Unit,
                     success = {
                         showToast("停止收集脑波心率数据成功")
                     },
