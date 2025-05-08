@@ -13,7 +13,6 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.base.util.startActivity
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.device.cushion.CushionManager
@@ -33,9 +32,7 @@ import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.device.DeviceType
 import cn.entertech.flowtimeble.data.FileListActivity
 import cn.entertech.flowtimeble.device.BaseDeviceActivity
-import cn.entertech.flowtimeble.log.LogAdapter
 import cn.entertech.log.local.LogListActivity
-import java.text.SimpleDateFormat
 import java.util.Date
 
 
