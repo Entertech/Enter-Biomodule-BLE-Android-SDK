@@ -55,6 +55,7 @@ dependencies {
 //    implementation project(':ble')
     implementation ("cn.entertech.android:ble-device:3.0.3-dev-local")
     implementation ("cn.entertech.android:ble-device-api:3.0.3-dev-local")
+    implementation ("cn.entertech.android:biomoduleble_base_rx:3.0.3-dev-local")
     implementation ("cn.entertech.android:log-local:1.1.0")
     implementation(libs.androidx.core.ktx.v190)
     implementation(libs.kotlin.stdlib)
