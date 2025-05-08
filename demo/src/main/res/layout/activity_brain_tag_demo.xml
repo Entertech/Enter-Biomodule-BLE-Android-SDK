@@ -13,14 +13,6 @@
         android:orientation="vertical">
 
         <CheckBox
-            android:id="@+id/cbNeedReconnected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/spinnerDeviceTypeList"
-            android:layout_marginStart="20dp"
-            android:text="是否重连" />
-
-        <CheckBox
             android:id="@+id/cbStopLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
