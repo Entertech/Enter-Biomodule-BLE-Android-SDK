@@ -350,7 +350,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_NOTIFY_CONTACT -> {
                 (bluetoothDeviceManager as IContactFunction).notifyContact({ data ->
-                    showToast("佩戴状态数据：${data[0]}")
+                    showMsg("佩戴状态数据：${data.contentToString()}")
                 }, { error ->
                     showToast("佩戴状态数据失败：$error")
                 })
@@ -363,7 +363,7 @@ class BrainTagDemoActivity : BaseDeviceActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE -> {
                 (bluetoothDeviceManager as ISleepPostureFunction<*>).notifySleepPosture({ data ->
-                    showToast("睡眠姿势数据：${data[0]}")
+                    showMsg("睡眠姿势数据：${data.contentToString()}")
                 }, { error ->
                     showToast("睡眠姿势数据失败：$error")
                 })
