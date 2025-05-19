@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.device.tag.BrainTagManager
-import cn.entertech.ble.device.tag.ITagHrFunction
+import cn.entertech.ble.device.tag.function.ITagHrFunction
 import cn.entertech.ble.function.IBrainWaveFunction
 import cn.entertech.ble.function.IContactFunction
 import cn.entertech.ble.function.IDeviceBatteryFunction
