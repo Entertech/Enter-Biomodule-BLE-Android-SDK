@@ -1,4 +1,4 @@
-package cn.entertech.flowtimeble.device.tag
+package cn.entertech.flowtimeble.device
 
 data class BleFunctionUiBean(val functionName: String, val functionFlag: Int, val uiType: Int = 0) {
     companion object {

@@ -1,4 +1,4 @@
-package cn.entertech.flowtimeble.device.tag
+package cn.entertech.flowtimeble.device
 
 import android.view.LayoutInflater
 import android.view.View

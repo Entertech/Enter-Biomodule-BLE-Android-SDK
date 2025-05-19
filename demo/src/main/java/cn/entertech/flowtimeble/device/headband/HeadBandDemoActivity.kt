@@ -1,15 +1,14 @@
-package cn.entertech.flowtimeble.device.tag
+package cn.entertech.flowtimeble.device.headband
 
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cn.entertech.ble.device.tag.BrainTagManager
+import cn.entertech.ble.device.headband.HeadbandManger
 import cn.entertech.ble.device.tag.function.ITagHrFunction
 import cn.entertech.ble.function.IBrainWaveFunction
 import cn.entertech.ble.function.IContactFunction
 import cn.entertech.ble.function.IDeviceBatteryFunction
-import cn.entertech.ble.function.IHrFunction
 import cn.entertech.ble.function.IInfoFunction
 import cn.entertech.ble.function.ISleepPostureFunction
 import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
@@ -39,10 +38,10 @@ import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_
 import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE
 import java.util.Date
 
-class BrainTagDemoActivity : BaseDeviceActivity() {
+class HeadBandDemoActivity : BaseDeviceActivity() {
 
     companion object {
-        private const val TAG = "BrainTagDemoActivity"
+        private const val TAG = "HeadBandDemoActivity"
     }
 
     private lateinit var binding: ActivityDeviceDemoBinding
@@ -65,7 +64,7 @@ class BrainTagDemoActivity : BaseDeviceActivity() {
         scrollView_logs?.layoutManager = LinearLayoutManager(this)
         rvBleFunction?.layoutManager = GridLayoutManager(this, 2)
         rvBleFunction?.adapter = functionListAdapter
-        bluetoothDeviceManager = BrainTagManager(this)
+        bluetoothDeviceManager = HeadbandManger(this)
         cbShowLog?.isChecked = true
         needLog = cbShowLog?.isChecked ?: false
         cbShowLog?.setOnCheckedChangeListener { _, isChecked ->
@@ -74,6 +73,7 @@ class BrainTagDemoActivity : BaseDeviceActivity() {
         btnClearLog?.setOnClickListener {
             adapter.setData(ArrayList())
         }
+
         functionListAdapter.setNewData(initBleFunction())
 
     }

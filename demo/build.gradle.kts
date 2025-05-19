@@ -50,6 +50,7 @@ dependencies {
     implementation (libs.ble.device.tag)
 //    implementation (libs.ble.device.cushion)
     implementation(libs.kotlin.stdlib.jdk7)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit.v412)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core)
