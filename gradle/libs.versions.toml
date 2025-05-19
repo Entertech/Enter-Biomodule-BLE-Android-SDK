@@ -15,6 +15,7 @@ autoService = "1.0-rc6"
 base = "0.0.6"
 baseVersion = "0.0.5"
 bleCommon = "2.7.5"
+bleDeviceHeadband = "3.0.4-local"
 cardview = "1.0.0"
 cnBase = "0.0.7"
 constraintlayoutVersion = "2.1.4"
@@ -76,6 +77,9 @@ base = { module = "cn.entertech.android:base", version.ref = "base" }
 base-v005 = { module = "cn.entertech.android:base", version.ref = "baseVersion" }
 base-v007 = { module = "cn.entertech.android:base", version.ref = "cnBase" }
 ble-common = { module = "no.nordicsemi.android:ble-common", version.ref = "bleCommon" }
+ble-device-cushion = { module = "cn.entertech.android:ble-device-cushion", version.ref = "bleDeviceHeadband" }
+ble-device-headband = { module = "cn.entertech.android:ble-device-headband", version.ref = "bleDeviceHeadband" }
+ble-device-tag = { module = "cn.entertech.android:ble-device-tag", version.ref = "bleDeviceHeadband" }
 constraint-layout = { module = "com.android.support.constraint:constraint-layout", version.ref = "androidConstraintLayout" }
 device = { module = "cn.entertech.android:device", version.ref = "device" }
 dfu = { module = "no.nordicsemi.android:dfu", version.ref = "dfu" }

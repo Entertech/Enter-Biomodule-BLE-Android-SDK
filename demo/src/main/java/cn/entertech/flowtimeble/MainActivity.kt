@@ -15,18 +15,17 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.entertech.base.util.startActivity
 import cn.entertech.ble.BaseBleConnectManager
-import cn.entertech.ble.device.cushion.CushionManager
 import cn.entertech.ble.device.headband.HeadbandManger
-import cn.entertech.ble.device.tag.BrainTagExerciseLevelBean
 import cn.entertech.ble.device.tag.BrainTagManager
-import cn.entertech.ble.device.tag.BrainTagSleepPostureBean
-import cn.entertech.ble.device.tag.BrainTemperatureBean
+import cn.entertech.ble.device.tag.bean.BrainTagExerciseLevelBean
+import cn.entertech.ble.device.tag.bean.BrainTagSleepPostureBean
+import cn.entertech.ble.device.tag.bean.BrainTemperatureBean
+import cn.entertech.ble.device.tag.function.IDeviceGyroFunction
+import cn.entertech.ble.device.tag.function.IDeviceTemperatureFunction
 import cn.entertech.ble.function.IDeviceBatteryFunction
 import cn.entertech.ble.function.IDeviceCommandUploadFunction
 import cn.entertech.ble.function.IDeviceEegFunction
-import cn.entertech.ble.function.IDeviceGyroFunction
 import cn.entertech.ble.function.IDeviceHrFunction
-import cn.entertech.ble.function.IDeviceTemperatureFunction
 import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.device.DeviceType
@@ -181,7 +180,6 @@ class MainActivity : BaseDeviceActivity() {
         bluetoothDeviceManager = when (deviceType) {
             DeviceType.DEVICE_TYPE_HEADBAND -> HeadbandManger(this)
             DeviceType.DEVICE_TYPE_BRAIN_TAG -> BrainTagManager(this)
-            DeviceType.DEVICE_TYPE_CUSHION -> CushionManager(this)
             else -> null
         }
         bluetoothDeviceManager?.addConnectListener(connectedListener)
