@@ -11,7 +11,7 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
     RecyclerView.Adapter<BleFunctionListAdapter.BleFunctionListVH>() {
 
     interface IBleFunctionClick {
-        fun onClick(bleFunctionFlag: Int)
+        fun onClick(bleFunctionFlag: BleFunction)
     }
 
     var bleFunctionClick: IBleFunctionClick? = null
