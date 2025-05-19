@@ -20,6 +20,7 @@ logLocal = "1.1.0"
 materialVersion = "1.9.0"
 meditate = "0.0.2"
 publish = "1.1.0-local"
+activity = "1.9.2"
 #publish = "1.0.5"
 
 [libraries]
@@ -45,6 +46,7 @@ log-local = { module = "cn.entertech.android:log-local", version.ref = "logLocal
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 meditate = { module = "cn.entertech.android:meditate", version.ref = "meditate" }
 publish = { module = "cn.entertech.android:publish", version.ref = "publish" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
