@@ -5,37 +5,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.ble.device.headband.HeadbandManger
-import cn.entertech.ble.device.tag.function.ITagHrFunction
-import cn.entertech.ble.function.IBrainWaveFunction
-import cn.entertech.ble.function.IContactFunction
-import cn.entertech.ble.function.IDeviceBatteryFunction
-import cn.entertech.ble.function.IInfoFunction
-import cn.entertech.ble.function.ISleepPostureFunction
-import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
-import cn.entertech.ble.function.collect.ICollectExerciseDegreeDataFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.flowtimeble.databinding.ActivityDeviceDemoBinding
 import cn.entertech.flowtimeble.device.BaseDeviceActivity
 import cn.entertech.flowtimeble.device.BleFunctionListAdapter
-import cn.entertech.flowtimeble.device.BleFunctionListAdapter.IBleFunctionClick
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_CONTACT
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_HR
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_BATTERY
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_FIRMWARE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_HARDWARE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_MAC
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_MANUFACTURER
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_READ_SERIAL
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
-import cn.entertech.flowtimeble.device.BleFunctionUiBean.Companion.BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE
 import java.util.Date
 
 class HeadBandDemoActivity : BaseDeviceActivity() {
