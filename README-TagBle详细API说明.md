@@ -1,4 +1,22 @@
-# 详细API说明
+# Tag SDK 接入说明
+
+## 集成
+
+#### gradle自动依赖
+
+在项目根目录的build.gradle文件下添加以下依赖：
+
+```groovy
+repositories {
+    mavenCentral()
+}
+```
+
+在所需的module中的build.gradle文件下添加以下依赖：
+
+    implementation ("cn.entertech.android:ble-device-tag:3.0.4")
+
+## 详细API说明
 
 ### 获取Tag蓝牙管理类
 
