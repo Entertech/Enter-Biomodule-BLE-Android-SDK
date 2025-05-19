@@ -1,59 +1,26 @@
 [versions]
 affective_sdk_api = "1.3.0-demo-svm-authentication"
 agp = "8.6.0"
-androidConstraintLayout = "1.1.3"
-androidEspressoCore = "3.0.2"
 androidxAppcompat = "1.6.1"
-androidxCoreKtx = "1.10.1"
-androidxEspressoCore = "3.5.1"
 androidxJunit = "1.1.5"
-androidxJunitVersion = "1.1.1"
 annotation = "1.1.0"
-appcompatV7 = "28.0.0"
 appcompatVersion = "1.0.0"
-autoService = "1.0-rc6"
 base = "0.0.6"
-baseVersion = "0.0.5"
-bleCommon = "2.7.5"
 bleDeviceHeadband = "3.0.4-local"
 cardview = "1.0.0"
-cnBase = "0.0.7"
 constraintlayoutVersion = "2.1.4"
-core = "1.5.0-alpha01"
 coreKtxVersion = "1.9.0"
 device = "0.0.2"
 dfu = "2.4.2"
-dfuVersion = "1.11.0"
-espressoCoreVersion = "3.1.0"
-eventbus = "3.2.0"
-googleMaterial = "1.10.0"
-gson = "2.8.6"
 junitJunit = "4.12"
 kotlin = "1.9.0"
-coreKtx = "1.15.0"
-junit = "4.13.2"
-junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-appcompat = "1.7.0"
-kotlinBom = "1.8.0"
-kotlinBomVersion = "1.8.22"
-kotlinStdlib = "2.0.21"
 kotlinStdlibJdk7 = "1.9.0"
-localbroadcastmanager = "1.0.0"
 logLocal = "1.1.0"
-lottie = "5.2.0"
-material = "1.12.0"
-activity = "1.10.0"
-constraintlayout = "2.2.0"
 materialVersion = "1.9.0"
 meditate = "0.0.2"
-mpandroidchart = "v3.1.0"
 publish = "1.1.0-local"
 #publish = "1.0.5"
-runner = "1.0.2"
-rxandroidble = "1.17.2"
-navigationFragmentKtx = "2.8.9"
-navigationUiKtx = "2.8.9"
 
 [libraries]
 affective_sdk_api = { module = "cn.entertech.android:affective_sdk_api", version.ref = "affective_sdk_api" }
@@ -62,57 +29,22 @@ androidx-appcompat-v100 = { module = "androidx.appcompat:appcompat", version.ref
 androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-constraintlayout-v214 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
-androidx-core = { module = "androidx.core:core", version.ref = "core" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-ktx-v1101 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx" }
 androidx-core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
-androidx-espresso-core-v310 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
-androidx-espresso-core-v351 = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxEspressoCore" }
-androidx-junit-v111 = { module = "androidx.test.ext:junit", version.ref = "androidxJunitVersion" }
 androidx-junit-v115 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
-androidx-localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version.ref = "localbroadcastmanager" }
-appcompat-v7 = { module = "com.android.support:appcompat-v7", version.ref = "appcompatV7" }
-auto-service = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 base = { module = "cn.entertech.android:base", version.ref = "base" }
-base-v005 = { module = "cn.entertech.android:base", version.ref = "baseVersion" }
-base-v007 = { module = "cn.entertech.android:base", version.ref = "cnBase" }
-ble-common = { module = "no.nordicsemi.android:ble-common", version.ref = "bleCommon" }
 ble-device-cushion = { module = "cn.entertech.android:ble-device-cushion", version.ref = "bleDeviceHeadband" }
 ble-device-headband = { module = "cn.entertech.android:ble-device-headband", version.ref = "bleDeviceHeadband" }
 ble-device-tag = { module = "cn.entertech.android:ble-device-tag", version.ref = "bleDeviceHeadband" }
-constraint-layout = { module = "com.android.support.constraint:constraint-layout", version.ref = "androidConstraintLayout" }
 device = { module = "cn.entertech.android:device", version.ref = "device" }
 dfu = { module = "no.nordicsemi.android:dfu", version.ref = "dfu" }
-dfu-v1110 = { module = "no.nordicsemi.android:dfu", version.ref = "dfuVersion" }
-espresso-core = { module = "com.android.support.test.espresso:espresso-core", version.ref = "androidEspressoCore" }
-eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 junit-v412 = { module = "junit:junit", version.ref = "junitJunit" }
-kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlinBom" }
-kotlin-bom-v1822 = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlinBomVersion" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlibJdk7" }
 kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlinStdlibJdk7" }
-kotlin-stdlib-v2021 = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
-log-api = { module = "cn.entertech.android:log-api", version.ref = "logLocal" }
 log-local = { module = "cn.entertech.android:log-local", version.ref = "logLocal" }
-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-material-v1100 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 meditate = { module = "cn.entertech.android:meditate", version.ref = "meditate" }
-mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 publish = { module = "cn.entertech.android:publish", version.ref = "publish" }
-recyclerview-v7 = { module = "com.android.support:recyclerview-v7", version.ref = "appcompatV7" }
-runner = { module = "com.android.support.test:runner", version.ref = "runner" }
-rxandroidble = { module = "com.polidea.rxandroidble2:rxandroidble", version.ref = "rxandroidble" }
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -22,11 +22,11 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.base.util.startActivity
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.device.tag.BrainTagManager
-import cn.entertech.ble.device.tag.BrainTemperatureBean
+import cn.entertech.ble.device.tag.bean.BrainTemperatureBean
+import cn.entertech.ble.device.tag.function.IDeviceGyroFunction
+import cn.entertech.ble.device.tag.function.IDeviceTemperatureFunction
 import cn.entertech.ble.function.IDeviceEegFunction
-import cn.entertech.ble.function.IDeviceGyroFunction
 import cn.entertech.ble.function.IDeviceHrFunction
-import cn.entertech.ble.function.IDeviceTemperatureFunction
 import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.ble.utils.CharUtil
