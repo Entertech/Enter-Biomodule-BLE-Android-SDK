@@ -45,18 +45,20 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk7)
 
+    implementation (libs.ble.device.headband)
+    implementation (libs.ble.device.tag)
+//    implementation (libs.ble.device.cushion)
+    implementation(libs.kotlin.stdlib.jdk7)
     testImplementation(libs.junit.v412)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("cn.entertech.android:device:0.0.2")
+    implementation (libs.device)
 //    api project(':bleuisdk')
 //    implementation project(':ble')
-    implementation ("cn.entertech.android:ble-device:3.0.3")
-    implementation ("cn.entertech.android:ble-device-api:3.0.3")
-    implementation ("cn.entertech.android:biomoduleble_base_rx:3.0.3")
-    implementation ("cn.entertech.android:log-local:1.1.0")
+    implementation (libs.ble.device.headband)
+    implementation (libs.ble.device.tag)
+    implementation (libs.log.local)
     implementation(libs.androidx.core.ktx.v190)
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.appcompat.v100)
