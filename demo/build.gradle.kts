@@ -48,6 +48,7 @@ dependencies {
 
     implementation (libs.ble.device.headband)
     implementation (libs.ble.device.tag)
+    implementation (libs.ble.device.eyehead)
 //    implementation (libs.ble.device.cushion)
     implementation(libs.kotlin.stdlib.jdk7)
     implementation(libs.androidx.activity)

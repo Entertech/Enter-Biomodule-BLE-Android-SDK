@@ -14,7 +14,7 @@ repositories {
 
 在所需的module中的build.gradle文件下添加以下依赖：
 
-    implementation ("cn.entertech.android:ble-device-headband:3.0.4")
+    implementation ("cn.entertech.android:ble-device-headband:3.0.6")
 
 ## 详细API说明
 
