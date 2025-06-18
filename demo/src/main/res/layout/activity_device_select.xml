@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
-        android:text="头环(Headband)"
+        android:text="Tag"
         android:textStyle="bold"
         android:textSize="24sp"
         android:layout_weight="1"/>
