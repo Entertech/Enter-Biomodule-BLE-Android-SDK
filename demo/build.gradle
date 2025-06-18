@@ -10,8 +10,8 @@ android {
         applicationId "cn.entertech.flowtimeble"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 4
-        versionName "1.2"
+        versionCode 2051
+        versionName "2.0.5.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     compileOptions {
