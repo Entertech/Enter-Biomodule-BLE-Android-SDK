@@ -51,18 +51,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <activity
-            android:name=".skin.SkinConductivityInfoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".skin.SkinConductivityRecordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".skin.SkinConductivity"
-            android:exported="false" />
-        <activity
-            android:name=".ShowLogActivity"
-            android:exported="false" />
+        <activity android:name=".data.FileListActivity" android:exported="true"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
