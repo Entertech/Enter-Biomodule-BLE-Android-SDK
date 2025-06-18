@@ -18,13 +18,13 @@ class HandBandFactory : BaseDeviceFactory() {
     }
 
     override fun getDeviceKeyList(): List<String> {
-        return listOf("1","2")
+        return listOf("1", "2")
     }
 
     override fun getDeviceInfo(): Map<String, DeviceInfo> {
         return mapOf(
-            Pair("1", DeviceInfo("头环1","1")),
-            Pair("2", DeviceInfo("头环2","2")),
+            Pair("1", DeviceInfo("头环1", "1")),
+            Pair("2", DeviceInfo("头环2", "2")),
         )
     }
 }

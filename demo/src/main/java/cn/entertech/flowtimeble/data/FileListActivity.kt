@@ -12,6 +12,7 @@ import cn.entertech.base.BaseActivity
 import cn.entertech.base.list.adapter.BaseRecyclerViewAdapter
 import cn.entertech.base.list.adapter.IRecycleViewClickListener
 import cn.entertech.base.util.startActivity
+
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.flowtimeble.R
 import java.io.File

@@ -17,8 +17,8 @@ android {
         applicationId = "cn.entertech.flowtimeble"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2051
-        versionName = "2.0.5.1"
+        versionCode = 3060
+        versionName = "3.0.6.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -36,38 +36,28 @@ android {
             )
         }
     }
-    buildFeatures {
-        viewBinding = true
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
-
+    implementation(libs.kotlin.stdlib.jdk7)
+//    implementation(project(":ble-device-headband"))
+//    implementation(project(":ble-device-eyehead"))
+//    implementation(project(":ble-device-tag"))
+//    implementation(project(":ble-device-cushion"))
     implementation (libs.ble.device.headband)
     implementation (libs.ble.device.tag)
     implementation (libs.ble.device.eyehead)
-//    implementation (libs.ble.device.cushion)
-    implementation(libs.kotlin.stdlib.jdk7)
-    implementation(libs.androidx.activity)
+    implementation (libs.ble.device.cushion)
     testImplementation(libs.junit.v412)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation (libs.device)
-//    api project(':bleuisdk')
-//    implementation project(':ble')
-    implementation (libs.ble.device.headband)
-    implementation (libs.ble.device.tag)
-    implementation (libs.log.local)
+
     implementation(libs.androidx.core.ktx.v190)
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.appcompat.v100)
     implementation(libs.androidx.constraintlayout.v214)
     implementation(libs.material.v190)
 
-    implementation (libs.meditate)
 //    implementation(libs.mpandroidchart)
     implementation(libs.device)
     implementation(libs.base)
