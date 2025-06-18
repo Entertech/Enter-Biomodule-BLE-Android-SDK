@@ -1,4 +1,4 @@
-# Tag SDK 接入说明
+# EyeHead SDK 接入说明
 
 ## 集成
 
@@ -14,11 +14,11 @@ repositories {
 
 在所需的module中的build.gradle文件下添加以下依赖：
 
-    implementation ("cn.entertech.android:ble-device-tag:3.0.6")
+    implementation ("cn.entertech.android:ble-device-eyehead:3.0.6")
 
 ## 详细API说明
 
-### 获取Tag蓝牙管理类
+### 获取EyeHead蓝牙管理类
 
 **方法说明**
 
@@ -27,7 +27,7 @@ repositories {
 **示例代码**
 
 ```kotlin
-biomoduleBleManager = BrainTagManager(context)
+biomoduleBleManager = EyeHeadManager(context)
 ```
 
 ### 设备连接
@@ -123,7 +123,7 @@ biomoduleBleManager.isConnected()
 **示例代码**
 
 ```kotlin
-biomoduleBleManager.startCollectBrainAndHrData(success = {
+biomoduleBleManager.startCollectBrainData(success = {
     showMsg("收集数据指令发送成功 ")
 }, failure = { _, it ->
     showMsg("收集数据指令发送失败： 失败原因：$it ")
@@ -137,7 +137,7 @@ biomoduleBleManager.startCollectBrainAndHrData(success = {
 **示例代码**
 
 ```kotlin
-biomoduleBleManager.stopCollectBrainAndHrData(success = {
+biomoduleBleManager.stopCollectBrainData(success = {
     showMsg("停止收集数据指令发送成功 ")
 }, failure = { _, it ->
     showMsg("停止收集数据指令发送失败： 失败原因：$it ")
@@ -183,179 +183,30 @@ biomoduleBleManager.notifyBrainWave(success = {
 })
 ```
 
-### 心率数据
-
-#### 订阅心率数据
-
-**示例代码**
-
-```kotlin
-fun notifyHRValue(
-    success: (BrainTagHrBean) -> Unit,
-    failure: ((String) -> Unit)? = null,
-    castHrValue: (ByteArray) -> BrainTagHrBean = getDefaultCastHrValue()
-) {
-} 
-```
-
-**参数说明**
-
-| 参数          | 类型                            | 说明                                           |
-|-------------|-------------------------------|----------------------------------------------|
-| success     | (BrainTagHrBean) -> Unit      | 获取心率数据的回调                                    |
-| failure     | (String)->Unit                | 失败回调                                         |
-| castHrValue | (ByteArray) -> BrainTagHrBean | 原始数据转换成可利用数据逻辑，默认使用getDefaultCastHrValue()方法 |
-
-#### tag心率数据类：BrainTagHrBean
-
-```kotlin
-data class BrainTagHrBean(val rawData: ByteArray, val hr: Int) 
-```
-
-**参数说明**
-
-| 参数      | 类型        | 说明      |
-|---------|-----------|---------|
-| rawData | ByteArray | 心率原始数据  |
-| hr      | Int       | 心率可视化数据 |
-
 ### 佩戴状态数据
 
 #### 订阅佩戴状态数据
 
-    fun notifyContact(
-            success: ((ByteArray) -> Unit) = {},
+    fun notifyContactValue(
+            success: ((EyeHeadWearStatusBean) -> Unit) = {},
             failure: (String) -> Unit = {}
         )
 
 **参数说明**
 
-| 参数      | 类型                  | 说明                        |
-|---------|---------------------|---------------------------|
-| success | (ByteArray) -> Unit | 佩戴状态原始数据   第一个字节为0，表示佩戴好了 |
-| failure | (String) -> Unit    | 订阅失败回调                    |
+| 参数      | 类型                              | 说明     |
+|---------|---------------------------------|--------|
+| success | (EyeHeadWearStatusBean) -> Unit | 佩戴状态   |
+| failure | (String) -> Unit                | 订阅失败回调 |
 
-### 温度数据
+**佩戴状态 EyeHeadWearStatusBean 说明**
 
-#### 订阅温度数据
-
-     fun notifyTemperatureValue(
-            success: (T) -> Unit,
-            failure: (String) -> Unit,
-            case: ((ByteArray) -> T) = getDefaultCastTemperatureValue()
-        )
-
-**参数说明**
-
-| 参数          | 类型               | 说明                                                      |
-|-------------|------------------|---------------------------------------------------------|
-| success     | (T) -> Unit      | 获取温度数据的回调                                               |
-| failure     | (String)->Unit   | 失败回调                                                    |
-| castHrValue | (ByteArray) -> T | 温度原始数据转换成可利用数据逻辑，默认使用getDefaultCastTemperatureValue()方法 |
-
-**示例代码**
-
-    notifyTemperatureValue(success={
-                                if (it is BrainTemperatureBean) {
-                                    showMsg("Temperature: ${it.tem}")
-                                } else {
-                                    showMsg("Temperature is error $it")
-                                }
-                            }, failure={
-                                showMsg("订阅 Temperature 失败 $it")
-                            },case= getDefaultCastTemperatureValue())
-
-```
-data class BrainTemperatureBean(val raw:ByteArray,val tem:Float)
-```
-
-### 下发收集运动程度&睡眠姿势数据指令
-
-     fun <MeditateType>  startCollectExerciseDegreeData(
-            type: MeditateType,
-            success: ((ByteArray) -> Unit) = {},
-            failure: ((Int, String) -> Unit) = { _, _ -> }
-        ) 
-
-**参数说明**
-
-| 参数      | 类型                    | 说明                 |
-|---------|-----------------------|--------------------|
-| type    | MeditateType          | 类型，目前不做区别，可以使用Unit |
-| success | (ByteArray) -> Unit   | 成功回调，发送的指令         |
-| failure | (Int, String) -> Unit | 失败回调，错误码以及错误原因     |
-
-### 下发停止收集运动程度&睡眠姿势数据指令
-
-    fun <MeditateType> stopCollectExerciseDegreeData(
-            type: MeditateType,
-            success: (ByteArray) -> Unit = {},
-            failure: ((Int, String) -> Unit) = { _, _ -> }
-        )
-
-### 睡眠姿势数据
-
-*==订阅相关数据一定先得下发收集指令==*
-
-#### 订阅睡眠姿势数据
-
-每30秒计算一次睡眠姿势，半分钟上传一次，一次上传1个字节数据包
-
-```
-fun notifySleepPostureValue(
-        success: (R) -> Unit,
-        failure: (String) -> Unit,
-        case: (ByteArray) -> R = getDefaultSleepPostureValue()
-    )
-```
-
-**示例代码**
-
-```
-notifySleepPostureValue({
-                        if (it is BrainTagSleepPostureBean) {
-                           
-                        }
-                    }, {
-                        showMsg("订阅睡眠姿态数据失败：$it")
-                    })
-```
-
-```
-class BrainTagSleepPostureBean(val rawData: ByteArray, val sleepPosture: Int)
-```
-
-### 运动程度数据
-
-#### 订阅运动程度数据
-
-每30秒计算一次运动程度范围0到100，半分钟上传一次，一次上传1个字节数据包
-
-```
- fun notifyExerciseLevelValue(
-        success: (T) -> Unit,
-        failure: (String) -> Unit,
-        case: (ByteArray) -> T = getDefaultCastExerciseLevelValue()
-    )
-```
-
-**示例代码**
-
-```
- notifyExerciseLevelValue({
-                        if (it is BrainTagExerciseLevelBean) {
-                           
-                        }
-                    }, {
-                        showMsg("订阅运动程度数据失败：$it")
-                    })
-```
-
-**tag 运动水平数据类 BrainTagExerciseLevelBean**
-
-```
-class BrainTagExerciseLevelBean(val rawData: ByteArray, val exerciseLevel: Int)
-```
+| 类型                 | 说明            |
+|--------------------|---------------|
+| NORMAL             | 佩戴正常          |
+| ACTIVE_ABNORMAL    | 活动电极佩戴不正常     |
+| REFERENCE_ABNORMAL | 参考电极佩戴不正常     |
+| ABNORMAL           | 活动电极和参考电极都不正常 |
 
 ### DFU（设备固件升级）
 
@@ -497,26 +348,4 @@ starter.start(this, DfuService::class.java)
 ```kotlin
 DfuServiceInitiator.createDfuNotificationChannel(context);
 ```
-
-### C#调用说明
-
-> 该SDK大部分方法都能被C#调用，但是涉及到数组的传递时，C#会调用失败，如这里的脑波数据传递。因此如需在C#设置脑波数据监听，可采用如下方式：
->
-> ```c#
-> //c#端定义脑波监听类
-> class RawBrainDataCallback : AndroidJavaProxy {
-> 	public RawBrainDataCallback():base("kotlin.jvm.functions.Function1"){
-> 	}
-> 	public void invoke(AndroidJavaObject jo){
-> 		AndroidJavaObject bufferObject = jo.Get<AndroidJavaObject>("Buffer");
-> 		byte[] buffer = AndroidJNIHelper.ConvertFromJNIArray<byte[]>(bufferObject.GetRawObject());//这里的buffer数据便是返回的脑波数组
->     }
-> }
-> AndroidJavaClass biomoduleBleManagerJc = new AndroidJavaClass("cn.entertech.ble.BiomoduleBleManager");
-> var companion = biomoduleBleManagerJc.GetStatic<AndroidJavaObject>("Companion");
-> var biomoduleBleManager = companion.Call<AndroidJavaObject>("getInstance",currentActivity);
-> //实例化脑波数据监听回调
-> RawBrainDataCallback rawBrainDataCallback = new RawBrainDataCallback();
-> biomoduleBleManager.Call("addRawDataListener4CSharp",rawBrainDataCallback);
-> ```
 

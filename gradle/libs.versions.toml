@@ -6,7 +6,7 @@ androidxJunit = "1.1.5"
 annotation = "1.1.0"
 appcompatVersion = "1.0.0"
 base = "0.0.6"
-bleDeviceHeadband = "3.0.4-local"
+bleDevice = "3.0.6"
 cardview = "1.0.0"
 constraintlayoutVersion = "2.1.4"
 coreKtxVersion = "1.9.0"
@@ -33,9 +33,10 @@ androidx-constraintlayout-v214 = { module = "androidx.constraintlayout:constrain
 androidx-core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-junit-v115 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
 base = { module = "cn.entertech.android:base", version.ref = "base" }
-ble-device-cushion = { module = "cn.entertech.android:ble-device-cushion", version.ref = "bleDeviceHeadband" }
-ble-device-headband = { module = "cn.entertech.android:ble-device-headband", version.ref = "bleDeviceHeadband" }
-ble-device-tag = { module = "cn.entertech.android:ble-device-tag", version.ref = "bleDeviceHeadband" }
+ble-device-cushion = { module = "cn.entertech.android:ble-device-cushion", version.ref = "bleDevice" }
+ble-device-eyehead = { module = "cn.entertech.android:ble-device-eyehead", version.ref = "bleDevice" }
+ble-device-headband = { module = "cn.entertech.android:ble-device-headband", version.ref = "bleDevice" }
+ble-device-tag = { module = "cn.entertech.android:ble-device-tag", version.ref = "bleDevice" }
 device = { module = "cn.entertech.android:device", version.ref = "device" }
 dfu = { module = "no.nordicsemi.android:dfu", version.ref = "dfu" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
