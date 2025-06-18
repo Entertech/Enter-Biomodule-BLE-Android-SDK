@@ -3,27 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".device.DeviceSelectActivity">
 
     <TextView
         android:id="@+id/tvHeadband"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center"
-        android:text="头环(Headband)"
-        android:textStyle="bold"
+        android:text="@string/device_type_headband"
         android:textSize="24sp"
-        android:layout_weight="1"/>
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/tvTag"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center"
-        android:text="Tag"
-        android:textStyle="bold"
+        android:text="@string/device_type_tag"
         android:textSize="24sp"
-        android:layout_weight="1"/>
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvEyeHead"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/device_type_eyehead"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvAll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="All"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 </LinearLayout>

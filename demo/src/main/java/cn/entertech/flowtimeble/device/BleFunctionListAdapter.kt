@@ -16,7 +16,7 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
 
     var bleFunctionClick: IBleFunctionClick? = null
 
-    class BleFunctionListVH(rootView: View, val btnBleFunctionName: Button) :
+    class BleFunctionListVH(rootView: View, val btnBleFunctionName: Button?) :
         RecyclerView.ViewHolder(rootView) {
 
     }
@@ -30,8 +30,9 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
 
     override fun onBindViewHolder(holder: BleFunctionListVH, position: Int) {
         val item = functionList[position]
-        holder.btnBleFunctionName.text = item.functionName
-        holder.btnBleFunctionName.setOnClickListener {
+        holder.btnBleFunctionName?.text =
+            holder.btnBleFunctionName?.context?.getString(item.functionFlag.desStringResId)
+        holder.btnBleFunctionName?.setOnClickListener {
             bleFunctionClick?.onClick(item.functionFlag)
         }
     }

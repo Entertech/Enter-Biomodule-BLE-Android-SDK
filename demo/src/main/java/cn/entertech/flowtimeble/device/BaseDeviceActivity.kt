@@ -1,16 +1,26 @@
 package cn.entertech.flowtimeble.device
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.entertech.base.BaseActivity
+import cn.entertech.base.util.startActivity
 import cn.entertech.ble.BaseBleConnectManager
 import cn.entertech.ble.api.ConnectionBleStrategy
+import cn.entertech.ble.device.eyehead.EyeHeadManager
 import cn.entertech.ble.function.IBatteryFunction
 import cn.entertech.ble.function.IBrainWaveFunction
 import cn.entertech.ble.function.IContactFunction
@@ -20,8 +30,12 @@ import cn.entertech.ble.function.IInfoFunction
 import cn.entertech.ble.function.ISleepPostureFunction
 import cn.entertech.ble.function.ITemperatureFunction
 import cn.entertech.ble.function.collect.ICollectBrainAndHrDataFunction
+import cn.entertech.ble.function.collect.ICollectBrainDataFunction
 import cn.entertech.ble.function.collect.ICollectExerciseDegreeDataFunction
 import cn.entertech.ble.log.BleLogUtil
+import cn.entertech.flowtimeble.R
+import cn.entertech.flowtimeble.data.FileListActivity
+import cn.entertech.flowtimeble.data.MeditateDataHelper
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BATTERY
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_NOTIFY_CONTACT
@@ -48,185 +62,361 @@ import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE
 import cn.entertech.flowtimeble.device.BleFunctionListAdapter.IBleFunctionClick
 import cn.entertech.flowtimeble.log.LogAdapter
+import cn.entertech.log.local.LogListActivity
 import java.text.SimpleDateFormat
+import java.util.Date
 
-abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
+abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
     companion object {
         private const val TAG = "BaseDeviceActivity"
+        private const val RECONNECT_DELAY_TIME = 2000L
     }
 
-    protected var needLog = false
-    protected val mainHandler by lazy {
-        Handler(Looper.getMainLooper())
-    }
-    protected val adapter by lazy {
+    private var needLog = false
+    private var needReconnected = false
+    private val adapter by lazy {
         LogAdapter()
     }
-    protected val simple by lazy {
+    protected var meditateDataHelper: MeditateDataHelper? = null
+    private val simple by lazy {
         SimpleDateFormat("yyyy/MM/dd  hh:mm:ss:SSS")
     }
-    protected var cbShowLog: CheckBox? = null
+    private var cbShowLog: CheckBox? = null
+    private var cbNeedReconnected: CheckBox? = null
     protected var bluetoothDeviceManager: BaseBleConnectManager? = null
-    protected var scrollView_logs: RecyclerView? = null
-    protected var btnClearLog: Button? = null
-
-    @Volatile
-    protected var needReConnected = false
-    protected val reconnectRunnable: Runnable by lazy {
+    private var scrollViewLogs: RecyclerView? = null
+    private var btnClearLog: Button? = null
+    private val functionListAdapter by lazy {
+        val adapter = BleFunctionListAdapter()
+        adapter.bleFunctionClick = this
+        adapter
+    }
+    private var connectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
+    private var mac: String = ""
+    private val reconnectRunnable: Runnable by lazy {
         Runnable {
-            showMsg("reconnectRunnable needReConnected:   $needReConnected")
-            if (needReConnected) {
+            showMsg("reconnectRunnable needReConnected:   $needReconnected")
+            if (needReconnected) {
                 showMsg("start reconnect")
                 connectDevice()
             }
         }
     }
+    protected val connectListener: (String) -> Unit by lazy {
+        { mac ->
+            deviceConnect(mac)
+        }
+    }
 
-    protected fun initBleFunction(): List<BleFunctionUiBean> {
+    protected val disconnectListener: (String) -> Unit by lazy {
+        {
+            deviceDisconnect()
+        }
+    }
+    private var rvBleFunction: RecyclerView? = null
+    private var btnOpenLocalLog: View? = null
+    private var btnOpenLocalData: View? = null
+    private var rbConnectScan: RadioButton? = null
+    private var rbConnectMac: RadioButton? = null
+    private var rbConnectName: RadioButton? = null
+    private var radioGroup: RadioGroup? = null
+    private var tvDeviceTypeName: TextView? = null
+
+
+    private var btnConnectDevice: Button? = null
+    private var etConnectInfo: EditText? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_device_demo)
+        rvBleFunction = findViewById(R.id.rvBleFunction)
+        tvDeviceTypeName = findViewById(R.id.tvDeviceTypeName)
+        tvDeviceTypeName?.text = getDeviceTypeName()
+        etConnectInfo = findViewById(R.id.etConnectInfo)
+        radioGroup = findViewById(R.id.rgConnectTypes)
+        radioGroup?.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rbConnectScan -> {
+                    etConnectInfo?.visibility = View.GONE
+                    connectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
+                }
+
+                R.id.rbConnectMac -> {
+                    etConnectInfo?.visibility = View.VISIBLE
+                    etConnectInfo?.hint = getString(R.string.input_mac)
+                    connectionBleStrategy = ConnectionBleStrategy.CONNECT_DEVICE_MAC
+                }
+
+                R.id.rbConnectName -> {
+                    etConnectInfo?.visibility = View.VISIBLE
+                    etConnectInfo?.hint = getString(R.string.input_name)
+                }
+            }
+        }
+        rbConnectScan = findViewById(R.id.rbConnectScan)
+        rbConnectMac = findViewById(R.id.rbConnectMac)
+        rbConnectName = findViewById(R.id.rbConnectName)
+        btnConnectDevice = findViewById(R.id.btnConnectDevice)
+        btnConnectDevice?.setOnClickListener(this)
+        scrollViewLogs = findViewById(R.id.scrollView_logs)
+        btnClearLog = findViewById(R.id.btnClearLog)
+        btnOpenLocalLog = findViewById(R.id.btnOpenLocalLog)
+        btnOpenLocalData = findViewById(R.id.btnOpenLocalData)
+        btnOpenLocalLog?.setOnClickListener {
+            startActivity(LogListActivity::class.java, finishCurrent = false)
+        }
+        btnOpenLocalData?.setOnClickListener {
+            startActivity(FileListActivity::class.java, finishCurrent = false)
+        }
+        cbShowLog = findViewById(R.id.cbShowLog)
+        cbNeedReconnected = findViewById(R.id.cbNeedReconnected)
+        scrollViewLogs?.adapter = adapter
+        scrollViewLogs?.layoutManager = LinearLayoutManager(this)
+        rvBleFunction?.layoutManager = GridLayoutManager(this, 2)
+        rvBleFunction?.adapter = functionListAdapter
+        bluetoothDeviceManager = EyeHeadManager(this)
+
+
+        cbShowLog?.isChecked = true
+        cbNeedReconnected?.isChecked = true
+        needLog = cbShowLog?.isChecked ?: false
+        needReconnected = cbNeedReconnected?.isChecked ?: false
+        cbShowLog?.setOnCheckedChangeListener { _, isChecked ->
+            needLog = isChecked
+        }
+        cbNeedReconnected?.setOnCheckedChangeListener { _, isChecked ->
+            needReconnected = isChecked
+        }
+        btnClearLog?.setOnClickListener {
+            adapter.setData(ArrayList())
+        }
+        bluetoothDeviceManager = initBleManager()
+        bluetoothDeviceManager?.addConnectListener(connectListener)
+        bluetoothDeviceManager?.addDisConnectListener(disconnectListener)
+        initBleFunctionList()
+        initPermission()
+    }
+
+    open fun initBleManager(): BaseBleConnectManager? {
+        return null
+    }
+
+    open fun initMeditateDataHelper():MeditateDataHelper?{
+        return null
+    }
+
+    open fun getDeviceTypeName(): String {
+        return ""
+    }
+
+
+    private fun reconnect() {
+        mainHandler.removeCallbacks(reconnectRunnable)
+        mainHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_TIME)
+    }
+
+    /**
+     * Android6.0 auth
+     */
+    private fun initPermission() {
+        val needPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+        val needRequestPermissions = ArrayList<String>()
+        for (i in needPermission.indices) {
+            if (ActivityCompat.checkSelfPermission(
+                    this, needPermission[i]
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                needRequestPermissions.add(needPermission[i])
+            }
+        }
+        if (needRequestPermissions.size != 0) {
+            val permissions = arrayOfNulls<String>(needRequestPermissions.size)
+            for (i in needRequestPermissions.indices) {
+                permissions[i] = needRequestPermissions[i]
+            }
+            ActivityCompat.requestPermissions(this, permissions, 1)
+        }
+    }
+
+    protected fun initBleFunctionList() {
         val bleFunctionList = ArrayList<BleFunctionUiBean>()
         if (bluetoothDeviceManager is IInfoFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取固件信息", BLE_FUNCTION_FLAG_READ_FIRMWARE
+                    BLE_FUNCTION_FLAG_READ_FIRMWARE
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取软件信息", BLE_FUNCTION_FLAG_READ_HARDWARE
+                    BLE_FUNCTION_FLAG_READ_HARDWARE
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取Mac地址", BLE_FUNCTION_FLAG_READ_MAC
+                    BLE_FUNCTION_FLAG_READ_MAC
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取Serial信息", BLE_FUNCTION_FLAG_READ_SERIAL
+                    BLE_FUNCTION_FLAG_READ_SERIAL
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取MANUFACTURER信息", BLE_FUNCTION_FLAG_READ_MANUFACTURER
+                    BLE_FUNCTION_FLAG_READ_MANUFACTURER
                 )
             )
         }
         if (bluetoothDeviceManager is ICollectBrainAndHrDataFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "开始收集脑波心率数据", BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR
+                    BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "停止收集脑波心率数据", BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
+                    BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
+                )
+            )
+        }
+        if (bluetoothDeviceManager is ICollectBrainDataFunction) {
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN
+                )
+            )
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN
                 )
             )
         }
         if (bluetoothDeviceManager is IHrFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "订阅心率数据", BLE_FUNCTION_FLAG_NOTIFY_HR
+                    BLE_FUNCTION_FLAG_NOTIFY_HR
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "取消订阅心率数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
                 )
             )
         }
         if (bluetoothDeviceManager is IBrainWaveFunction) {
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    "订阅脑波数据", BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE
+            if (bluetoothDeviceManager is IContactFunction<*>) {
+                bleFunctionList.add(BleFunctionUiBean(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT))
+                bleFunctionList.add(BleFunctionUiBean(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_CONTRACT))
+            } else {
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE
+                    )
                 )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    "取消订阅脑波数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE
+                    )
                 )
-            )
+            }
+        } else {
+            if (bluetoothDeviceManager is IContactFunction<*>) {
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_NOTIFY_CONTACT
+                    )
+                )
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT
+                    )
+                )
+            }
+        }
 
-        }
-        if (bluetoothDeviceManager is IContactFunction) {
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    "订阅佩戴数据", BLE_FUNCTION_FLAG_NOTIFY_CONTACT
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    "取消订阅佩戴数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT
-                )
-            )
-        }
+
+
+
         if (bluetoothDeviceManager is ITemperatureFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "订阅温度数据", BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE
+                    BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "取消订阅温度数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE
                 )
             )
         }
         if (bluetoothDeviceManager is IBatteryFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "订阅电量数据", BLE_FUNCTION_FLAG_NOTIFY_BATTERY
+                    BLE_FUNCTION_FLAG_NOTIFY_BATTERY
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "取消订阅电量数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "读取电量数据", BLE_FUNCTION_FLAG_READ_BATTERY
+                    BLE_FUNCTION_FLAG_READ_BATTERY
                 )
             )
         }
         if (bluetoothDeviceManager is ICollectExerciseDegreeDataFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "开始收集运动数据", BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE
+                    BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "停止收集运动数据", BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE
+                    BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE
                 )
             )
         }
         if (bluetoothDeviceManager is ISleepPostureFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "订阅睡眠姿势数据", BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE
+                    BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "取消订阅睡眠姿势数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE
                 )
             )
         }
         if (bluetoothDeviceManager is IExerciseLevelFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "订阅运动水平数据", BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL
+                    BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL
                 )
             )
             bleFunctionList.add(
                 BleFunctionUiBean(
-                    "取消订阅运动水平数据", BLE_FUNCTION_FLAG_STOP_NOTIFY_EXERCISE_LEVEL
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_EXERCISE_LEVEL
                 )
             )
         }
-        return bleFunctionList
+        functionListAdapter.setNewData(bleFunctionList)
     }
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -235,42 +425,38 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
         }
     }
 
-    protected open fun showMsg(msg: String) {
-        Log.d(TAG, "msg: $msg")
+    protected open fun showMsg(msg: String, needToast: Boolean = false) {
+        BleLogUtil.d(TAG, msg)
+        if (!needLog) {
+            return
+        }
+        val realMsg = "->: ${simple.format(Date())} $msg\n"
+        runOnUiThread {
+            adapter.addItem(realMsg)
+            scrollViewLogs?.scrollToPosition(adapter.itemCount - 1)
+        }
+
+        if (needToast) {
+            showToast(msg)
+        }
     }
 
     protected open fun deviceDisconnect() {
-
+        btnConnectDevice?.text = getString(R.string.go_to_connect_device)
+        reconnect()
     }
 
     protected open fun deviceConnect(mac: String) {
-
+        btnConnectDevice?.text = mac
     }
 
-    fun onGetState(@Suppress("UNUSED_PARAMETER") view: View) {
-        BleLogUtil.d(
-            TAG, "biomoduleBleManager.isConnected()： ${bluetoothDeviceManager?.isConnected()}"
-        )
-        Toast.makeText(
-            this, if (bluetoothDeviceManager?.isConnected() == true) {
-                "connected"
-            } else {
-                "disconnect"
-            }, Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    fun showToast(msg: String) {
+    private fun showToast(msg: String) {
         runOnUiThread {
             Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun onConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        connectDevice()
-    }
-
-    protected fun connectDevice() {
+    private fun connectDevice() {
         mainHandler.removeCallbacks(reconnectRunnable)
         if (bluetoothDeviceManager?.isConnected() == true) {
             showMsg("已连接  $bluetoothDeviceManager")
@@ -282,31 +468,50 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             return
         }
         showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
-        bluetoothDeviceManager?.connectDevice(fun(mac: String) {
-            showMsg("connect success $mac")
-            deviceConnect(mac)
-        }, { msg ->
-            showMsg("connect failed $msg")
-            runOnUiThread {
-                Toast.makeText(
-                    this, "failed to connect to device：${msg}", Toast.LENGTH_SHORT
-                ).show()
-            }
-        }, ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL)
+        bluetoothDeviceManager?.connectDevice(
+            { mac ->
+                showMsg("connect success $mac", true)
+            },
+            { errorMsg ->
+                showMsg("connect failed $errorMsg", true)
+            },
+            connectionBleStrategy, mac = mac,
+        )
     }
 
     override fun onClick(bleFunctionFlag: BleFunction) {
         when (bleFunctionFlag) {
-
             BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE -> {
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.startCollectExerciseDegreeData(Unit,
                     success = {
-                        showToast("开始收集运动数据成功")
+                        showToast("开始收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
-                        showToast("开始收集运动数据失败：$it")
+                        showToast("开始收集运动数据指令发送失败：$it")
                     })
             }
+
+            BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN -> {
+                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.startCollectBrainData(Unit,
+                    success = {
+                        showMsg("发送收集脑波数据成功 指令: ${it.contentToString()}")
+                    },
+                    failure = { _, it ->
+                        showMsg("发送收集脑波数据失败：$it", true)
+                    })
+            }
+
+            BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN -> {
+                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(Unit,
+                    success = {
+                        showMsg("停止收集脑波数据成功", true)
+                    },
+                    failure = { _, it ->
+                        showMsg("停止收集脑波数据失败：$it", true)
+                    })
+
+            }
+
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE -> {
 
@@ -315,10 +520,10 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
                     success = {
-                        showToast("停止收集脑波心率数据成功")
+                        showMsg("发送停止收集脑波心率数据指令成功  指令 ${it.contentToString()}")
                     },
                     failure = { _, it ->
-                        showToast("开停止收集脑波心率数据失败：$it")
+                        showMsg("发送停止收集脑波心率数据指令失败：$it", true)
                     })
             }
 
@@ -343,8 +548,9 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
-                (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHRValue(success = {
-                    showMsg("心率数据：$it")
+                (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHeartRate(success = {
+                    showMsg("心率数据：${it.contentToString()}")
+                    meditateDataHelper?.saveData("hr", it)
                 }, failure = {
                     showToast("订阅心率数据失败：$it")
                 })
@@ -402,6 +608,7 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE -> {
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
                     showMsg("脑波数据：${data.contentToString()}")
+                    meditateDataHelper?.saveData("brain_wave", data)
                 }, { error ->
                     showToast("脑波数据失败：$error")
                 })
@@ -412,22 +619,47 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
                     { error -> showToast("取消订阅脑波数据失败：$error") })
             }
 
-            BLE_FUNCTION_FLAG_NOTIFY_CONTACT -> {
-                (bluetoothDeviceManager as? IContactFunction)?.notifyContact({ data ->
+            BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT -> {
+                (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
+                    showMsg("脑波数据：${data.contentToString()}")
+                    meditateDataHelper?.saveData("brain_wave", data)
+                }, { error ->
+                    showToast("脑波数据失败：$error")
+                })
+                (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
                     showMsg("佩戴状态数据：${data.contentToString()}")
+                    meditateDataHelper?.saveData("contact", data)
                 }, { error ->
                     showToast("佩戴状态数据失败：$error")
                 })
             }
 
+            BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_CONTRACT -> {
+                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
+                    { error -> showToast("取消订阅佩戴状态数据失败：$error") })
+                (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
+                    { error -> showToast("取消订阅脑波数据失败：$error") })
+            }
+
+            BLE_FUNCTION_FLAG_NOTIFY_CONTACT -> {
+                (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
+                    showMsg("佩戴状态数据：${data.contentToString()}")
+                    meditateDataHelper?.saveData("contact", data)
+                }, { error ->
+                    showToast("佩戴状态数据失败：$error")
+                })
+            }
+
+
             BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT -> {
-                (bluetoothDeviceManager as? IContactFunction)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
+                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
                     { error -> showToast("取消订阅佩戴状态数据失败：$error") })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE -> {
                 (bluetoothDeviceManager as? ISleepPostureFunction<*>)?.notifySleepPosture({ data ->
                     showMsg("睡眠姿势数据：${data.contentToString()}")
+                    meditateDataHelper?.saveData("SleepPosture", data)
                 }, { error ->
                     showToast("睡眠姿势数据失败：$error")
                 })
@@ -442,10 +674,11 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL -> {
-                (bluetoothDeviceManager as? IExerciseLevelFunction<*>)?.notifyExerciseLevelValue({
-                    showToast(
+                (bluetoothDeviceManager as? IExerciseLevelFunction<*>)?.notifyExerciseLevel({
+                    showMsg(
                         "运动等级 $it"
                     )
+                    meditateDataHelper?.saveData("SleepPosture", it)
                 }, { error -> showToast("订阅运动等级数据失败：$error") })
             }
 
@@ -458,10 +691,11 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE -> {
-                (bluetoothDeviceManager as? ITemperatureFunction<*>)?.notifyTemperatureValue({
-                    showToast(
+                (bluetoothDeviceManager as? ITemperatureFunction<*>)?.notifyTemperature({
+                    showMsg(
                         "温度数据 $it"
                     )
+                    meditateDataHelper?.saveData("Temperature", it)
                 }, { error -> showToast("订阅温度数据失败：$error") })
             }
 
@@ -474,20 +708,37 @@ abstract class BaseDeviceActivity : AppCompatActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_BATTERY -> {
-                (bluetoothDeviceManager as? IBatteryFunction<*>)?.notifyBatteryValue({
-                    showToast(
+                (bluetoothDeviceManager as? IBatteryFunction<*>)?.notifyBattery({
+                    showMsg(
                         "电池数据 $it"
                     )
+                    meditateDataHelper?.saveData("Battery", it)
                 }, { error -> showToast("订阅电池数据失败：$error") })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY -> {
                 (bluetoothDeviceManager as? IBatteryFunction<*>)?.stopNotifyBattery({
                     showToast(
-                        "取消电池数据成功"
+                        "取消订阅电池数据成功"
                     )
                 }, { error -> showToast("取消订阅电池数据失败：$error") })
             }
         }
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.btnConnectDevice -> {
+                mac = etConnectInfo?.text?.toString() ?: ""
+                connectDevice()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetoothDeviceManager?.removeConnectListener(connectListener)
+        bluetoothDeviceManager?.removeDisConnectListener(disconnectListener)
+        functionListAdapter.bleFunctionClick = null
     }
 }

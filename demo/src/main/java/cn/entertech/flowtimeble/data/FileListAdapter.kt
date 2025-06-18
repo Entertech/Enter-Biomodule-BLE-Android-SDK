@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.entertech.base.list.adapter.BaseRecyclerViewAdapter
 import cn.entertech.base.list.adapter.IRecycleViewClickListener
 import cn.entertech.flowtimeble.R
+
 import java.io.File
 
 class FileListAdapter(

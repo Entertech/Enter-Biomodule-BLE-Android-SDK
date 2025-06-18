@@ -3,34 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="cn.entertech.flowtimeble">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-    <!--
- Needed only if your app looks for Bluetooth devices.
-         You must add an attribute to this permission, or declare the
-         ACCESS_FINE_LOCATION permission, depending on the results when you
-         check location usage in your app.
-    -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <!--
- Needed only if your app makes the device discoverable to Bluetooth
-         devices.
-    -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <!--
- Needed only if your app communicates with already-paired Bluetooth
-         devices.
-    -->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission
-        android:name="android.permission.ACCESS_FINE_LOCATION"
-        android:maxSdkVersion="30" />
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:name=".App"
@@ -40,6 +19,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity
+            android:name=".data.FileListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".device.all.FTBleDeviceDemoActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        </activity>
         <activity
             android:name=".device.DeviceSelectActivity"
             android:exported="true">
@@ -57,6 +45,10 @@
             android:name=".device.headband.HeadBandDemoActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".device.eyehead.EyeHeadDemoActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -72,17 +64,12 @@
         </provider>
 
         <activity
-            android:name=".data.FileListActivity"
+            android:name=".log.ShowLogActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".device.skin.MultipleSkinDeviceActivity"
+            android:exported="false"></activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

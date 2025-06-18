@@ -8,6 +8,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.entertech.base.util.startActivity
 import cn.entertech.flowtimeble.R
+import cn.entertech.flowtimeble.device.all.FTBleDeviceDemoActivity
+import cn.entertech.flowtimeble.device.eyehead.EyeHeadDemoActivity
 import cn.entertech.flowtimeble.device.headband.HeadBandDemoActivity
 import cn.entertech.flowtimeble.device.tag.BrainTagDemoActivity
 
@@ -24,8 +26,14 @@ class DeviceSelectActivity : AppCompatActivity() {
         findViewById<View>(R.id.tvTag)?.setOnClickListener {
             startActivity(BrainTagDemoActivity::class.java, finishCurrent = false)
         }
+        findViewById<View>(R.id.tvEyeHead)?.setOnClickListener {
+            startActivity(EyeHeadDemoActivity::class.java, finishCurrent = false)
+        }
         findViewById<View>(R.id.tvHeadband)?.setOnClickListener {
             startActivity(HeadBandDemoActivity::class.java, finishCurrent = false)
+        }
+        findViewById<View>(R.id.tvAll)?.setOnClickListener {
+            startActivity(FTBleDeviceDemoActivity::class.java, finishCurrent = false)
         }
     }
 }

@@ -1,5 +1,6 @@
 package cn.entertech.flowtimeble.device
 
-data class BleFunctionUiBean(val functionName: String, val functionFlag: BleFunction, val uiType: Int = 0 ) {
+
+data class BleFunctionUiBean(val functionFlag: BleFunction, val uiType: Int = 0) {
 
 }
