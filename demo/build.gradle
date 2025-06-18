@@ -2,14 +2,13 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 34
     defaultConfig {
         applicationId "cn.entertech.flowtimeble"
-        minSdkVersion 21
-        targetSdkVersion 32
+        minSdkVersion 24
+        targetSdkVersion 34
         versionCode 2051
         versionName "2.0.5.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -30,7 +29,6 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.9.0'
@@ -41,8 +39,8 @@ dependencies {
 //    implementation 'com.orhanobut:BleLogUtil:2.2.0'
 //    api project(':bleuisdk')
 //    implementation project(':ble')
-    implementation ("cn.entertech.android:ble-device:3.0.3-dev-local")
-    implementation ("cn.entertech.android:ble-device-api:3.0.3-dev-local")
+    implementation ("cn.entertech.android:ble-device:3.0.3")
+    implementation ("cn.entertech.android:ble-device-api:3.0.3")
     implementation ("cn.entertech.android:log-local:1.1.0")
     implementation 'androidx.core:core-ktx:1.8.0'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
@@ -51,5 +49,6 @@ dependencies {
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.8.0"
 //    implementation 'com.orhanobut:BleLogUtil:1.15'
 //    implementation 'cn.entertech:biomodulebleui:1.0.4'
+    implementation 'cn.entertech.android:uicomponentsdk:1.5.4-demo'
 //    implementation 'cn.entertech.android:biomoduleble:1.5.5'
 }
