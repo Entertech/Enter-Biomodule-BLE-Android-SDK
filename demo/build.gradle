@@ -43,9 +43,11 @@ dependencies {
         exclude group: 'cn.entertech.android', module: 'affective-offline-sdk-flowtime'
     }
     implementation ("cn.entertech.android:ble-device-api:3.0.3")
+    implementation ("cn.entertech.android:biomoduleble_base_api:3.0.3")
+    implementation ("cn.entertech.android:biomoduleble_base_rx:3.0.3")
     implementation ("cn.entertech.android:base:1.0.2")
     implementation ("cn.entertech.android:meditate:0.0.3")
-    implementation ("cn.entertech.android:log-local:1.1.0")
+    implementation ("cn.entertech.android:log-local:1.1.1")
     implementation 'androidx.core:core-ktx:1.8.0'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
