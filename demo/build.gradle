@@ -39,8 +39,12 @@ dependencies {
 //    implementation 'com.orhanobut:BleLogUtil:2.2.0'
 //    api project(':bleuisdk')
 //    implementation project(':ble')
-    implementation ("cn.entertech.android:ble-device:3.0.3")
+    implementation ("cn.entertech.android:ble-device:3.0.3"){
+        exclude group: 'cn.entertech.android', module: 'affective-offline-sdk-flowtime'
+    }
     implementation ("cn.entertech.android:ble-device-api:3.0.3")
+    implementation ("cn.entertech.android:base:1.0.2")
+    implementation ("cn.entertech.android:meditate:0.0.3")
     implementation ("cn.entertech.android:log-local:1.1.0")
     implementation 'androidx.core:core-ktx:1.8.0'
 //    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
