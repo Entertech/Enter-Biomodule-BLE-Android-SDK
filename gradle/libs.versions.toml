@@ -19,9 +19,9 @@ kotlinStdlibJdk7 = "1.9.0"
 logLocal = "1.1.0"
 materialVersion = "1.9.0"
 meditate = "0.0.2"
-publish = "1.1.0-local"
+#publish = "1.1.0-local"
 activity = "1.9.2"
-#publish = "1.0.5"
+publish = "1.0.5"
 
 [libraries]
 affective_sdk_api = { module = "cn.entertech.android:affective_sdk_api", version.ref = "affective_sdk_api" }
