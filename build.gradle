@@ -29,6 +29,9 @@ buildscript {
                 if (details.requested.group == 'androidx.appcompat' && !details.requested.name.contains('appcompat-resources')) {
                     details.useVersion "1.6.0"
                 }
+                if (details.requested.group == 'com.google.protobuf') {
+                    details.useVersion '3.21.12'  // 替换为你需要的稳定版本
+                }
 
             }
         }
