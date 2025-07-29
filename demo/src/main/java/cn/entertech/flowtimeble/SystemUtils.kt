@@ -149,15 +149,15 @@ fun Context.startAppByPackageName(packageName: String) {
  * @param path apk文件路径
  * @param authority fileProvider的authority
 fun Activity.installApk(path: String, authority: String, requestCode:Int) {
-    Intent(Intent.ACTION_VIEW).let {
-        it.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        it.setDataAndType(
-            this.path2Uri(path, authority),
-            "application/vnd.android.package-archive"
-        )
-        this.startActivityForResult(it, requestCode);
-    }
+Intent(Intent.ACTION_VIEW).let {
+it.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+it.setDataAndType(
+this.path2Uri(path, authority),
+"application/vnd.android.package-archive"
+)
+this.startActivityForResult(it, requestCode);
+}
 }*/
 
 /**
@@ -332,7 +332,7 @@ fun Context.getDeviceIMEI(): String {
  */
 fun Context.getAppVersionName(): String {
     return try {
-        this.packageManager.getPackageInfo(this.packageName, PackageManager.GET_ACTIVITIES).versionName
+        this.packageManager.getPackageInfo(this.packageName, PackageManager.GET_ACTIVITIES).versionName?:""
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
         "0"

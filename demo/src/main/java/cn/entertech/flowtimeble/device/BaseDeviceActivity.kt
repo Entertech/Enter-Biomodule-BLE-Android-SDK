@@ -442,7 +442,9 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     protected open fun deviceDisconnect() {
-        btnConnectDevice?.text = getString(R.string.go_to_connect_device)
+        runOnUiThread {
+            btnConnectDevice?.text = getString(R.string.go_to_connect_device)
+        }
         reconnect()
     }
 
@@ -518,22 +520,22 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
-                (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
+                (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(Unit,
                     success = {
-                        showMsg("发送停止收集脑波心率数据指令成功  指令 ${it.contentToString()}")
+                        showMsg("发送收集脑波心率数据指令成功  指令 ${it.contentToString()}")
                     },
                     failure = { _, it ->
-                        showMsg("发送停止收集脑波心率数据指令失败：$it", true)
+                        showMsg("发送收集脑波心率数据指令失败：$it", true)
                     })
             }
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR -> {
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
-                        showToast("停止收集脑波心率数据成功")
+                        showToast("发送停止收集脑波心率数据成功")
                     },
                     failure = { _, it ->
-                        showToast("停止收集脑波心率数据失败：$it")
+                        showToast("发送停止收集脑波心率数据失败：$it")
                     })
             }
 
