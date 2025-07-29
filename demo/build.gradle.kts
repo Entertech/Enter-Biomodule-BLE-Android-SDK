@@ -4,6 +4,15 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("config") {
+            keyAlias = "entertech"
+            keyPassword = "123456"
+            storeFile = file("../entertech.jks")
+            storePassword = "123456"
+        }
+    }
+
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
         exclude("META-INF/kotlinx_coroutines_core.version")
@@ -11,14 +20,14 @@ android {
     }
 
     namespace = "cn.entertech.flowtimeble"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "cn.entertech.flowtimeble"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 3060
-        versionName = "3.0.6.0"
+        targetSdk = 35
+        versionCode = 3061
+        versionName = "3.0.6.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,8 +40,8 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
-                    getDefaultProguardFile("proguard-android.txt"),
-                    "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -48,6 +57,7 @@ dependencies {
     implementation (libs.ble.device.tag)
     implementation (libs.ble.device.eyehead)
     implementation (libs.ble.device.cushion)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit.v412)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core)
