@@ -32,15 +32,25 @@ android {
     }
 
     flavorDimensions += "product"
+    flavorDimensions += "function"
 
     productFlavors {
         create("demo") {
             dimension = "product"
         }
+        //用于研究测试
         create("qa") {
             dimension = "product"
             applicationIdSuffix = ".test"
             versionNameSuffix = "-test"
+        }
+
+        create("hr") {
+            dimension = "function"
+        }
+
+        create("all") {
+            dimension = "function"
         }
     }
 
@@ -60,6 +70,23 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().all()) { variantBuilder ->
+        val product = variantBuilder.productFlavors
+            .firstOrNull { it.first == "product" }
+            ?.second
+        val function = variantBuilder.productFlavors
+            .firstOrNull { it.first == "function" }
+            ?.second
+
+        variantBuilder.enable = when {
+            product == "demo" && function == "all" -> true
+            product == "qa" && function == "hr" -> true
+            else -> false
         }
     }
 }
