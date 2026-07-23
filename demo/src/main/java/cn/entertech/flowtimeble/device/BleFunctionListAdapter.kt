@@ -32,11 +32,11 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
     override fun onBindViewHolder(holder: BleFunctionListVH, position: Int) {
         val item = functionList[position]
         val isEnabled = enabledFunctionSet.contains(item.functionFlag)
-        holder.btnBleFunctionName?.text =
-            holder.btnBleFunctionName.context?.getString(item.functionFlag.desStringResId)
-        holder.btnBleFunctionName?.isEnabled = isEnabled
-        holder.btnBleFunctionName?.alpha = if (isEnabled) 1f else 0.45f
-        holder.btnBleFunctionName?.setOnClickListener {
+        val button = holder.btnBleFunctionName ?: return
+        button.text = button.context.getString(item.functionFlag.desStringResId)
+        button.isEnabled = isEnabled
+        button.alpha = if (isEnabled) 1f else 0.45f
+        button.setOnClickListener {
             bleFunctionClick?.onClick(item.functionFlag)
         }
     }

@@ -87,6 +87,23 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         private val STOP_TO_START_FUNCTION_MAP = START_TO_STOP_FUNCTION_MAP.entries.associate {
             it.value to it.key
         }
+        private val STOP_COLLECT_TO_NOTIFY_FUNCTION_MAP = mapOf(
+            BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE to setOf(
+                BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE,
+                BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL
+            ),
+            BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN to setOf(
+                BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE,
+                BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT,
+                BLE_FUNCTION_FLAG_NOTIFY_CONTACT
+            ),
+            BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR to setOf(
+                BLE_FUNCTION_FLAG_NOTIFY_HR,
+                BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE,
+                BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT,
+                BLE_FUNCTION_FLAG_NOTIFY_CONTACT
+            )
+        )
     }
 
     private var needLog = false
@@ -111,6 +128,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     private var connectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
     private var mac: String = ""
     private val activeStartFunctionSet = mutableSetOf<BleFunction>()
+    private var connectActionInProgress = false
+    private var userDisconnectRequested = false
     private val reconnectRunnable: Runnable by lazy {
         Runnable {
             showMsg("reconnectRunnable needReConnected:   $needReconnected")
@@ -142,6 +161,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
 
     private var btnConnectDevice: Button? = null
+    private var btnDisconnectDevice: Button? = null
     private var etConnectInfo: EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -174,6 +194,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         rbConnectMac = findViewById(R.id.rbConnectMac)
         rbConnectName = findViewById(R.id.rbConnectName)
         btnConnectDevice = findViewById(R.id.btnConnectDevice)
+        btnDisconnectDevice = findViewById(R.id.btnDisconnectDevice)
         btnConnectDevice?.setOnClickListener(this)
         scrollViewLogs = findViewById(R.id.scrollView_logs)
         btnClearLog = findViewById(R.id.btnClearLog)
@@ -211,6 +232,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         bluetoothDeviceManager?.addConnectListener(connectListener)
         bluetoothDeviceManager?.addDisConnectListener(disconnectListener)
         initBleFunctionList()
+        updateConnectActionState()
         initPermission()
     }
 
@@ -506,7 +528,27 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         }
     }
 
+    private fun restoreStopFunctionStateAfterFailure(stopFunction: BleFunction) {
+        updateStopFunctionState(
+            stopFunction,
+            bluetoothDeviceManager?.isConnected() == true && !userDisconnectRequested
+        )
+    }
+
+    private fun deactivateNotifyFunctionsForStoppedCollect(stopCollectFunction: BleFunction) {
+        STOP_COLLECT_TO_NOTIFY_FUNCTION_MAP[stopCollectFunction]?.forEach { notifyFunction ->
+            activeStartFunctionSet.remove(notifyFunction)
+        }
+        updateBleFunctionEnableState()
+    }
+
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
+        userDisconnectRequested = true
+        connectActionInProgress = false
+        mainHandler.removeCallbacks(reconnectRunnable)
+        activeStartFunctionSet.clear()
+        updateBleFunctionEnableState()
+        updateConnectActionState()
         bluetoothDeviceManager?.disConnect {
             deviceDisconnect()
         }
@@ -529,17 +571,44 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     protected open fun deviceDisconnect() {
+        connectActionInProgress = false
         runOnUiThread {
             btnConnectDevice?.text = getString(R.string.go_to_connect_device)
         }
         activeStartFunctionSet.clear()
         updateBleFunctionEnableState()
-        reconnect()
+        updateConnectActionState()
+        if (!userDisconnectRequested) {
+            reconnect()
+        }
     }
 
     protected open fun deviceConnect(mac: String) {
-        btnConnectDevice?.text = mac
+        connectActionInProgress = false
+        runOnUiThread {
+            btnConnectDevice?.text = mac
+        }
         updateBleFunctionEnableState()
+        updateConnectActionState()
+    }
+
+    private fun updateConnectActionState() {
+        val isConnected = bluetoothDeviceManager?.isConnected() == true
+        val isConnecting =
+            !userDisconnectRequested && (connectActionInProgress || bluetoothDeviceManager?.isConnecting() == true)
+        runOnUiThread {
+            btnConnectDevice?.isEnabled = !isConnected && !isConnecting
+            btnConnectDevice?.alpha = if (btnConnectDevice?.isEnabled == true) 1f else 0.45f
+            btnDisconnectDevice?.isEnabled = isConnected || isConnecting
+            btnDisconnectDevice?.alpha = if (btnDisconnectDevice?.isEnabled == true) 1f else 0.45f
+            if (!isConnected) {
+                btnConnectDevice?.text = if (isConnecting) {
+                    getString(R.string.connecting)
+                } else {
+                    getString(R.string.go_to_connect_device)
+                }
+            }
+        }
     }
 
     private fun showToast(msg: String) {
@@ -549,23 +618,37 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun connectDevice() {
+        if (bluetoothDeviceManager == null) {
+            showMsg("设备管理器未初始化", true)
+            updateConnectActionState()
+            return
+        }
+        userDisconnectRequested = false
         mainHandler.removeCallbacks(reconnectRunnable)
         if (bluetoothDeviceManager?.isConnected() == true) {
             showMsg("已连接  $bluetoothDeviceManager")
+            updateConnectActionState()
             return
         }
 
         if (bluetoothDeviceManager?.isConnecting() == true) {
             showMsg("正在连接中  $bluetoothDeviceManager")
+            updateConnectActionState()
             return
         }
+        connectActionInProgress = true
+        updateConnectActionState()
         showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
         bluetoothDeviceManager?.connectDevice(
             { mac ->
+                connectActionInProgress = false
                 showMsg("connect success $mac", true)
+                updateConnectActionState()
             },
             { errorMsg ->
+                connectActionInProgress = false
                 showMsg("connect failed $errorMsg", true)
+                updateConnectActionState()
             },
             connectionBleStrategy, mac = mac,
         )
@@ -605,10 +688,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(Unit,
                     success = {
+                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showMsg("停止收集脑波数据成功", true)
                     },
                     failure = { _, it ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showMsg("停止收集脑波数据失败：$it", true)
                     })
 
@@ -619,10 +703,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
                     success = {
+                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showToast("停止收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("停止收集运动数据指令发送失败：$it")
                     })
             }
@@ -643,10 +728,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
+                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showToast("发送停止收集脑波心率数据成功")
                     },
                     failure = { _, it ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("发送停止收集脑波心率数据失败：$it")
                     })
             }
@@ -720,7 +806,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IHrFunction<*>)?.stopNotifyHeartRate({ showToast("取消订阅心率数据成功") },
                     { error ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅心率数据失败：$error")
                     })
             }
@@ -740,7 +826,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
                     { error ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅脑波数据失败：$error")
                     })
             }
@@ -767,12 +853,12 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
                     { error ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅佩戴状态数据失败：$error")
                     })
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
                     { error ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅脑波数据失败：$error")
                     })
             }
@@ -793,7 +879,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
                     { error ->
-                        updateStopFunctionState(bleFunctionFlag, true)
+                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅佩戴状态数据失败：$error")
                     })
             }
@@ -816,7 +902,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                         "取消订阅睡眠姿势数据成功"
                     )
                 }, { error ->
-                    updateStopFunctionState(bleFunctionFlag, true)
+                    restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showToast("取消订阅睡眠姿势数据失败：$error")
                 })
             }
@@ -841,7 +927,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                         "取消订阅运动等级数据成功"
                     )
                 }, { error ->
-                    updateStopFunctionState(bleFunctionFlag, true)
+                    restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showToast("取消订阅运动等级数据失败：$error")
                 })
             }
@@ -866,7 +952,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                         "取消订阅温度数据成功"
                     )
                 }, { error ->
-                    updateStopFunctionState(bleFunctionFlag, true)
+                    restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showToast("取消订阅温度数据失败：$error")
                 })
             }
@@ -891,7 +977,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                         "取消订阅电池数据成功"
                     )
                 }, { error ->
-                    updateStopFunctionState(bleFunctionFlag, true)
+                    restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showToast("取消订阅电池数据失败：$error")
                 })
             }
