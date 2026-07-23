@@ -87,23 +87,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         private val STOP_TO_START_FUNCTION_MAP = START_TO_STOP_FUNCTION_MAP.entries.associate {
             it.value to it.key
         }
-        private val STOP_COLLECT_TO_NOTIFY_FUNCTION_MAP = mapOf(
-            BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE to setOf(
-                BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE,
-                BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL
-            ),
-            BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN to setOf(
-                BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE,
-                BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT,
-                BLE_FUNCTION_FLAG_NOTIFY_CONTACT
-            ),
-            BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR to setOf(
-                BLE_FUNCTION_FLAG_NOTIFY_HR,
-                BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE,
-                BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT,
-                BLE_FUNCTION_FLAG_NOTIFY_CONTACT
-            )
-        )
     }
 
     private var needLog = false
@@ -535,11 +518,10 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         )
     }
 
-    private fun deactivateNotifyFunctionsForStoppedCollect(stopCollectFunction: BleFunction) {
-        STOP_COLLECT_TO_NOTIFY_FUNCTION_MAP[stopCollectFunction]?.forEach { notifyFunction ->
-            activeStartFunctionSet.remove(notifyFunction)
+    private fun markNotifyFunctionActive(notifyFunction: BleFunction) {
+        if (!activeStartFunctionSet.contains(notifyFunction)) {
+            updateStartFunctionState(notifyFunction, true)
         }
-        updateBleFunctionEnableState()
     }
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -688,7 +670,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(Unit,
                     success = {
-                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showMsg("停止收集脑波数据成功", true)
                     },
                     failure = { _, it ->
@@ -703,7 +684,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
                     success = {
-                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showToast("停止收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
@@ -728,7 +708,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
-                        deactivateNotifyFunctionsForStoppedCollect(bleFunctionFlag)
                         showToast("发送停止收集脑波心率数据成功")
                     },
                     failure = { _, it ->
@@ -750,6 +729,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHeartRate(success = {
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("心率数据：${it.contentToString()}")
                     meditateDataHelper?.saveData("hr", it)
                 }, failure = {
@@ -814,6 +794,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("脑波数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("brain_wave", data)
                 }, { error ->
@@ -834,6 +815,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("脑波数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("brain_wave", data)
                 }, { error ->
@@ -841,6 +823,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                     showToast("脑波数据失败：$error")
                 })
                 (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("佩戴状态数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("contact", data)
                 }, { error ->
@@ -866,6 +849,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_CONTACT -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("佩戴状态数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("contact", data)
                 }, { error ->
@@ -887,6 +871,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ISleepPostureFunction<*>)?.notifySleepPosture({ data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("睡眠姿势数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("SleepPosture", data)
                 }, { error ->
@@ -910,6 +895,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IExerciseLevelFunction<*>)?.notifyExerciseLevel({
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg(
                         "运动等级 $it"
                     )
@@ -935,6 +921,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ITemperatureFunction<*>)?.notifyTemperature({
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg(
                         "温度数据 $it"
                     )
@@ -960,6 +947,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_NOTIFY_BATTERY -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBatteryFunction<*>)?.notifyBattery({
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg(
                         "电池数据 $it"
                     )
