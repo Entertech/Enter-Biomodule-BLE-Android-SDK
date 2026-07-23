@@ -34,7 +34,7 @@ enum class BleFunction(val desStringResId: Int = -1) {
     BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR(R.string.start_collect_brain_and_hr_data), BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR(
         R.string.stop_collect_brain_and_hr_data
     ),
-    BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE(R.string.stop_collect_exercise_degree_data), BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE(
+    BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE(R.string.start_collect_exercise_degree_data), BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE(
         R.string.stop_collect_exercise_degree_data
     ),
     BLE_FUNCTION_FLAG_START_COLLECT_BRAIN(R.string.start_collect_brain_data), BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN(

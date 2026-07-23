@@ -71,6 +71,22 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     companion object {
         private const val TAG = "BaseDeviceActivity"
         private const val RECONNECT_DELAY_TIME = 2000L
+        private val START_TO_STOP_FUNCTION_MAP = mapOf(
+            BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE to BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE,
+            BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN to BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN,
+            BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR to BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR,
+            BLE_FUNCTION_FLAG_NOTIFY_HR to BLE_FUNCTION_FLAG_STOP_NOTIFY_HR,
+            BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE to BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE,
+            BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT to BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_CONTRACT,
+            BLE_FUNCTION_FLAG_NOTIFY_CONTACT to BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT,
+            BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE to BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE,
+            BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL to BLE_FUNCTION_FLAG_STOP_NOTIFY_EXERCISE_LEVEL,
+            BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE to BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE,
+            BLE_FUNCTION_FLAG_NOTIFY_BATTERY to BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
+        )
+        private val STOP_TO_START_FUNCTION_MAP = START_TO_STOP_FUNCTION_MAP.entries.associate {
+            it.value to it.key
+        }
     }
 
     private var needLog = false
@@ -94,6 +110,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
     private var connectionBleStrategy = ConnectionBleStrategy.SCAN_AND_CONNECT_HIGH_SIGNAL
     private var mac: String = ""
+    private val activeStartFunctionSet = mutableSetOf<BleFunction>()
     private val reconnectRunnable: Runnable by lazy {
         Runnable {
             showMsg("reconnectRunnable needReConnected:   $needReconnected")
@@ -280,6 +297,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 )
             }
             functionListAdapter.setNewData(bleFunctionList)
+            updateBleFunctionEnableState()
             return
         }
         if (bluetoothDeviceManager is IInfoFunction) {
@@ -445,6 +463,47 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             )
         }
         functionListAdapter.setNewData(bleFunctionList)
+        updateBleFunctionEnableState()
+    }
+
+    private fun updateBleFunctionEnableState() {
+        val enabledFunctions = if (bluetoothDeviceManager?.isConnected() == true) {
+            BleFunction.values().filter { isBleFunctionEnabled(it) }.toSet()
+        } else {
+            emptySet()
+        }
+        runOnUiThread {
+            functionListAdapter.setEnabledFunctions(enabledFunctions)
+        }
+    }
+
+    private fun isBleFunctionEnabled(bleFunctionFlag: BleFunction): Boolean {
+        if (bluetoothDeviceManager?.isConnected() != true) {
+            return false
+        }
+        if (START_TO_STOP_FUNCTION_MAP.containsKey(bleFunctionFlag)) {
+            return !activeStartFunctionSet.contains(bleFunctionFlag)
+        }
+        val startFunction = STOP_TO_START_FUNCTION_MAP[bleFunctionFlag]
+        if (startFunction != null) {
+            return activeStartFunctionSet.contains(startFunction)
+        }
+        return true
+    }
+
+    private fun updateStartFunctionState(startFunction: BleFunction, isActive: Boolean) {
+        if (isActive) {
+            activeStartFunctionSet.add(startFunction)
+        } else {
+            activeStartFunctionSet.remove(startFunction)
+        }
+        updateBleFunctionEnableState()
+    }
+
+    private fun updateStopFunctionState(stopFunction: BleFunction, isActive: Boolean) {
+        STOP_TO_START_FUNCTION_MAP[stopFunction]?.let { startFunction ->
+            updateStartFunctionState(startFunction, isActive)
+        }
     }
 
     fun onDisconnect(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -473,11 +532,14 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         runOnUiThread {
             btnConnectDevice?.text = getString(R.string.go_to_connect_device)
         }
+        activeStartFunctionSet.clear()
+        updateBleFunctionEnableState()
         reconnect()
     }
 
     protected open fun deviceConnect(mac: String) {
         btnConnectDevice?.text = mac
+        updateBleFunctionEnableState()
     }
 
     private fun showToast(msg: String) {
@@ -510,33 +572,43 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     override fun onClick(bleFunctionFlag: BleFunction) {
+        if (!isBleFunctionEnabled(bleFunctionFlag)) {
+            showToast("当前状态下不可执行该功能")
+            return
+        }
         when (bleFunctionFlag) {
             BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.startCollectExerciseDegreeData(Unit,
                     success = {
                         showToast("开始收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
+                        updateStartFunctionState(bleFunctionFlag, false)
                         showToast("开始收集运动数据指令发送失败：$it")
                     })
             }
 
             BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ICollectBrainDataFunction)?.startCollectBrainData(Unit,
                     success = {
                         showMsg("发送收集脑波数据成功 指令: ${it.contentToString()}")
                     },
                     failure = { _, it ->
+                        updateStartFunctionState(bleFunctionFlag, false)
                         showMsg("发送收集脑波数据失败：$it", true)
                     })
             }
 
             BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(Unit,
                     success = {
                         showMsg("停止收集脑波数据成功", true)
                     },
                     failure = { _, it ->
+                        updateStopFunctionState(bleFunctionFlag, true)
                         showMsg("停止收集脑波数据失败：$it", true)
                     })
 
@@ -544,25 +616,37 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE -> {
-
+                updateStopFunctionState(bleFunctionFlag, false)
+                (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
+                    success = {
+                        showToast("停止收集运动数据指令发送成功")
+                    },
+                    failure = { _, it ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("停止收集运动数据指令发送失败：$it")
+                    })
             }
 
             BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.startCollectBrainAndHrData(Unit,
                     success = {
                         showMsg("发送收集脑波心率数据指令成功  指令 ${it.contentToString()}")
                     },
                     failure = { _, it ->
+                        updateStartFunctionState(bleFunctionFlag, false)
                         showMsg("发送收集脑波心率数据指令失败：$it", true)
                     })
             }
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
                         showToast("发送停止收集脑波心率数据成功")
                     },
                     failure = { _, it ->
+                        updateStopFunctionState(bleFunctionFlag, true)
                         showToast("发送停止收集脑波心率数据失败：$it")
                     })
             }
@@ -578,10 +662,12 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHeartRate(success = {
                     showMsg("心率数据：${it.contentToString()}")
                     meditateDataHelper?.saveData("hr", it)
                 }, failure = {
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("订阅心率数据失败：$it")
                 })
             }
@@ -631,127 +717,183 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_HR -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IHrFunction<*>)?.stopNotifyHeartRate({ showToast("取消订阅心率数据成功") },
-                    { error -> showToast("取消订阅心率数据失败：$error") })
+                    { error ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("取消订阅心率数据失败：$error")
+                    })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
                     showMsg("脑波数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("brain_wave", data)
                 }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("脑波数据失败：$error")
                 })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
-                    { error -> showToast("取消订阅脑波数据失败：$error") })
+                    { error ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("取消订阅脑波数据失败：$error")
+                    })
             }
 
             BleFunction.BLE_FUNCTION_FLAG_NOTIFY_BRAIN_CONTRACT -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.notifyBrainWave({ data ->
                     showMsg("脑波数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("brain_wave", data)
                 }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("脑波数据失败：$error")
                 })
                 (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
                     showMsg("佩戴状态数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("contact", data)
                 }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("佩戴状态数据失败：$error")
                 })
             }
 
             BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_CONTRACT -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
-                    { error -> showToast("取消订阅佩戴状态数据失败：$error") })
+                    { error ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("取消订阅佩戴状态数据失败：$error")
+                    })
                 (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
-                    { error -> showToast("取消订阅脑波数据失败：$error") })
+                    { error ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("取消订阅脑波数据失败：$error")
+                    })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_CONTACT -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.notifyContact({ data ->
                     showMsg("佩戴状态数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("contact", data)
                 }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("佩戴状态数据失败：$error")
                 })
             }
 
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
-                    { error -> showToast("取消订阅佩戴状态数据失败：$error") })
+                    { error ->
+                        updateStopFunctionState(bleFunctionFlag, true)
+                        showToast("取消订阅佩戴状态数据失败：$error")
+                    })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_SLEEP_POSTURE -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ISleepPostureFunction<*>)?.notifySleepPosture({ data ->
                     showMsg("睡眠姿势数据：${data.contentToString()}")
                     meditateDataHelper?.saveData("SleepPosture", data)
                 }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
                     showToast("睡眠姿势数据失败：$error")
                 })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_SLEEP_POSTURE -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ISleepPostureFunction<*>)?.stopNotifySleepPosture({
                     showToast(
                         "取消订阅睡眠姿势数据成功"
                     )
-                }, { error -> showToast("取消订阅睡眠姿势数据失败：$error") })
+                }, { error ->
+                    updateStopFunctionState(bleFunctionFlag, true)
+                    showToast("取消订阅睡眠姿势数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_EXERCISE_LEVEL -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IExerciseLevelFunction<*>)?.notifyExerciseLevel({
                     showMsg(
                         "运动等级 $it"
                     )
                     meditateDataHelper?.saveData("SleepPosture", it)
-                }, { error -> showToast("订阅运动等级数据失败：$error") })
+                }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
+                    showToast("订阅运动等级数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_EXERCISE_LEVEL -> {
-                (bluetoothDeviceManager as? ISleepPostureFunction<*>)?.stopNotifySleepPosture({
+                updateStopFunctionState(bleFunctionFlag, false)
+                (bluetoothDeviceManager as? IExerciseLevelFunction<*>)?.stopNotifyExerciseLevel({
                     showToast(
-                        "取消运动等级数据成功"
+                        "取消订阅运动等级数据成功"
                     )
-                }, { error -> showToast("取消订阅运动等级数据失败：$error") })
+                }, { error ->
+                    updateStopFunctionState(bleFunctionFlag, true)
+                    showToast("取消订阅运动等级数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_TEMPERATURE -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ITemperatureFunction<*>)?.notifyTemperature({
                     showMsg(
                         "温度数据 $it"
                     )
                     meditateDataHelper?.saveData("Temperature", it)
-                }, { error -> showToast("订阅温度数据失败：$error") })
+                }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
+                    showToast("订阅温度数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ITemperatureFunction<*>)?.stopNotifyTemperature({
                     showToast(
-                        "取消运动等级数据成功"
+                        "取消订阅温度数据成功"
                     )
-                }, { error -> showToast("取消订阅运动等级数据失败：$error") })
+                }, { error ->
+                    updateStopFunctionState(bleFunctionFlag, true)
+                    showToast("取消订阅温度数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_BATTERY -> {
+                updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IBatteryFunction<*>)?.notifyBattery({
                     showMsg(
                         "电池数据 $it"
                     )
                     meditateDataHelper?.saveData("Battery", it)
-                }, { error -> showToast("订阅电池数据失败：$error") })
+                }, { error ->
+                    updateStartFunctionState(bleFunctionFlag, false)
+                    showToast("订阅电池数据失败：$error")
+                })
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY -> {
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IBatteryFunction<*>)?.stopNotifyBattery({
                     showToast(
                         "取消订阅电池数据成功"
                     )
-                }, { error -> showToast("取消订阅电池数据失败：$error") })
+                }, { error ->
+                    updateStopFunctionState(bleFunctionFlag, true)
+                    showToast("取消订阅电池数据失败：$error")
+                })
             }
         }
     }
