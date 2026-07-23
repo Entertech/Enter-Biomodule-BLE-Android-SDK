@@ -541,7 +541,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         if (!needLog) {
             return
         }
-        val realMsg = "->: ${simple.format(Date())} $msg\n"
+        val realMsg = "${simple.format(Date())}:->  $msg\n"
         runOnUiThread {
             adapter.addItem(realMsg)
             scrollViewLogs?.scrollToPosition(adapter.itemCount - 1)
@@ -594,9 +594,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun showToast(msg: String) {
-        runOnUiThread {
-            Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
-        }
+        showMsg(msg,true)
     }
 
     private fun connectDevice() {
@@ -620,7 +618,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         }
         connectActionInProgress = true
         updateConnectActionState()
-        showMsg("开始寻找设备 ，准备连接 $bluetoothDeviceManager")
+        showMsg("开始寻找设备 ，准备连接")
         bluetoothDeviceManager?.connectDevice(
             { mac ->
                 connectActionInProgress = false
@@ -638,7 +636,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
     override fun onClick(bleFunctionFlag: BleFunction) {
         if (!isBleFunctionEnabled(bleFunctionFlag)) {
-            showToast("当前状态下不可执行该功能")
+            showMsg("当前状态下不可执行该功能 $bleFunctionFlag")
             return
         }
         when (bleFunctionFlag) {
@@ -646,11 +644,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.startCollectExerciseDegreeData(Unit,
                     success = {
-                        showToast("开始收集运动数据指令发送成功")
+                        showMsg("开始收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
                         updateStartFunctionState(bleFunctionFlag, false)
-                        showToast("开始收集运动数据指令发送失败：$it")
+                        showMsg("开始收集运动数据指令发送失败：$it")
                     })
             }
 
@@ -684,11 +682,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectExerciseDegreeDataFunction)?.stopCollectExerciseDegreeData(Unit,
                     success = {
-                        showToast("停止收集运动数据指令发送成功")
+                        showMsg("停止收集运动数据指令发送成功")
                     },
                     failure = { _, it ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
-                        showToast("停止收集运动数据指令发送失败：$it")
+                        showMsg("停止收集运动数据指令发送失败：$it")
                     })
             }
 
@@ -708,21 +706,21 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? ICollectBrainAndHrDataFunction)?.stopCollectBrainAndHrData(Unit,
                     success = {
-                        showToast("发送停止收集脑波心率数据成功")
+                        showMsg("发送停止收集脑波心率数据成功")
                     },
                     failure = { _, it ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
-                        showToast("发送停止收集脑波心率数据失败：$it")
+                        showMsg("发送停止收集脑波心率数据失败：$it")
                     })
             }
 
             BLE_FUNCTION_FLAG_READ_BATTERY -> {
                 (bluetoothDeviceManager as IBatteryFunction<*>).readBatteryValue(success = {
                     if (it is Int) {
-                        showToast("读取电量数据：$it")
+                        showMsg("读取电量数据：$it",true)
                     }
                 }, failure = {
-                    showToast("读取电量数据失败：$it")
+                    showMsg("读取电量数据失败：$it")
                 })
             }
 
