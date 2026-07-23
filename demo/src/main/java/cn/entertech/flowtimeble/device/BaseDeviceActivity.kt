@@ -243,7 +243,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 needRequestPermissions.add(needPermission[i])
             }
         }
-        if (needRequestPermissions.size != 0) {
+        if (needRequestPermissions.isNotEmpty()) {
             val permissions = arrayOfNulls<String>(needRequestPermissions.size)
             for (i in needRequestPermissions.indices) {
                 permissions[i] = needRequestPermissions[i]
@@ -254,6 +254,34 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
     protected fun initBleFunctionList() {
         val bleFunctionList = ArrayList<BleFunctionUiBean>()
+        if (BleFunctionPolicy.hrOnly) {
+            if (bluetoothDeviceManager is ICollectBrainAndHrDataFunction) {
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR
+                    )
+                )
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
+                    )
+                )
+            }
+            if (bluetoothDeviceManager is IHrFunction<*>) {
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_NOTIFY_HR
+                    )
+                )
+                bleFunctionList.add(
+                    BleFunctionUiBean(
+                        BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
+                    )
+                )
+            }
+            functionListAdapter.setNewData(bleFunctionList)
+            return
+        }
         if (bluetoothDeviceManager is IInfoFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
