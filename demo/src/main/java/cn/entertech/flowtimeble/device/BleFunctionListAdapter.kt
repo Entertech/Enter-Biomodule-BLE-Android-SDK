@@ -15,6 +15,7 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
     }
 
     var bleFunctionClick: IBleFunctionClick? = null
+    private val enabledFunctionSet = mutableSetOf<BleFunction>()
 
     class BleFunctionListVH(rootView: View, val btnBleFunctionName: Button?) :
         RecyclerView.ViewHolder(rootView) {
@@ -30,8 +31,11 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
 
     override fun onBindViewHolder(holder: BleFunctionListVH, position: Int) {
         val item = functionList[position]
+        val isEnabled = enabledFunctionSet.contains(item.functionFlag)
         holder.btnBleFunctionName?.text =
-            holder.btnBleFunctionName?.context?.getString(item.functionFlag.desStringResId)
+            holder.btnBleFunctionName.context?.getString(item.functionFlag.desStringResId)
+        holder.btnBleFunctionName?.isEnabled = isEnabled
+        holder.btnBleFunctionName?.alpha = if (isEnabled) 1f else 0.45f
         holder.btnBleFunctionName?.setOnClickListener {
             bleFunctionClick?.onClick(item.functionFlag)
         }
@@ -44,6 +48,12 @@ class BleFunctionListAdapter(private val functionList: MutableList<BleFunctionUi
     fun setNewData(newData: List<BleFunctionUiBean>) {
         functionList.clear()
         functionList.addAll(newData)
+        notifyDataSetChanged()
+    }
+
+    fun setEnabledFunctions(enabledFunctions: Set<BleFunction>) {
+        enabledFunctionSet.clear()
+        enabledFunctionSet.addAll(enabledFunctions)
         notifyDataSetChanged()
     }
 }
