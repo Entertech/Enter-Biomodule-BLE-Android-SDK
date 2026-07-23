@@ -31,6 +31,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "product"
+
+    productFlavors {
+        create("demo") {
+            dimension = "product"
+        }
+        create("qa") {
+            dimension = "product"
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
