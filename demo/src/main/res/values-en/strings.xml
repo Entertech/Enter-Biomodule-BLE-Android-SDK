@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FlowtimeBle</string>
     <string name="connect">Connect</string>
+    <string name="connecting">Connecting...</string>
     <string name="connectBonded">Connect to Bonded Device</string>
     <string name="disconnect">Disconnect</string>
     <string name="start_collect">Start EEG Data Collection</string>
