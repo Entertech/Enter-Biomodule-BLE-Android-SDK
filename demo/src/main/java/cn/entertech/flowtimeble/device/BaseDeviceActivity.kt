@@ -472,7 +472,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun updateBleFunctionEnableState() {
-        val enabledFunctions = if (bluetoothDeviceManager?.isConnected() == true) {
+        val enabledFunctions = if (isDeviceAvailableForActions()) {
             BleFunction.values().filter { isBleFunctionEnabled(it) }.toSet()
         } else {
             emptySet()
@@ -483,7 +483,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun isBleFunctionEnabled(bleFunctionFlag: BleFunction): Boolean {
-        if (bluetoothDeviceManager?.isConnected() != true) {
+        if (!isDeviceAvailableForActions()) {
             return false
         }
         if (START_TO_STOP_FUNCTION_MAP.containsKey(bleFunctionFlag)) {
@@ -505,6 +505,10 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         updateBleFunctionEnableState()
     }
 
+    private fun isDeviceAvailableForActions(): Boolean {
+        return bluetoothDeviceManager?.isConnected() == true && !userDisconnectRequested
+    }
+
     private fun updateStopFunctionState(stopFunction: BleFunction, isActive: Boolean) {
         STOP_TO_START_FUNCTION_MAP[stopFunction]?.let { startFunction ->
             updateStartFunctionState(startFunction, isActive)
@@ -514,7 +518,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     private fun restoreStopFunctionStateAfterFailure(stopFunction: BleFunction) {
         updateStopFunctionState(
             stopFunction,
-            bluetoothDeviceManager?.isConnected() == true && !userDisconnectRequested
+            isDeviceAvailableForActions()
         )
     }
 
@@ -575,7 +579,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun updateConnectActionState() {
-        val isConnected = bluetoothDeviceManager?.isConnected() == true
+        val isConnected = isDeviceAvailableForActions()
         val isConnecting =
             !userDisconnectRequested && (connectActionInProgress || bluetoothDeviceManager?.isConnecting() == true)
         runOnUiThread {
