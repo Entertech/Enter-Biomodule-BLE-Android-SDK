@@ -224,7 +224,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         return null
     }
 
-    open fun initMeditateDataHelper():MeditateDataHelper?{
+    open fun initMeditateDataHelper(): MeditateDataHelper? {
         return null
     }
 
@@ -485,12 +485,11 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
     protected fun restoreStopFunctionStateAfterFailure(stopFunction: BleFunction) {
         updateStopFunctionState(
-            stopFunction,
-            isDeviceAvailableForActions()
+            stopFunction, isDeviceAvailableForActions()
         )
     }
 
-    private fun markNotifyFunctionActive(notifyFunction: BleFunction) {
+    protected fun markNotifyFunctionActive(notifyFunction: BleFunction) {
         if (!activeStartFunctionSet.contains(notifyFunction)) {
             updateStartFunctionState(notifyFunction, true)
         }
@@ -565,7 +564,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         }
     }
 
-    private fun showToast(msg: String) {
+    protected fun showToast(msg: String) {
         runOnUiThread {
             Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
         }
@@ -609,10 +608,32 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
 
-    protected open fun processFunction(bleFunctionFlag: BleFunction){
+    protected open fun processFunction(bleFunctionFlag: BleFunction) {
 
     }
 
+
+    protected open fun notifyHr() {
+        updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, true)
+        (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHeartRate(success = {
+            markNotifyFunctionActive(BLE_FUNCTION_FLAG_NOTIFY_HR)
+            showMsg("心率数据：${it.contentToString()}")
+            meditateDataHelper?.saveData("hr", it)
+        }, failure = {
+            updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, false)
+            showToast("订阅心率数据失败：$it")
+        })
+    }
+
+    protected open fun stopNotifyHr() {
+        updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
+        (bluetoothDeviceManager as? IHrFunction<*>)?.stopNotifyHeartRate(
+            { showToast("取消订阅心率数据成功") },
+            { error ->
+                restoreStopFunctionStateAfterFailure(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)
+                showToast("取消订阅心率数据失败：$error")
+            })
+    }
 
 
     override fun onClick(bleFunctionFlag: BleFunction) {
@@ -635,7 +656,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
             BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN -> {
                 updateStartFunctionState(bleFunctionFlag, true)
-                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.startCollectBrainData(Unit,
+                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.startCollectBrainData(
+                    Unit,
                     success = {
                         showMsg("发送收集脑波数据成功 指令: ${it.contentToString()}")
                     },
@@ -647,7 +669,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
             BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN -> {
                 updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(Unit,
+                (bluetoothDeviceManager as? ICollectBrainDataFunction)?.stopCollectBrainData(
+                    Unit,
                     success = {
                         showMsg("停止收集脑波数据成功", true)
                     },
@@ -697,7 +720,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_READ_BATTERY -> {
                 (bluetoothDeviceManager as IBatteryFunction<*>).readBatteryValue(success = {
                     if (it is Int) {
-                        showMsg("读取电量数据：$it",true)
+                        showMsg("读取电量数据：$it", true)
                     }
                 }, failure = {
                     showMsg("读取电量数据失败：$it")
@@ -705,15 +728,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_HR -> {
-                updateStartFunctionState(bleFunctionFlag, true)
-                (bluetoothDeviceManager as? IHrFunction<*>)?.notifyHeartRate(success = {
-                    markNotifyFunctionActive(bleFunctionFlag)
-                    showMsg("心率数据：${it.contentToString()}")
-                    meditateDataHelper?.saveData("hr", it)
-                }, failure = {
-                    updateStartFunctionState(bleFunctionFlag, false)
-                    showToast("订阅心率数据失败：$it")
-                })
+                notifyHr()
             }
 
             BLE_FUNCTION_FLAG_READ_HARDWARE -> {
@@ -761,12 +776,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             }
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_HR -> {
-                updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? IHrFunction<*>)?.stopNotifyHeartRate({ showToast("取消订阅心率数据成功") },
-                    { error ->
-                        restoreStopFunctionStateAfterFailure(bleFunctionFlag)
-                        showToast("取消订阅心率数据失败：$error")
-                    })
+                stopNotifyHr()
             }
 
             BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE -> {
@@ -783,7 +793,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_WAVE -> {
                 updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
+                (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave(
+                    { showToast("取消订阅脑波数据成功") },
                     { error ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅脑波数据失败：$error")
@@ -812,12 +823,14 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
             BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_BRAIN_CONTRACT -> {
                 updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
+                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact(
+                    { showToast("取消订阅佩戴状态数据成功") },
                     { error ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅佩戴状态数据失败：$error")
                     })
-                (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave({ showToast("取消订阅脑波数据成功") },
+                (bluetoothDeviceManager as? IBrainWaveFunction)?.stopNotifyBrainWave(
+                    { showToast("取消订阅脑波数据成功") },
                     { error ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅脑波数据失败：$error")
@@ -839,7 +852,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
 
             BLE_FUNCTION_FLAG_STOP_NOTIFY_CONTACT -> {
                 updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact({ showToast("取消订阅佩戴状态数据成功") },
+                (bluetoothDeviceManager as? IContactFunction<*>)?.stopNotifyContact(
+                    { showToast("取消订阅佩戴状态数据成功") },
                     { error ->
                         restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                         showToast("取消订阅佩戴状态数据失败：$error")
@@ -947,7 +961,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                     showToast("取消订阅电池数据失败：$error")
                 })
             }
-            else->{
+
+            else -> {
                 processFunction(bleFunctionFlag)
             }
         }
