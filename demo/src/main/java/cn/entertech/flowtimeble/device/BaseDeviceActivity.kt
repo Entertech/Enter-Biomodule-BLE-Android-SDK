@@ -566,7 +566,9 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     private fun showToast(msg: String) {
-        showMsg(msg,true)
+        runOnUiThread {
+            Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun connectDevice() {
