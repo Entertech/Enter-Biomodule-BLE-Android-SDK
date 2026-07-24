@@ -72,6 +72,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         private const val TAG = "BaseDeviceActivity"
         private const val RECONNECT_DELAY_TIME = 2000L
         private val START_TO_STOP_FUNCTION_MAP = mapOf(
+            BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW to BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW,
             BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE to BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE,
             BleFunction.BLE_FUNCTION_FLAG_START_COLLECT_BRAIN to BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN,
             BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR to BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR,
@@ -103,7 +104,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     protected var bluetoothDeviceManager: BaseBleConnectManager? = null
     private var scrollViewLogs: RecyclerView? = null
     private var btnClearLog: Button? = null
-    private val functionListAdapter by lazy {
+    protected val functionListAdapter by lazy {
         val adapter = BleFunctionListAdapter()
         adapter.bleFunctionClick = this
         adapter
@@ -274,37 +275,8 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         }
     }
 
-    protected fun initBleFunctionList() {
+    protected open fun initBleFunctionList() {
         val bleFunctionList = ArrayList<BleFunctionUiBean>()
-        if (BleFunctionPolicy.hrOnly) {
-            if (bluetoothDeviceManager is ICollectBrainAndHrDataFunction) {
-                bleFunctionList.add(
-                    BleFunctionUiBean(
-                        BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR
-                    )
-                )
-                bleFunctionList.add(
-                    BleFunctionUiBean(
-                        BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
-                    )
-                )
-            }
-            if (bluetoothDeviceManager is IHrFunction<*>) {
-                bleFunctionList.add(
-                    BleFunctionUiBean(
-                        BLE_FUNCTION_FLAG_NOTIFY_HR
-                    )
-                )
-                bleFunctionList.add(
-                    BleFunctionUiBean(
-                        BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
-                    )
-                )
-            }
-            functionListAdapter.setNewData(bleFunctionList)
-            updateBleFunctionEnableState()
-            return
-        }
         if (bluetoothDeviceManager is IInfoFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
@@ -398,10 +370,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 )
             }
         }
-
-
-
-
         if (bluetoothDeviceManager is ITemperatureFunction<*>) {
             bleFunctionList.add(
                 BleFunctionUiBean(
@@ -471,9 +439,9 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         updateBleFunctionEnableState()
     }
 
-    private fun updateBleFunctionEnableState() {
+    protected fun updateBleFunctionEnableState() {
         val enabledFunctions = if (isDeviceAvailableForActions()) {
-            BleFunction.values().filter { isBleFunctionEnabled(it) }.toSet()
+            BleFunction.entries.filter { isBleFunctionEnabled(it) }.toSet()
         } else {
             emptySet()
         }
@@ -496,7 +464,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         return true
     }
 
-    private fun updateStartFunctionState(startFunction: BleFunction, isActive: Boolean) {
+    protected fun updateStartFunctionState(startFunction: BleFunction, isActive: Boolean) {
         if (isActive) {
             activeStartFunctionSet.add(startFunction)
         } else {
@@ -515,7 +483,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         }
     }
 
-    private fun restoreStopFunctionStateAfterFailure(stopFunction: BleFunction) {
+    protected fun restoreStopFunctionStateAfterFailure(stopFunction: BleFunction) {
         updateStopFunctionState(
             stopFunction,
             isDeviceAvailableForActions()
@@ -638,6 +606,13 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         )
     }
 
+
+    protected open fun processFunction(bleFunctionFlag: BleFunction){
+
+    }
+
+
+
     override fun onClick(bleFunctionFlag: BleFunction) {
         if (!isBleFunctionEnabled(bleFunctionFlag)) {
             showMsg("当前状态下不可执行该功能 $bleFunctionFlag")
@@ -680,7 +655,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                     })
 
             }
-
 
             BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE -> {
                 updateStopFunctionState(bleFunctionFlag, false)
@@ -970,6 +944,9 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                     restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showToast("取消订阅电池数据失败：$error")
                 })
+            }
+            else->{
+                processFunction(bleFunctionFlag)
             }
         }
     }

@@ -98,6 +98,7 @@ dependencies {
 //    implementation(project(":ble-device-tag"))
 //    implementation(project(":ble-device-cushion"))
     implementation (libs.ble.device.headband)
+    implementation (libs.ble.device.api)
     implementation (libs.ble.device.tag)
     implementation (libs.ble.device.eyehead)
     implementation (libs.ble.device.cushion)

@@ -4,6 +4,7 @@ import cn.entertech.flowtimeble.R
 
 
 enum class BleFunction(val desStringResId: Int = -1) {
+    BLE_FUNCTION_FLAG_NOTIFY_HR_RAW(R.string.notify_hr_raw_data), BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW(R.string.stop_notify_hr_raw_data),
     BLE_FUNCTION_FLAG_NOTIFY_HR(R.string.notify_hr_data), BLE_FUNCTION_FLAG_STOP_NOTIFY_HR(R.string.stop_notify_hr_data), BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE(
         R.string.notify_brain_wave_data
     ),
