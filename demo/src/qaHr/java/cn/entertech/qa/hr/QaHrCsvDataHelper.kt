@@ -37,7 +37,7 @@ class QaHrCsvDataHelper(private val parentFileName: String) {
             return
         }
         val helper = dataHelperMap[dataFileName] ?: return
-        helper.writeData("$timestamp,$data\n")
+        helper.writeData("${simple.format(Date(timestamp))},$data\n")
     }
 
     fun saveData(dataFileName: String, timestamp: Long, data: String) {
@@ -45,7 +45,7 @@ class QaHrCsvDataHelper(private val parentFileName: String) {
             return
         }
         val helper = dataHelperMap[dataFileName] ?: return
-        helper.writeData("$timestamp,$data\n")
+        helper.writeData("${simple.format(Date(timestamp))},$data\n")
     }
 
     private fun initSessionFile(fileSuffix: String) {
