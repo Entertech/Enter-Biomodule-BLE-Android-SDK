@@ -11,7 +11,7 @@ class QaHrCsvDataHelper(private val parentFileName: String) {
         HashMap<String, FileHelper>()
     }
     private val simple by lazy {
-        SimpleDateFormat("yyyy_MM_dd  HH:mm:ss:SSS")
+        SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS")
     }
     private var sessionStartTimestamp: Long = 0L
 
