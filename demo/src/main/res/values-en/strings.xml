@@ -37,6 +37,8 @@
     <string name="device_manager_page">Device UI Entry</string>
     <string name="notify_hr_data">Subscribe Heart Rate Data</string>
     <string name="stop_notify_hr_data">Unsubscribe Heart Rate Data</string>
+    <string name="notify_hr_raw_data">Subscribe Heart Rate Raw Data</string>
+    <string name="stop_notify_hr_raw_data">Unsubscribe Heart Rate Raw  Data</string>
     <string name="notify_brain_wave_data">Subscribe EEG Data</string>
     <string name="stop_notify_brain_wave_data">Unsubscribe EEG Data</string>
     <string name="notify_wear_data">Subscribe Wearing Data</string>

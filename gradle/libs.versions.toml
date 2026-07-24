@@ -20,6 +20,7 @@ materialVersion = "1.9.0"
 ble-device-cushion = { module = "cn.entertech.android:ble-device-cushion", version.ref = "bleDevice" }
 ble-device-eyehead = { module = "cn.entertech.android:ble-device-eyehead", version.ref = "bleDevice" }
 ble-device-headband = { module = "cn.entertech.android:ble-device-headband", version.ref = "bleDevice" }
+ble-device-api = { module = "cn.entertech.android:ble-device-api", version.ref = "bleDevice" }
 ble-device-tag = { module = "cn.entertech.android:ble-device-tag", version.ref = "bleDevice" }
 androidx-appcompat-v100 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-constraintlayout-v214 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }

@@ -22,7 +22,7 @@
             android:name=".data.FileListActivity"
             android:exported="false" />
         <activity
-            android:name=".device.headband.HeadBandDemoActivity"
+            android:name="cn.entertech.qa.hr.QaHrDemoActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
