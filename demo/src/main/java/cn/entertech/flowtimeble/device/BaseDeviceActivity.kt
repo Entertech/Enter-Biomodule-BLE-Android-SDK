@@ -477,7 +477,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         return bluetoothDeviceManager?.isConnected() == true && !userDisconnectRequested
     }
 
-    private fun updateStopFunctionState(stopFunction: BleFunction, isActive: Boolean) {
+    protected fun updateStopFunctionState(stopFunction: BleFunction, isActive: Boolean) {
         STOP_TO_START_FUNCTION_MAP[stopFunction]?.let { startFunction ->
             updateStartFunctionState(startFunction, isActive)
         }

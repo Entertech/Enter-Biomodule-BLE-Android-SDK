@@ -70,7 +70,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
-                    showMsg("心率原始数据：${data}")
+                    showMsg("心率原始数据：${data.contentToString()}")
                 }, failure = { error ->
                     updateStartFunctionState(bleFunctionFlag, false)
                     showMsg("收集心率原始数据失败：$error")
@@ -78,9 +78,9 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             }
 
             BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW -> {
-                updateStartFunctionState(bleFunctionFlag, false)
+                updateStopFunctionState(bleFunctionFlag, false)
                 (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success = {
-
+                    showMsg("结束收集心率原始数据")
                 }, failure = { error ->
                     restoreStopFunctionStateAfterFailure(bleFunctionFlag)
                     showMsg("结束收集心率原始数据失败：$error")
