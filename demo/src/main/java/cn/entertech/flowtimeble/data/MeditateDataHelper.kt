@@ -1,7 +1,6 @@
 package cn.entertech.flowtimeble.data
 
 
-import android.os.Looper
 import cn.android.file.FileHelper
 import cn.entertech.base.util.getValueWithInit
 import cn.entertech.flowtimeble.App
@@ -36,7 +35,7 @@ class MeditateDataHelper(private val parentFileName: String) {
         getFileHelper(dataFileName)?.writeData(data)
     }
 
-    private fun saveStringData(dataFileName: String, data: String) {
+    fun saveStringData(dataFileName: String, data: String) {
         getFileHelper(dataFileName)?.writeData(data)
     }
 

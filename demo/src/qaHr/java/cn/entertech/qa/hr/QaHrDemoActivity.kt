@@ -13,6 +13,8 @@ import cn.entertech.flowtimeble.device.BleFunctionUiBean
 
 class QaHrDemoActivity : BaseDeviceActivity() {
 
+    private val qaHrCsvDataHelper = QaHrCsvDataHelper("qaHr")
+
     override fun initBleManager(): BaseBleConnectManager {
         return QaHrManager(this)
     }
@@ -65,6 +67,69 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         updateBleFunctionEnableState()
     }
 
+    private fun saveData(dataFileName: String, data: ByteArray) {
+        val timestamp = System.currentTimeMillis()
+        when (dataFileName) {
+            HR_FILE_NAME -> {
+                val value = parseUnsignedValue(data)
+                saveCsvRecord(HR_FILE_NAME, timestamp, value)
+            }
+
+            HR_RAW_DATA_FILE_NAME -> {
+                if (data.size == HR_RAW_DATA_PACKET_BYTES) {
+                    parseRawDataAsUnsignedInt(data).forEach { value ->
+                        saveCsvRecord(HR_RAW_DATA_FILE_NAME, timestamp, value)
+                    }
+                    return
+                }
+                saveCsvRecord(HR_RAW_DATA_FILE_NAME, timestamp, getRawDataAsDecimalBytes(data))
+            }
+        }
+    }
+
+    private fun saveCsvRecord(fileName: String, timestamp: Long, value: Long) {
+        if (!qaHrCsvDataHelper.isActive()) {
+            qaHrCsvDataHelper.startSession(timestamp)
+        }
+        qaHrCsvDataHelper.saveData(fileName, timestamp, value)
+    }
+
+    private fun saveCsvRecord(fileName: String, timestamp: Long, value: String) {
+        if (!qaHrCsvDataHelper.isActive()) {
+            qaHrCsvDataHelper.startSession(timestamp)
+        }
+        qaHrCsvDataHelper.saveData(fileName, timestamp, value)
+    }
+
+    private fun parseUnsignedValue(data: ByteArray): Long {
+        var value = 0L
+        for (byte in data) {
+            value = (value shl 8) or (byte.toLong() and 0xFFL)
+        }
+        return value
+    }
+
+    private fun parseRawDataAsUnsignedInt(data: ByteArray): List<Long> {
+        if (data.size != HR_RAW_DATA_PACKET_BYTES) {
+            return emptyList()
+        }
+
+        val result = ArrayList<Long>()
+        for (index in 0 until HR_RAW_DATA_POINT_COUNT) {
+            val start = index * HR_RAW_DATA_POINT_BYTES
+            val value =
+                ((data[start].toLong() and 0xFFL) shl 24) or ((data[start + 1].toLong() and 0xFFL) shl 16) or ((data[start + 2].toLong() and 0xFFL) shl 8) or (data[start + 3].toLong() and 0xFFL)
+            result.add(value)
+        }
+        return result
+    }
+
+    private fun getRawDataAsDecimalBytes(data: ByteArray): String {
+        return data.joinToString(" ") {
+            (it.toInt() and 0xFF).toString()
+        }
+    }
+
     override fun processFunction(bleFunctionFlag: BleFunction) {
         when (bleFunctionFlag) {
             BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW -> {
@@ -72,6 +137,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
                 (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
                     markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("心率原始数据：${data.contentToString()}")
+                    saveData(HR_RAW_DATA_FILE_NAME, data)
                 }, failure = { error ->
                     updateStartFunctionState(bleFunctionFlag, false)
                     showMsg("收集心率原始数据失败：$error")
@@ -92,19 +158,19 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         }
     }
 
-    override fun notifyHr() {
+    override fun notifyHr(success: (ByteArray) -> Unit, failure: (String) -> Unit) {
         updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, true)
         (bluetoothDeviceManager as? IQaHrFunction)?.notifyHeartRate(success = {
             markNotifyFunctionActive(BLE_FUNCTION_FLAG_NOTIFY_HR)
             showMsg("心率数据：${it.contentToString()}")
-            meditateDataHelper?.saveData("hr", it)
+            saveData(HR_FILE_NAME, it)
         }, failure = {
             updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, false)
             showToast("订阅心率数据失败：$it")
         })
     }
 
-    override fun stopNotifyHr() {
+    override fun stopNotifyHr(success: () -> Unit, failure: (String) -> Unit) {
         updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
         (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(
             { showToast("取消订阅心率数据成功") },
@@ -112,5 +178,43 @@ class QaHrDemoActivity : BaseDeviceActivity() {
                 restoreStopFunctionStateAfterFailure(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)
                 showToast("取消订阅心率数据失败：$error")
             })
+    }
+
+    override fun stopCollectBrainAndHrData(
+        success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
+    ) {
+        super.stopCollectBrainAndHrData({ data ->
+            success(data)
+            qaHrCsvDataHelper.endSession()
+        }, failure)
+    }
+
+
+    override fun deviceDisconnect() {
+        super.deviceDisconnect()
+        qaHrCsvDataHelper.endSession()
+    }
+
+    override fun startCollectBrainAndHrData(
+        success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
+    ) {
+        super.startCollectBrainAndHrData({ data ->
+            success(data)
+            qaHrCsvDataHelper.startSession(System.currentTimeMillis())
+        }, failure)
+    }
+
+    override fun onDestroy() {
+        qaHrCsvDataHelper.close()
+        super.onDestroy()
+    }
+
+    companion object {
+        private const val HR_FILE_NAME = "hr"
+        private const val HR_RAW_DATA_FILE_NAME = "hr_rawdata"
+        private const val HR_RAW_DATA_POINT_BYTES = 4
+        private const val HR_RAW_DATA_POINT_COUNT = 5
+        private const val HR_RAW_DATA_PACKET_BYTES =
+            HR_RAW_DATA_POINT_BYTES * HR_RAW_DATA_POINT_COUNT
     }
 }
