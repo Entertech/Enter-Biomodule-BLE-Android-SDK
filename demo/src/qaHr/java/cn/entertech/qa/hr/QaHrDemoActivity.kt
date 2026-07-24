@@ -70,6 +70,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW -> {
                 updateStartFunctionState(bleFunctionFlag, true)
                 (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
+                    markNotifyFunctionActive(bleFunctionFlag)
                     showMsg("心率原始数据：${data.contentToString()}")
                 }, failure = { error ->
                     updateStartFunctionState(bleFunctionFlag, false)
@@ -89,5 +90,27 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
             else -> {}
         }
+    }
+
+    override fun notifyHr() {
+        updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, true)
+        (bluetoothDeviceManager as? IQaHrFunction)?.notifyHeartRate(success = {
+            markNotifyFunctionActive(BLE_FUNCTION_FLAG_NOTIFY_HR)
+            showMsg("心率数据：${it.contentToString()}")
+            meditateDataHelper?.saveData("hr", it)
+        }, failure = {
+            updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, false)
+            showToast("订阅心率数据失败：$it")
+        })
+    }
+
+    override fun stopNotifyHr() {
+        updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
+        (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(
+            { showToast("取消订阅心率数据成功") },
+            { error ->
+                restoreStopFunctionStateAfterFailure(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)
+                showToast("取消订阅心率数据失败：$error")
+            })
     }
 }
