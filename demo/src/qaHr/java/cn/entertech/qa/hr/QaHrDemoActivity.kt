@@ -120,11 +120,16 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         })
     }
 
-    private fun stopNotifyHrRawData() {
+    private fun stopNotifyHrRawData(
+        success: () -> Unit = {},
+        failure: (String) -> Unit = {}
+    ) {
         updateStopFunctionState(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW, false)
         (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success = {
+            success()
             showMsg("结束收集心率原始数据")
         }, failure = { error ->
+            failure(error)
             restoreStopFunctionStateAfterFailure(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW)
             showMsg("结束收集心率原始数据失败：$error")
         })
@@ -145,8 +150,12 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     override fun stopNotifyHr(success: () -> Unit, failure: (String) -> Unit) {
         updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
         (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(
-            { showMsg("取消订阅心率数据成功") },
+            {
+                success()
+                showMsg("取消订阅心率数据成功")
+            },
             { error ->
+                failure(error)
                 restoreStopFunctionStateAfterFailure(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)
                 showMsg("取消订阅心率数据失败：$error")
             })
@@ -155,12 +164,36 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     override fun stopCollectBrainAndHrData(
         success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
     ) {
-        super.stopCollectBrainAndHrData({ data ->
-            stopNotifyHrRawData()
-            stopNotifyHr()
-            qaHrCsvDataHelper.endSession()
-            success(data)
+        stopQaHrNotifications(success = {
+            super.stopCollectBrainAndHrData({ data ->
+                qaHrCsvDataHelper.endSession()
+                success(data)
+            }, failure)
+        }, failure = { error ->
+            failure(STOP_NOTIFY_FAILURE_CODE, error)
+        })
+    }
+
+    private fun stopQaHrNotifications(success: () -> Unit, failure: (String) -> Unit) {
+        stopHrRawDataNotificationIfActive(success = {
+            stopHrNotificationIfActive(success, failure)
         }, failure)
+    }
+
+    private fun stopHrRawDataNotificationIfActive(success: () -> Unit, failure: (String) -> Unit) {
+        if (!isBleFunctionEnabled(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW)) {
+            success()
+            return
+        }
+        stopNotifyHrRawData(success, failure)
+    }
+
+    private fun stopHrNotificationIfActive(success: () -> Unit, failure: (String) -> Unit) {
+        if (!isBleFunctionEnabled(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)) {
+            success()
+            return
+        }
+        stopNotifyHr(success, failure)
     }
 
 
@@ -192,5 +225,6 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         private const val HR_RAW_DATA_POINT_COUNT = 5
         private const val HR_RAW_DATA_PACKET_BYTES =
             HR_RAW_DATA_POINT_BYTES * HR_RAW_DATA_POINT_COUNT
+        private const val STOP_NOTIFY_FAILURE_CODE = -1
     }
 }
