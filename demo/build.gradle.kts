@@ -89,6 +89,14 @@ androidComponents {
             else -> false
         }
     }
+
+    onVariants(
+        selector()
+            .withFlavor("product", "qa")
+            .withFlavor("function", "hr")
+    ) { variant ->
+        variant.applicationId.set("cn.entertech.flowtimeble.qahr")
+    }
 }
 
 dependencies {
