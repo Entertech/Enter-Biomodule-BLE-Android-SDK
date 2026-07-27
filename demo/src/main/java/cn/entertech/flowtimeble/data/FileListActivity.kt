@@ -7,6 +7,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.android.base.view.ToastUtil
@@ -71,7 +73,28 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
         rvLogFileList = findViewById(R.id.rvLogFileList)
         rvLogFileList?.adapter = mLogListAdapter
         rvLogFileList?.layoutManager = LinearLayoutManager(this)
+        rvLogFileList?.clipToPadding = false
+        applySystemBarsPadding()
 
+    }
+
+    private fun applySystemBarsPadding() {
+        val recyclerView = rvLogFileList ?: return
+        val initialLeft = recyclerView.paddingLeft
+        val initialTop = recyclerView.paddingTop
+        val initialRight = recyclerView.paddingRight
+        val initialBottom = recyclerView.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                initialLeft + systemBars.left,
+                initialTop + systemBars.top,
+                initialRight + systemBars.right,
+                initialBottom + systemBars.bottom
+            )
+            insets
+        }
     }
 
     override fun itemClick(
