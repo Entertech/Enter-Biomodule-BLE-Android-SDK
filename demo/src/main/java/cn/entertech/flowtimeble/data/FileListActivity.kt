@@ -3,6 +3,8 @@ package cn.entertech.flowtimeble.data
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,7 @@ import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.concurrent.Executors
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -32,7 +35,15 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
     private val mLogListAdapter by lazy {
         FileListAdapter(clickListener = this)
     }
+    private val uiHandler by lazy {
+        Handler(Looper.getMainLooper())
+    }
+    private val zipExecutor by lazy {
+        Executors.newSingleThreadExecutor()
+    }
     private var rvLogFileList: RecyclerView? = null
+    @Volatile
+    private var isSharingZip = false
 
     override fun getActivityLayoutResId(): Int {
         return R.layout.log_list_activity
@@ -81,24 +92,53 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
         if (!target.isDirectory) {
             shareFile(target)
         } else {
-            //压缩为zip，分享zip文件
-            val zipFilePath =
-                "${applicationContext.getExternalFilesDir("zipCache")}/${target.name}.zip"
-            val oldZipFile = File(zipFilePath)
-            if (oldZipFile.exists()) {
-                if (!oldZipFile.delete()) {
-                    BleLogUtil.i("删除旧的分享文件失败")
-                    ToastUtil.toastShort(this, "删除旧的分享文件失败")
-                }else{
-                    BleLogUtil.i("成功删除旧的分享文件")
+            shareDirectoryAsZip(target)
+        }
+    }
+
+    private fun shareDirectoryAsZip(target: File) {
+        if (isSharingZip) {
+            ToastUtil.toastShort(this, "正在压缩，请稍候")
+            return
+        }
+
+        val zipCacheDir = applicationContext.getExternalFilesDir("zipCache") ?: filesDir
+        val zipFilePath = "${zipCacheDir}/${target.name}.zip"
+        isSharingZip = true
+        ToastUtil.toastShort(this, "正在压缩，请稍候")
+        zipExecutor.execute {
+            try {
+                deleteOldZipFile(zipFilePath)
+                zipFolder(target, zipFilePath)
+                uiHandler.post {
+                    if (!isFinishing && !isDestroyed) {
+                        shareZipFile(zipFilePath)
+                    }
+                }
+            } catch (e: Exception) {
+                BleLogUtil.i("压缩分享文件失败: ${e.message}")
+                uiHandler.post {
+                    if (!isFinishing && !isDestroyed) {
+                        ToastUtil.toastShort(this, "压缩分享文件失败")
+                    }
+                }
+            } finally {
+                uiHandler.post {
+                    isSharingZip = false
                 }
             }
-            try {
-                zipFolder(target, zipFilePath)
-                shareZipFile(zipFilePath)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        }
+    }
+
+    private fun deleteOldZipFile(zipFilePath: String) {
+        val oldZipFile = File(zipFilePath)
+        if (!oldZipFile.exists()) {
+            return
+        }
+        if (oldZipFile.delete()) {
+            BleLogUtil.i("成功删除旧的分享文件")
+        } else {
+            BleLogUtil.i("删除旧的分享文件失败")
         }
     }
 
@@ -122,6 +162,9 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
 
 
     private fun zipFolderContents(folder: File, parentPath: String, zipOut: ZipOutputStream) {
+        if (Thread.currentThread().isInterrupted) {
+            return
+        }
         folder.listFiles()?.forEach { file ->
             val zipEntryName = if (parentPath.isEmpty()) file.name else "$parentPath/${file.name}"
             if (file.isDirectory) {
@@ -187,5 +230,10 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
         } else {
             ToastUtil.toastShort(this, "文件不存在")
         }
+    }
+
+    override fun onDestroy() {
+        zipExecutor.shutdownNow()
+        super.onDestroy()
     }
 }
