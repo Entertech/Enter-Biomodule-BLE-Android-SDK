@@ -509,7 +509,10 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
     }
 
     protected open fun showMsg(msg: String, needToast: Boolean = false) {
-        BleLogUtil.d(TAG, msg)
+        BleLogUtil.i(TAG, msg)
+        if (needToast) {
+            showToast(msg)
+        }
         if (!needLog) {
             return
         }
@@ -517,10 +520,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         runOnUiThread {
             adapter.addItem(realMsg)
             scrollViewLogs?.scrollToPosition(adapter.itemCount - 1)
-        }
-
-        if (needToast) {
-            showToast(msg)
         }
     }
 
