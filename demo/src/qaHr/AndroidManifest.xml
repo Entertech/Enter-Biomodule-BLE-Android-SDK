@@ -20,10 +20,12 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".data.FileListActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name="cn.entertech.qa.hr.QaHrDemoActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +48,14 @@
 
         <activity
             android:name=".log.ShowLogActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="cn.entertech.log.local.ShowLogActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="cn.entertech.log.local.LogListActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
