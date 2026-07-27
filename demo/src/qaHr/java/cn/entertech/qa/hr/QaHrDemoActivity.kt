@@ -41,28 +41,6 @@ class QaHrDemoActivity : BaseDeviceActivity() {
                 )
             )
         }
-        if (bluetoothDeviceManager is IQaHrFunction) {
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BLE_FUNCTION_FLAG_NOTIFY_HR
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW
-                )
-            )
-        }
         functionListAdapter.setNewData(bleFunctionList)
         updateBleFunctionEnableState()
     }
@@ -130,32 +108,26 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         }
     }
 
-    override fun processFunction(bleFunctionFlag: BleFunction) {
-        when (bleFunctionFlag) {
-            BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW -> {
-                updateStartFunctionState(bleFunctionFlag, true)
-                (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
-                    markNotifyFunctionActive(bleFunctionFlag)
-                    showMsg("心率原始数据：${data.contentToString()}")
-                    saveData(HR_RAW_DATA_FILE_NAME, data)
-                }, failure = { error ->
-                    updateStartFunctionState(bleFunctionFlag, false)
-                    showMsg("收集心率原始数据失败：$error")
-                })
-            }
+    private fun notifyHrRawData() {
+        updateStartFunctionState(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW, true)
+        (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
+            markNotifyFunctionActive(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW)
+            showMsg("心率原始数据：${data.contentToString()}")
+            saveData(HR_RAW_DATA_FILE_NAME, data)
+        }, failure = { error ->
+            updateStartFunctionState(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW, false)
+            showMsg("收集心率原始数据失败：$error")
+        })
+    }
 
-            BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW -> {
-                updateStopFunctionState(bleFunctionFlag, false)
-                (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success = {
-                    showMsg("结束收集心率原始数据")
-                }, failure = { error ->
-                    restoreStopFunctionStateAfterFailure(bleFunctionFlag)
-                    showMsg("结束收集心率原始数据失败：$error")
-                })
-            }
-
-            else -> {}
-        }
+    private fun stopNotifyHrRawData() {
+        updateStopFunctionState(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW, false)
+        (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success = {
+            showMsg("结束收集心率原始数据")
+        }, failure = { error ->
+            restoreStopFunctionStateAfterFailure(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW)
+            showMsg("结束收集心率原始数据失败：$error")
+        })
     }
 
     override fun notifyHr(success: (ByteArray) -> Unit, failure: (String) -> Unit) {
@@ -166,17 +138,17 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             saveData(HR_FILE_NAME, it)
         }, failure = {
             updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, false)
-            showToast("订阅心率数据失败：$it")
+            showMsg("订阅心率数据失败：$it")
         })
     }
 
     override fun stopNotifyHr(success: () -> Unit, failure: (String) -> Unit) {
         updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
         (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(
-            { showToast("取消订阅心率数据成功") },
+            { showMsg("取消订阅心率数据成功") },
             { error ->
                 restoreStopFunctionStateAfterFailure(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)
-                showToast("取消订阅心率数据失败：$error")
+                showMsg("取消订阅心率数据失败：$error")
             })
     }
 
@@ -184,8 +156,10 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
     ) {
         super.stopCollectBrainAndHrData({ data ->
-            success(data)
+            stopNotifyHrRawData()
+            stopNotifyHr()
             qaHrCsvDataHelper.endSession()
+            success(data)
         }, failure)
     }
 
@@ -201,6 +175,8 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         super.startCollectBrainAndHrData({ data ->
             success(data)
             qaHrCsvDataHelper.startSession(System.currentTimeMillis())
+            notifyHr()
+            notifyHrRawData()
         }, failure)
     }
 
