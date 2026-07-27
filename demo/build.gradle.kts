@@ -26,8 +26,8 @@ android {
         applicationId = "cn.entertech.flowtimeble"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3061
-        versionName = "3.0.6.1"
+        versionCode = 3070
+        versionName = "3.0.7.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
