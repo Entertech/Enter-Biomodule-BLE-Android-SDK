@@ -15,7 +15,12 @@ import cn.entertech.base.util.startActivity
 
 import cn.entertech.ble.log.BleLogUtil
 import cn.entertech.flowtimeble.R
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
 
@@ -59,10 +64,7 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
     }
 
     override fun itemClick(
-        adapter: BaseRecyclerViewAdapter<File, *>,
-        view: View?,
-        position: Int,
-        target: File
+        adapter: BaseRecyclerViewAdapter<File, *>, view: View?, position: Int, target: File
     ) {
         if (target.isDirectory) {
             val bundle = Bundle()
@@ -74,13 +76,74 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
     }
 
     override fun itemLongClick(
-        adapter: BaseRecyclerViewAdapter<File, *>,
-        view: View?,
-        position: Int,
-        target: File
+        adapter: BaseRecyclerViewAdapter<File, *>, view: View?, position: Int, target: File
     ) {
         if (!target.isDirectory) {
             shareFile(target)
+        } else {
+            //压缩为zip，分享zip文件
+            val zipFilePath =
+                "${applicationContext.getExternalFilesDir("zipCache")}/${target.name}.zip"
+            val oldZipFile = File(zipFilePath)
+            if (oldZipFile.exists()) {
+                if (!oldZipFile.delete()) {
+                    BleLogUtil.i("删除旧的分享文件失败")
+                    ToastUtil.toastShort(this, "删除旧的分享文件失败")
+                }else{
+                    BleLogUtil.i("成功删除旧的分享文件")
+                }
+            }
+            try {
+                zipFolder(target, zipFilePath)
+                shareZipFile(zipFilePath)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun shareZipFile(zipFilePath: String) {
+        val zipFile = File(zipFilePath)
+        if (!zipFile.exists()) {
+            BleLogUtil.i("需要分享文件不存在")
+            ToastUtil.toastShort(this, "需要分享文件不存在")
+            return
+        }
+
+        val zipUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", zipFile)
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/zip"
+            putExtra(Intent.EXTRA_STREAM, zipUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share ZIP File"))
+    }
+
+
+    private fun zipFolderContents(folder: File, parentPath: String, zipOut: ZipOutputStream) {
+        folder.listFiles()?.forEach { file ->
+            val zipEntryName = if (parentPath.isEmpty()) file.name else "$parentPath/${file.name}"
+            if (file.isDirectory) {
+                zipFolderContents(file, zipEntryName, zipOut)
+            } else {
+                FileInputStream(file).use { fis ->
+                    val zipEntry = ZipEntry(zipEntryName)
+                    zipOut.putNextEntry(zipEntry)
+                    fis.copyTo(zipOut)
+                    zipOut.closeEntry()
+                }
+            }
+        }
+    }
+
+    private fun zipFolder(folder: File, zipFilePath: String) {
+        if (!folder.exists() || !folder.isDirectory) {
+            throw IllegalArgumentException("The folder path is invalid or not a directory.")
+        }
+
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFilePath))).use { zipOut ->
+            zipFolderContents(folder, folder.name, zipOut)
         }
     }
 
