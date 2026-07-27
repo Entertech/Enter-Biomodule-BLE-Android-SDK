@@ -20,16 +20,19 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".data.FileListActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".device.all.FTBleDeviceDemoActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         </activity>
         <activity
             android:name=".device.DeviceSelectActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,14 +42,17 @@
         <activity
             android:name=".device.tag.BrainTagDemoActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".device.headband.HeadBandDemoActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".device.eyehead.EyeHeadDemoActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <provider
@@ -63,10 +69,18 @@
 
         <activity
             android:name=".log.ShowLogActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".device.skin.MultipleSkinDeviceActivity"
-            android:exported="false"></activity>
+            android:exported="false"
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name="cn.entertech.log.local.ShowLogActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="cn.entertech.log.local.LogListActivity"
+            android:screenOrientation="landscape" />
 
     </application>
 
