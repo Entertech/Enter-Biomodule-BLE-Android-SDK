@@ -14,6 +14,40 @@ import cn.entertech.flowtimeble.device.BleFunctionUiBean
 class QaHrDemoActivity : BaseDeviceActivity() {
 
     private val qaHrCsvDataHelper = QaHrCsvDataHelper("qaHr")
+    private val qaHrBleActionController by lazy {
+        QaHrBleActionController(qaHrBleActions)
+    }
+    private val qaHrBleActions = object : QaHrBleActions {
+        override fun notifyHr(success: (ByteArray) -> Unit, failure: (String) -> Unit) {
+            (bluetoothDeviceManager as? IQaHrFunction)?.notifyHeartRate(success, failure)
+        }
+
+        override fun notifyHrRaw(success: (ByteArray) -> Unit, failure: (String) -> Unit) {
+            (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success, failure)
+        }
+
+        override fun startCollect(
+            success: (ByteArray) -> Unit,
+            failure: (Int, String) -> Unit
+        ) {
+            sendStartCollectBrainAndHrData(success, failure)
+        }
+
+        override fun stopNotifyHr(success: () -> Unit, failure: (String) -> Unit) {
+            (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(success, failure)
+        }
+
+        override fun stopNotifyHrRaw(success: () -> Unit, failure: (String) -> Unit) {
+            (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success, failure)
+        }
+
+        override fun stopCollect(
+            success: (ByteArray) -> Unit,
+            failure: (Int, String) -> Unit
+        ) {
+            sendStopCollectBrainAndHrData(success, failure)
+        }
+    }
 
     override fun initBleManager(): BaseBleConnectManager {
         return QaHrManager(this)
@@ -110,7 +144,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
     private fun notifyHrRawData() {
         updateStartFunctionState(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW, true)
-        (bluetoothDeviceManager as? IQaHrFunction)?.notifyHrRawData(success = { data ->
+        qaHrBleActionController.notifyHrRaw(success = { data ->
             markNotifyFunctionActive(BleFunction.BLE_FUNCTION_FLAG_NOTIFY_HR_RAW)
             showMsg("心率原始数据：${data.contentToString()}")
             saveData(HR_RAW_DATA_FILE_NAME, data)
@@ -125,7 +159,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         failure: (String) -> Unit = {}
     ) {
         updateStopFunctionState(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW, false)
-        (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHrRawData(success = {
+        qaHrBleActionController.stopNotifyHrRaw(success = {
             success()
             showMsg("结束收集心率原始数据")
         }, failure = { error ->
@@ -137,7 +171,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
     override fun notifyHr(success: (ByteArray) -> Unit, failure: (String) -> Unit) {
         updateStartFunctionState(BLE_FUNCTION_FLAG_NOTIFY_HR, true)
-        (bluetoothDeviceManager as? IQaHrFunction)?.notifyHeartRate(success = {
+        qaHrBleActionController.notifyHr(success = {
             markNotifyFunctionActive(BLE_FUNCTION_FLAG_NOTIFY_HR)
             showMsg("心率数据：${it.contentToString()}")
             saveData(HR_FILE_NAME, it)
@@ -149,7 +183,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
     override fun stopNotifyHr(success: () -> Unit, failure: (String) -> Unit) {
         updateStopFunctionState(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR, false)
-        (bluetoothDeviceManager as? IQaHrFunction)?.stopNotifyHeartRate(
+        qaHrBleActionController.stopNotifyHr(
             {
                 success()
                 showMsg("取消订阅心率数据成功")
@@ -164,36 +198,15 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     override fun stopCollectBrainAndHrData(
         success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
     ) {
-        stopQaHrNotifications(success = {
-            super.stopCollectBrainAndHrData({ data ->
+        qaHrBleActionController.stopCollect(
+            isHrRawNotifyActive = isBleFunctionEnabled(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW),
+            isHrNotifyActive = isBleFunctionEnabled(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR),
+            success = { data ->
                 qaHrCsvDataHelper.endSession()
                 success(data)
-            }, failure)
-        }, failure = { error ->
-            failure(STOP_NOTIFY_FAILURE_CODE, error)
-        })
-    }
-
-    private fun stopQaHrNotifications(success: () -> Unit, failure: (String) -> Unit) {
-        stopHrRawDataNotificationIfActive(success = {
-            stopHrNotificationIfActive(success, failure)
-        }, failure)
-    }
-
-    private fun stopHrRawDataNotificationIfActive(success: () -> Unit, failure: (String) -> Unit) {
-        if (!isBleFunctionEnabled(BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW)) {
-            success()
-            return
-        }
-        stopNotifyHrRawData(success, failure)
-    }
-
-    private fun stopHrNotificationIfActive(success: () -> Unit, failure: (String) -> Unit) {
-        if (!isBleFunctionEnabled(BLE_FUNCTION_FLAG_STOP_NOTIFY_HR)) {
-            success()
-            return
-        }
-        stopNotifyHr(success, failure)
+            },
+            failure = failure
+        )
     }
 
 
@@ -205,7 +218,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     override fun startCollectBrainAndHrData(
         success: (ByteArray) -> Unit, failure: (Int, String) -> Unit
     ) {
-        super.startCollectBrainAndHrData({ data ->
+        qaHrBleActionController.startCollect({ data ->
             success(data)
             qaHrCsvDataHelper.startSession(System.currentTimeMillis())
             notifyHr()
@@ -225,6 +238,19 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         private const val HR_RAW_DATA_POINT_COUNT = 5
         private const val HR_RAW_DATA_PACKET_BYTES =
             HR_RAW_DATA_POINT_BYTES * HR_RAW_DATA_POINT_COUNT
-        private const val STOP_NOTIFY_FAILURE_CODE = -1
+    }
+
+    private fun sendStartCollectBrainAndHrData(
+        success: (ByteArray) -> Unit,
+        failure: (Int, String) -> Unit
+    ) {
+        super.startCollectBrainAndHrData(success, failure)
+    }
+
+    private fun sendStopCollectBrainAndHrData(
+        success: (ByteArray) -> Unit,
+        failure: (Int, String) -> Unit
+    ) {
+        super.stopCollectBrainAndHrData(success, failure)
     }
 }

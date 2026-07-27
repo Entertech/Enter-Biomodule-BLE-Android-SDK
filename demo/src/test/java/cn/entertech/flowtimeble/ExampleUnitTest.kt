@@ -1,9 +1,9 @@
 package cn.entertech.flowtimeble
 
-import android.util.Base64
 import org.junit.Test
 
 import org.junit.Assert.*
+import java.util.Base64
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -16,11 +16,12 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         // Context of the app under test.
         val bytes = byteArrayOf(0xAB.toByte(), 0x90.toByte(), 0x78, 0x56, 0x34, 0x12)
-        val base64 = Base64.encode(bytes, Base64.DEFAULT)
+        val base64 = Base64.getEncoder().encode(bytes)
         val hexStr = "AB9078563412"
         val byteArray = hexStr.hexToByteArray()
-        val base64_2 = Base64.encode(byteArray, Base64.DEFAULT)
+        val base64_2 = Base64.getEncoder().encode(byteArray)
         println("base64: $base64")
         println("base64_2: $base64_2")
+        assertArrayEquals(base64, base64_2)
     }
 }
