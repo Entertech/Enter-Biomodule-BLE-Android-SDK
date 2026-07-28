@@ -54,6 +54,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             }
 
             HR_RAW_DATA_FILE_NAME -> {
+                saveRawDataTextRecord(timestamp, data)
                 if (data.size == HR_RAW_DATA_PACKET_BYTES) {
                     parseRawDataAsUnsignedInt(data).forEach { value ->
                         saveCsvRecord(HR_RAW_DATA_FILE_NAME, timestamp, value)
@@ -66,17 +67,26 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     }
 
     private fun saveCsvRecord(fileName: String, timestamp: Long, value: Long) {
-        if (!qaHrCsvDataHelper.isActive()) {
-            qaHrCsvDataHelper.startSession(timestamp)
-        }
+        ensureDataSession(timestamp)
         qaHrCsvDataHelper.saveData(fileName, timestamp, value)
     }
 
     private fun saveCsvRecord(fileName: String, timestamp: Long, value: String) {
+        ensureDataSession(timestamp)
+        qaHrCsvDataHelper.saveData(fileName, timestamp, value)
+    }
+
+    private fun saveRawDataTextRecord(timestamp: Long, data: ByteArray) {
+        meditateDataHelper?.saveStringData(
+            HR_RAW_DATA_TEXT_FILE_NAME,
+            "$timestamp ${getRawDataAsDecimalBytes(data)}\n"
+        )
+    }
+
+    private fun ensureDataSession(timestamp: Long) {
         if (!qaHrCsvDataHelper.isActive()) {
             qaHrCsvDataHelper.startSession(timestamp)
         }
-        qaHrCsvDataHelper.saveData(fileName, timestamp, value)
     }
 
     private fun parseUnsignedValue(data: ByteArray): Long {
@@ -167,6 +177,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         stopQaHrNotifications(success = {
             super.stopCollectBrainAndHrData({ data ->
                 qaHrCsvDataHelper.endSession()
+                closeRawDataTextFile()
                 success(data)
             }, failure)
         }, failure = { error ->
@@ -200,6 +211,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     override fun deviceDisconnect() {
         super.deviceDisconnect()
         qaHrCsvDataHelper.endSession()
+        closeRawDataTextFile()
     }
 
     override fun startCollectBrainAndHrData(
@@ -207,20 +219,27 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     ) {
         super.startCollectBrainAndHrData({ data ->
             success(data)
+            closeRawDataTextFile()
             qaHrCsvDataHelper.startSession(System.currentTimeMillis())
             notifyHr()
             notifyHrRawData()
         }, failure)
     }
 
+    private fun closeRawDataTextFile() {
+        meditateDataHelper?.closeData(HR_RAW_DATA_TEXT_FILE_NAME)
+    }
+
     override fun onDestroy() {
         qaHrCsvDataHelper.close()
+        closeRawDataTextFile()
         super.onDestroy()
     }
 
     companion object {
         private const val HR_FILE_NAME = "hr"
         private const val HR_RAW_DATA_FILE_NAME = "hr_rawdata"
+        private const val HR_RAW_DATA_TEXT_FILE_NAME = "hr_rawdata.txt"
         private const val HR_RAW_DATA_POINT_BYTES = 4
         private const val HR_RAW_DATA_POINT_COUNT = 5
         private const val HR_RAW_DATA_PACKET_BYTES =
