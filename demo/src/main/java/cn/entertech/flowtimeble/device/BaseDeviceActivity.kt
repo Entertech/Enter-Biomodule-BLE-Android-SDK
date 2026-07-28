@@ -305,6 +305,23 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 )
             )
         }
+        if (bluetoothDeviceManager is IBatteryFunction<*>) {
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    BLE_FUNCTION_FLAG_NOTIFY_BATTERY
+                )
+            )
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
+                )
+            )
+            bleFunctionList.add(
+                BleFunctionUiBean(
+                    BLE_FUNCTION_FLAG_READ_BATTERY
+                )
+            )
+        }
         if (bluetoothDeviceManager is ICollectBrainAndHrDataFunction) {
             bleFunctionList.add(
                 BleFunctionUiBean(
@@ -380,23 +397,6 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             bleFunctionList.add(
                 BleFunctionUiBean(
                     BLE_FUNCTION_FLAG_STOP_NOTIFY_TEMPERATURE
-                )
-            )
-        }
-        if (bluetoothDeviceManager is IBatteryFunction<*>) {
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BLE_FUNCTION_FLAG_NOTIFY_BATTERY
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BLE_FUNCTION_FLAG_STOP_NOTIFY_BATTERY
-                )
-            )
-            bleFunctionList.add(
-                BleFunctionUiBean(
-                    BLE_FUNCTION_FLAG_READ_BATTERY
                 )
             )
         }
