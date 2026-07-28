@@ -92,6 +92,14 @@ class FTBleDeviceDemoActivity : BaseDeviceActivity() {
             }
     }
 
+    override fun initMeditateDataHelper(): MeditateDataHelper? {
+        return when (deviceTypes[spinnerDeviceTypeList?.selectedItemPosition ?: 0]) {
+            DEVICE_TYPE_TAG -> MeditateDataHelper("all_brain_tag")
+            DEVICE_TYPE_HEADBAND -> MeditateDataHelper("all_headband")
+            DEVICE_TYPE_EYE_HEAD -> MeditateDataHelper("all_eye_head")
+            else -> super.initMeditateDataHelper()
+        }
+    }
 
     private fun changeDeviceType() {
         bluetoothDeviceManager?.disConnect()
