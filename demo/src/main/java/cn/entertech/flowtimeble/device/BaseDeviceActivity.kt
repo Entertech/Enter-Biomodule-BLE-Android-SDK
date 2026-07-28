@@ -96,7 +96,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
         LogAdapter()
     }
     protected var meditateDataHelper: MeditateDataHelper? = null
-    private val simple by lazy {
+    protected val simple by lazy {
         SimpleDateFormat("yyyy/MM/dd  HH:mm:ss:SSS")
     }
     private var cbShowLog: CheckBox? = null

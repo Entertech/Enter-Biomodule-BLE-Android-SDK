@@ -10,6 +10,7 @@ import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_START_COLLE
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR
 import cn.entertech.flowtimeble.device.BleFunction.BLE_FUNCTION_FLAG_STOP_NOTIFY_HR
 import cn.entertech.flowtimeble.device.BleFunctionUiBean
+import java.util.Date
 
 class QaHrDemoActivity : BaseDeviceActivity() {
 
@@ -55,7 +56,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
             HR_RAW_DATA_FILE_NAME -> {
                 ensureDataSession(timestamp)
-                saveRawDataTextRecord(timestamp, data)
+                saveRawDataTextRecord(simple.format(Date(timestamp)), data)
                 if (data.size == HR_RAW_DATA_PACKET_BYTES) {
                     parseRawDataAsUnsignedInt(data).forEach { value ->
                         saveCsvRecord(HR_RAW_DATA_FILE_NAME, timestamp, value)
@@ -77,7 +78,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         qaHrCsvDataHelper.saveData(fileName, timestamp, value)
     }
 
-    private fun saveRawDataTextRecord(timestamp: Long, data: ByteArray) {
+    private fun saveRawDataTextRecord(timestamp: String, data: ByteArray) {
         meditateDataHelper?.saveStringData(
             HR_RAW_DATA_TEXT_FILE_NAME,
             HR_RAW_DATA_FILE_NAME,
