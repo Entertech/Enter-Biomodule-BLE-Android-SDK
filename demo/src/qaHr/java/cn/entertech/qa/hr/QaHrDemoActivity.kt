@@ -54,6 +54,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
             }
 
             HR_RAW_DATA_FILE_NAME -> {
+                ensureDataSession(timestamp)
                 saveRawDataTextRecord(timestamp, data)
                 if (data.size == HR_RAW_DATA_PACKET_BYTES) {
                     parseRawDataAsUnsignedInt(data).forEach { value ->
@@ -79,6 +80,8 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     private fun saveRawDataTextRecord(timestamp: Long, data: ByteArray) {
         meditateDataHelper?.saveStringData(
             HR_RAW_DATA_TEXT_FILE_NAME,
+            HR_RAW_DATA_FILE_NAME,
+            qaHrCsvDataHelper.getSessionFileName(HR_RAW_DATA_FILE_NAME, "txt"),
             "$timestamp ${getRawDataAsDecimalBytes(data)}\n"
         )
     }

@@ -24,6 +24,10 @@ class QaHrCsvDataHelper(private val parentFileName: String) {
 
     fun isActive() = sessionStartTimestamp > 0L
 
+    fun getSessionFileName(fileSuffix: String, fileExtension: String): String {
+        return "${simple.format(Date(sessionStartTimestamp))}-$fileSuffix.$fileExtension"
+    }
+
     fun endSession() {
         sessionStartTimestamp = 0L
         dataHelperMap.forEach {
@@ -53,7 +57,7 @@ class QaHrCsvDataHelper(private val parentFileName: String) {
         val targetDir = App.getInstance().getExternalFilesDir(parentFileName)
         helper.setFilePath(
             "$targetDir/$fileSuffix",
-            "${simple.format(Date(sessionStartTimestamp))}-$fileSuffix.csv"
+            getSessionFileName(fileSuffix, "csv")
         )
         dataHelperMap[fileSuffix] = helper
         helper.writeData("timestamp,value\n")

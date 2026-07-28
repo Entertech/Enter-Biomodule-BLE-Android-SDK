@@ -26,6 +26,17 @@ class MeditateDataHelper(private val parentFileName: String) {
         helper
     })
 
+    private fun getFileHelper(
+        dataFileName: String,
+        fileDirName: String,
+        fileName: String
+    ) = dataHelperMap.getValueWithInit(dataFileName, {
+        val helper = FileHelper()
+        val targetFile = App.getInstance().getExternalFilesDir("${parentFileName}/$fileDirName")
+        helper.setFilePath("$targetFile", fileName)
+        helper
+    })
+
 
     fun saveData(dataFileName: String, data: ByteArray) {
         getFileHelper(dataFileName)?.writeData(data)
@@ -33,6 +44,15 @@ class MeditateDataHelper(private val parentFileName: String) {
 
     fun saveStringData(dataFileName: String, data: String) {
         getFileHelper(dataFileName)?.writeData(data)
+    }
+
+    fun saveStringData(
+        dataFileName: String,
+        fileDirName: String,
+        fileName: String,
+        data: String
+    ) {
+        getFileHelper(dataFileName, fileDirName, fileName)?.writeData(data)
     }
 
     fun saveStringDataWithTime(dataFileName: String, data: String) {
