@@ -15,6 +15,8 @@ import java.util.Date
 class QaHrDemoActivity : BaseDeviceActivity() {
 
     private val qaHrCsvDataHelper = QaHrCsvDataHelper("qaHr")
+    private var hrRawDataFirstSampleTimestamp = 0L
+    private var hrRawDataSampleCount = 0L
 
     override fun initBleManager(): BaseBleConnectManager {
         return QaHrManager(this)
@@ -59,7 +61,11 @@ class QaHrDemoActivity : BaseDeviceActivity() {
                 saveRawDataTextRecord(simple.format(Date(timestamp)), data)
                 if (data.size == HR_RAW_DATA_PACKET_BYTES) {
                     parseRawDataAsUnsignedInt(data).forEach { value ->
-                        saveCsvRecord(HR_RAW_DATA_FILE_NAME, timestamp, value)
+                        saveCsvRecord(
+                            HR_RAW_DATA_FILE_NAME,
+                            nextHrRawDataSampleTimestamp(timestamp),
+                            value
+                        )
                     }
                     return
                 }
@@ -89,8 +95,34 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
     private fun ensureDataSession(timestamp: Long) {
         if (!qaHrCsvDataHelper.isActive()) {
-            qaHrCsvDataHelper.startSession(timestamp)
+            startDataSession(timestamp)
         }
+    }
+
+    private fun startDataSession(timestamp: Long) {
+        resetHrRawDataSampleClock()
+        qaHrCsvDataHelper.startSession(timestamp)
+    }
+
+    private fun endDataSession() {
+        qaHrCsvDataHelper.endSession()
+        resetHrRawDataSampleClock()
+    }
+
+    private fun nextHrRawDataSampleTimestamp(packetTimestamp: Long): Long {
+        if (hrRawDataFirstSampleTimestamp == 0L) {
+            hrRawDataFirstSampleTimestamp =
+                packetTimestamp - (HR_RAW_DATA_POINT_COUNT - 1) * HR_RAW_DATA_SAMPLE_INTERVAL_MS
+        }
+        val sampleTimestamp =
+            hrRawDataFirstSampleTimestamp + hrRawDataSampleCount * HR_RAW_DATA_SAMPLE_INTERVAL_MS
+        hrRawDataSampleCount++
+        return sampleTimestamp
+    }
+
+    private fun resetHrRawDataSampleClock() {
+        hrRawDataFirstSampleTimestamp = 0L
+        hrRawDataSampleCount = 0L
     }
 
     private fun parseUnsignedValue(data: ByteArray): Long {
@@ -180,7 +212,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     ) {
         stopQaHrNotifications(success = {
             super.stopCollectBrainAndHrData({ data ->
-                qaHrCsvDataHelper.endSession()
+                endDataSession()
                 closeRawDataTextFile()
                 success(data)
             }, failure)
@@ -214,7 +246,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
 
     override fun deviceDisconnect() {
         super.deviceDisconnect()
-        qaHrCsvDataHelper.endSession()
+        endDataSession()
         closeRawDataTextFile()
     }
 
@@ -224,7 +256,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         super.startCollectBrainAndHrData({ data ->
             success(data)
             closeRawDataTextFile()
-            qaHrCsvDataHelper.startSession(System.currentTimeMillis())
+            startDataSession(System.currentTimeMillis())
             notifyHr()
             notifyHrRawData()
         }, failure)
@@ -235,6 +267,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
     }
 
     override fun onDestroy() {
+        resetHrRawDataSampleClock()
         qaHrCsvDataHelper.close()
         closeRawDataTextFile()
         super.onDestroy()
@@ -248,6 +281,7 @@ class QaHrDemoActivity : BaseDeviceActivity() {
         private const val HR_RAW_DATA_POINT_COUNT = 5
         private const val HR_RAW_DATA_PACKET_BYTES =
             HR_RAW_DATA_POINT_BYTES * HR_RAW_DATA_POINT_COUNT
+        private const val HR_RAW_DATA_SAMPLE_INTERVAL_MS = 1000L / 25L
         private const val STOP_NOTIFY_FAILURE_CODE = -1
     }
 }
