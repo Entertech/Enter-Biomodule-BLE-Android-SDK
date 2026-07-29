@@ -35,11 +35,11 @@ jobs:
       - name: Build APKs
         shell: bash
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
 
           variant="${INPUT_VARIANT//[[:space:]]/}"
           if [[ -z "$variant" || "$variant" == "all" ]]; then
-            ./gradlew :demo:assembleDebug
+            task=":demo:assembleDebug"
           else
             variant="${variant^}"
             case "$variant" in
@@ -53,8 +53,32 @@ jobs:
                 exit 1
                 ;;
             esac
-            ./gradlew ":demo:assemble${variant}"
+            task=":demo:assemble${variant}"
           fi
+
+          if ./gradlew "$task"; then
+            :
+          else
+            exit_code=$?
+            echo "::error title=APK build failed::Gradle task ${task} failed with exit code ${exit_code}. Review the Gradle output above."
+            exit "$exit_code"
+          fi
+
+      - name: Verify Debug APK outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          shopt -s nullglob
+          apks=(
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          )
+          if (( ${#apks[@]} == 0 )); then
+            echo "::error title=Debug APK missing::Expected APKs under demo/build/outputs/apk/{demoAll,qaHr}/debug, but none were generated."
+            exit 1
+          fi
+          printf 'Debug APK ready: %s\n' "${apks[@]}"
 
       - name: Save APKs to GitHub Actions artifacts
         uses: actions/upload-artifact@v4
@@ -90,9 +114,15 @@ jobs:
 
           for apk in "${apks[@]}"; do
             echo "Uploading ${apk} to fir.im"
-            docker run --rm \
+            if docker run --rm \
               -e API_TOKEN="$FIR_TOKEN" \
               -v "${GITHUB_WORKSPACE}:/workspace" \
               firhq/fir-cli:latest \
-              publish "/workspace/${apk}"
+              publish "/workspace/${apk}"; then
+              :
+            else
+              exit_code=$?
+              echo "::error title=fir.im upload failed::APK ${apk} failed to upload (exit code ${exit_code}). Review fir-cli output above and verify the FIR_TOKEN secret."
+              exit "$exit_code"
+            fi
           done
