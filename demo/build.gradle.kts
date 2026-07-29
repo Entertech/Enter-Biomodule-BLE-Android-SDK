@@ -4,14 +4,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        create("config") {
-            keyAlias = "entertech"
-            keyPassword = "123456"
-            storeFile = file("../entertech.jks")
-            storePassword = "123456"
-        }
-    }
 
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
