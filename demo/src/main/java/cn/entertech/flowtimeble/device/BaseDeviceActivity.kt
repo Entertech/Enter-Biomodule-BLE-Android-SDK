@@ -747,7 +747,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
             BLE_FUNCTION_FLAG_READ_BATTERY -> {
                 (bluetoothDeviceManager as IBatteryFunction<*>).readBatteryValue(success = {
                     if (it is Int) {
-                        showMsg("读取电量数据：$it", true)
+                        showMsg("当前设备电量：$it %", true)
                     }
                 }, failure = {
                     showMsg("读取电量数据失败：$it")
