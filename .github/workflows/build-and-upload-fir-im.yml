@@ -1,0 +1,98 @@
+name: Build Android APKs and upload to fir.im
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "Debug variant to build (for example demoAllDebug); leave empty or use all to build every enabled Debug variant"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-upload:
+    name: Build and upload APKs
+    runs-on: ubuntu-latest
+    env:
+      INPUT_VARIANT: ${{ inputs.variant }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          variant="${INPUT_VARIANT//[[:space:]]/}"
+          if [[ -z "$variant" || "$variant" == "all" ]]; then
+            ./gradlew :demo:assembleDebug
+          else
+            variant="${variant^}"
+            case "$variant" in
+              DemoAll|QaHr)
+                variant="${variant}Debug"
+                ;;
+              DemoAllDebug|QaHrDebug)
+                ;;
+              *)
+                echo "::error::Only enabled Debug variants are supported: demoAllDebug or qaHrDebug."
+                exit 1
+                ;;
+            esac
+            ./gradlew ":demo:assemble${variant}"
+          fi
+
+      - name: Save APKs to GitHub Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks-${{ github.run_number }}
+          path: |
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload APKs to fir.im
+        env:
+          FIR_TOKEN: ${{ secrets.FIR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$FIR_TOKEN" ]]; then
+            echo "::error::Repository secret FIR_TOKEN is required to upload APKs to fir.im."
+            exit 1
+          fi
+
+          shopt -s globstar nullglob
+          apks=(
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          )
+          if (( ${#apks[@]} == 0 )); then
+            echo "::error::No APK files were produced."
+            exit 1
+          fi
+
+          for apk in "${apks[@]}"; do
+            echo "Uploading ${apk} to fir.im"
+            docker run --rm \
+              -e API_TOKEN="$FIR_TOKEN" \
+              -v "${GITHUB_WORKSPACE}:/workspace" \
+              firhq/fir-cli:latest \
+              publish "/workspace/${apk}"
+          done
