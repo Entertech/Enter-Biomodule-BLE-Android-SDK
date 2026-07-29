@@ -38,3 +38,14 @@ After dispatching, locate and report the run URL. Watch the run only when the us
 gh run list --workflow build-and-upload-fir-im.yml --branch "$ref" --event workflow_dispatch --limit 1 --json databaseId,url,status,conclusion
 gh run watch <run-id>
 ```
+
+## Failure Reporting
+
+If the run fails, report its URL, branch/ref, requested variant, failed job and step, then retrieve the exact failed log before summarizing the cause:
+
+```bash
+gh run view <run-id> --json url,status,conclusion,jobs
+gh run view <run-id> --log-failed
+```
+
+Classify the failure as Gradle build, Debug APK discovery/artifact, missing `FIR_TOKEN` repository Secret, or fir.im upload. Include the relevant error text and APK path when present; never reveal the secret value or claim that a failed run uploaded every APK.
