@@ -32,6 +32,8 @@ gh workflow run build-and-upload-fir-im.yml --ref "$ref" -f variant=demoAllDebug
 
 Accepted values are `demoAllDebug` and `qaHrDebug`; `demoAll` or `qaHr` automatically select their Debug build. Leave `variant` empty or use `all` to build every enabled Debug variant.
 
+Before artifact upload and fir.im publication, the workflow reads every APK's package name and `versionCode`, then compares it with the latest fir.im build for that Android package. It fails when the local build is less than or equal to the platform build; a missing fir.im package is allowed as its first upload.
+
 After dispatching, locate and report the run URL. Watch the run only when the user requests completion status:
 
 ```bash
@@ -48,4 +50,4 @@ gh run view <run-id> --json url,status,conclusion,jobs
 gh run view <run-id> --log-failed
 ```
 
-Classify the failure as Gradle build, Debug APK discovery/artifact, missing `FIR_TOKEN` repository Secret, or fir.im upload. Include the relevant error text and APK path when present; never reveal the secret value or claim that a failed run uploaded every APK.
+Classify the failure as Gradle build, Debug APK discovery/artifact, missing `FIR_TOKEN` repository Secret, build-number precheck, or fir.im upload. For build-number failures, include the package name and the local versus platform build values. Include the relevant error text and APK path when present; never reveal the secret value or claim that a failed run uploaded every APK.
