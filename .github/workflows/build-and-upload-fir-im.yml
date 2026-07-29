@@ -1,0 +1,200 @@
+name: Build Android APKs and upload to fir.im
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "Debug variant to build (for example demoAllDebug); leave empty or use all to build every enabled Debug variant"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-upload:
+    name: Build and upload APKs
+    runs-on: ubuntu-latest
+    env:
+      INPUT_VARIANT: ${{ inputs.variant }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APKs
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          variant="${INPUT_VARIANT//[[:space:]]/}"
+          if [[ -z "$variant" || "$variant" == "all" ]]; then
+            task=":demo:assembleDebug"
+          else
+            variant="${variant^}"
+            case "$variant" in
+              DemoAll|QaHr)
+                variant="${variant}Debug"
+                ;;
+              DemoAllDebug|QaHrDebug)
+                ;;
+              *)
+                echo "::error::Only enabled Debug variants are supported: demoAllDebug or qaHrDebug."
+                exit 1
+                ;;
+            esac
+            task=":demo:assemble${variant}"
+          fi
+
+          if ./gradlew "$task"; then
+            :
+          else
+            exit_code=$?
+            echo "::error title=APK build failed::Gradle task ${task} failed with exit code ${exit_code}. Review the Gradle output above."
+            exit "$exit_code"
+          fi
+
+      - name: Verify Debug APK outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          shopt -s nullglob
+          apks=(
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          )
+          if (( ${#apks[@]} == 0 )); then
+            echo "::error title=Debug APK missing::Expected APKs under demo/build/outputs/apk/{demoAll,qaHr}/debug, but none were generated."
+            exit 1
+          fi
+          printf 'Debug APK ready: %s\n' "${apks[@]}"
+
+      - name: Verify APK build numbers against fir.im
+        env:
+          FIR_TOKEN: ${{ secrets.FIR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$FIR_TOKEN" ]]; then
+            echo "::error title=fir.im build check unavailable::Repository secret FIR_TOKEN is required to compare APK build numbers."
+            exit 1
+          fi
+
+          if [[ -z "${ANDROID_HOME:-}" || ! -d "${ANDROID_HOME}/build-tools" ]]; then
+            echo "::error title=Android build tools unavailable::ANDROID_HOME/build-tools is unavailable, so APK package names and versionCode values cannot be checked."
+            exit 1
+          fi
+          aapt="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt -print 2>/dev/null | sort | tail -n 1)"
+          if [[ -z "$aapt" ]]; then
+            echo "::error title=Android build tools unavailable::Could not find aapt to read APK package names and versionCode values."
+            exit 1
+          fi
+
+          shopt -s nullglob
+          apks=(
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          )
+
+          for apk in "${apks[@]}"; do
+            badging="$($aapt dump badging "$apk")"
+            package_name="$(printf '%s\n' "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n 1)"
+            local_build="$(printf '%s\n' "$badging" | sed -n "s/^package: .*versionCode='\([^']*\)'.*/\1/p" | head -n 1)"
+            if [[ -z "$package_name" || ! "$local_build" =~ ^[0-9]+$ ]]; then
+              echo "::error title=APK metadata unreadable::Could not read a numeric versionCode and package name from ${apk}."
+              exit 1
+            fi
+
+            if response="$(curl --silent --show-error --location --get \
+              --data-urlencode "api_token=$FIR_TOKEN" \
+              --data-urlencode 'type=android' \
+              --write-out $'\n%{http_code}' \
+              "https://api.appmeta.cn/apps/latest/${package_name}")"; then
+              :
+            else
+              exit_code=$?
+              echo "::error title=fir.im build check failed::Could not query fir.im for ${package_name} (curl exit code ${exit_code})."
+              exit "$exit_code"
+            fi
+
+            http_code="${response##*$'\n'}"
+            response_body="${response%$'\n'*}"
+            if [[ "$http_code" == "404" ]]; then
+              echo "fir.im has no existing Android package for ${package_name}; allowing first upload (build ${local_build})."
+              continue
+            fi
+            if [[ "$http_code" != "200" ]]; then
+              echo "::error title=fir.im build check failed::fir.im returned HTTP ${http_code} for ${package_name}."
+              exit 1
+            fi
+
+            if ! platform_build="$(printf '%s' "$response_body" | python3 -c 'import json, sys; build = json.load(sys.stdin).get("build"); assert isinstance(build, str) and build.isdigit(); print(build)')"; then
+              echo "::error title=fir.im build check failed::fir.im returned no numeric build number for ${package_name}."
+              exit 1
+            fi
+            if python3 -c 'import sys; sys.exit(0 if int(sys.argv[1]) > int(sys.argv[2]) else 1)' "$local_build" "$platform_build"; then
+              echo "Build check passed for ${package_name}: local ${local_build} > fir.im ${platform_build}."
+            else
+              echo "::error title=APK build number is not newer::${package_name} local build ${local_build} must be greater than fir.im build ${platform_build}."
+              exit 1
+            fi
+          done
+
+      - name: Save APKs to GitHub Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks-${{ github.run_number }}
+          path: |
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload APKs to fir.im
+        env:
+          FIR_TOKEN: ${{ secrets.FIR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$FIR_TOKEN" ]]; then
+            echo "::error::Repository secret FIR_TOKEN is required to upload APKs to fir.im."
+            exit 1
+          fi
+
+          shopt -s globstar nullglob
+          apks=(
+            demo/build/outputs/apk/demoAll/debug/*.apk
+            demo/build/outputs/apk/qaHr/debug/*.apk
+          )
+          if (( ${#apks[@]} == 0 )); then
+            echo "::error::No APK files were produced."
+            exit 1
+          fi
+
+          for apk in "${apks[@]}"; do
+            echo "Uploading ${apk} to fir.im"
+            if docker run --rm \
+              -e API_TOKEN="$FIR_TOKEN" \
+              -v "${GITHUB_WORKSPACE}:/workspace" \
+              firhq/fir-cli:latest \
+              publish "/workspace/${apk}"; then
+              :
+            else
+              exit_code=$?
+              echo "::error title=fir.im upload failed::APK ${apk} failed to upload (exit code ${exit_code}). Review fir-cli output above and verify the FIR_TOKEN secret."
+              exit "$exit_code"
+            fi
+          done

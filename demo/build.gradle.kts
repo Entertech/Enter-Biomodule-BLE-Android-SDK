@@ -4,14 +4,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        create("config") {
-            keyAlias = "entertech"
-            keyPassword = "123456"
-            storeFile = file("../entertech.jks")
-            storePassword = "123456"
-        }
-    }
 
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
@@ -26,14 +18,41 @@ android {
         applicationId = "cn.entertech.flowtimeble"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3061
-        versionName = "3.0.6.1"
+        versionCode = 3073
+        versionName = "3.0.7.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions += "product"
+    flavorDimensions += "function"
+
+    productFlavors {
+        create("demo") {
+            dimension = "product"
+        }
+        //用于研究测试
+        create("qa") {
+            dimension = "product"
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+        }
+
+        create("hr") {
+            dimension = "function"
+        }
+
+        create("all") {
+            dimension = "function"
+        }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     buildTypes {
@@ -47,6 +66,31 @@ android {
     }
 }
 
+androidComponents {
+    beforeVariants(selector().all()) { variantBuilder ->
+        val product = variantBuilder.productFlavors
+            .firstOrNull { it.first == "product" }
+            ?.second
+        val function = variantBuilder.productFlavors
+            .firstOrNull { it.first == "function" }
+            ?.second
+
+        variantBuilder.enable = when {
+            product == "demo" && function == "all" -> true
+            product == "qa" && function == "hr" -> true
+            else -> false
+        }
+    }
+
+    onVariants(
+        selector()
+            .withFlavor("product", "qa")
+            .withFlavor("function", "hr")
+    ) { variant ->
+        variant.applicationId.set("cn.entertech.flowtimeble.qahr")
+    }
+}
+
 dependencies {
     implementation(libs.kotlin.stdlib.jdk7)
 //    implementation(project(":ble-device-headband"))
@@ -54,6 +98,7 @@ dependencies {
 //    implementation(project(":ble-device-tag"))
 //    implementation(project(":ble-device-cushion"))
     implementation (libs.ble.device.headband)
+    implementation (libs.ble.device.api)
     implementation (libs.ble.device.tag)
     implementation (libs.ble.device.eyehead)
     implementation (libs.ble.device.cushion)

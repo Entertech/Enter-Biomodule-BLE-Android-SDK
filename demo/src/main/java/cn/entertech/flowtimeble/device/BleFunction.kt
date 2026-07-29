@@ -4,6 +4,7 @@ import cn.entertech.flowtimeble.R
 
 
 enum class BleFunction(val desStringResId: Int = -1) {
+    BLE_FUNCTION_FLAG_NOTIFY_HR_RAW(R.string.notify_hr_raw_data), BLE_FUNCTION_FLAG_STOP_NOTIFY_HR_RAW(R.string.stop_notify_hr_raw_data),
     BLE_FUNCTION_FLAG_NOTIFY_HR(R.string.notify_hr_data), BLE_FUNCTION_FLAG_STOP_NOTIFY_HR(R.string.stop_notify_hr_data), BLE_FUNCTION_FLAG_NOTIFY_BRAIN_WAVE(
         R.string.notify_brain_wave_data
     ),
@@ -34,7 +35,7 @@ enum class BleFunction(val desStringResId: Int = -1) {
     BLE_FUNCTION_FLAG_START_COLLECT_BRAIN_HR(R.string.start_collect_brain_and_hr_data), BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN_HR(
         R.string.stop_collect_brain_and_hr_data
     ),
-    BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE(R.string.stop_collect_exercise_degree_data), BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE(
+    BLE_FUNCTION_FLAG_START_COLLECT_EXERCISE_DEGREE(R.string.start_collect_exercise_degree_data), BLE_FUNCTION_FLAG_STOP_COLLECT_EXERCISE_DEGREE(
         R.string.stop_collect_exercise_degree_data
     ),
     BLE_FUNCTION_FLAG_START_COLLECT_BRAIN(R.string.start_collect_brain_data), BLE_FUNCTION_FLAG_STOP_COLLECT_BRAIN(

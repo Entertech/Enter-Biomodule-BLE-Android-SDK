@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI FIR Package"
+  short_description: "Trigger the repository FIR upload workflow"
+  default_prompt: "Use $ci-fir-package to run the CI Debug APK build and fir.im upload."

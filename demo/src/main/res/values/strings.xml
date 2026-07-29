@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FlowtimeBle</string>
     <string name="connect">连接</string>
+    <string name="connecting">连接中...</string>
     <string name="connectBonded">连接绑定设备</string>
     <string name="disconnect">断开</string>
     <string name="start_collect">开始脑波数据采集</string>
@@ -36,6 +37,8 @@
     <string name="device_manager_page">设备UI入口</string>
     <string name="notify_hr_data">订阅心率数据</string>
     <string name="stop_notify_hr_data">取消订阅心率数据</string>
+    <string name="notify_hr_raw_data">订阅原始心率数据</string>
+    <string name="stop_notify_hr_raw_data">取消订阅原始心率数据</string>
     <string name="notify_brain_wave_data">订阅脑波数据</string>
     <string name="stop_notify_brain_wave_data">取消订阅脑波数据</string>
     <string name="notify_wear_data">订阅佩戴数据</string>
