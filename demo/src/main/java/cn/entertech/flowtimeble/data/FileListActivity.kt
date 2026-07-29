@@ -125,17 +125,21 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
             return
         }
 
-        val zipCacheDir = applicationContext.getExternalFilesDir("zipCache") ?: filesDir
-        val zipFilePath = "${zipCacheDir}/${target.name}.zip"
+        val zipCacheDir = externalCacheDir ?: cacheDir
+        if (!zipCacheDir.exists() && !zipCacheDir.mkdirs()) {
+            ToastUtil.toastShort(this, "创建压缩缓存目录失败")
+            return
+        }
+        val zipFile = File(zipCacheDir, "${target.name}.zip")
         isSharingZip = true
         ToastUtil.toastShort(this, "正在压缩，请稍候")
         zipExecutor.execute {
             try {
-                deleteOldZipFile(zipFilePath)
-                zipFolder(target, zipFilePath)
+                deleteOldZipFile(zipFile)
+                zipFolder(target, zipFile)
                 uiHandler.post {
                     if (!isFinishing && !isDestroyed) {
-                        shareZipFile(zipFilePath)
+                        shareZipFile(zipFile)
                     }
                 }
             } catch (e: Exception) {
@@ -153,20 +157,18 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
         }
     }
 
-    private fun deleteOldZipFile(zipFilePath: String) {
-        val oldZipFile = File(zipFilePath)
-        if (!oldZipFile.exists()) {
+    private fun deleteOldZipFile(zipFile: File) {
+        if (!zipFile.exists()) {
             return
         }
-        if (oldZipFile.delete()) {
+        if (zipFile.delete()) {
             BleLogUtil.i("成功删除旧的分享文件")
         } else {
             BleLogUtil.i("删除旧的分享文件失败")
         }
     }
 
-    private fun shareZipFile(zipFilePath: String) {
-        val zipFile = File(zipFilePath)
+    private fun shareZipFile(zipFile: File) {
         if (!zipFile.exists()) {
             BleLogUtil.i("需要分享文件不存在")
             ToastUtil.toastShort(this, "需要分享文件不存在")
@@ -184,14 +186,22 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
     }
 
 
-    private fun zipFolderContents(folder: File, parentPath: String, zipOut: ZipOutputStream) {
+    private fun zipFolderContents(
+        folder: File,
+        parentPath: String,
+        zipFile: File,
+        zipOut: ZipOutputStream
+    ) {
         if (Thread.currentThread().isInterrupted) {
             return
         }
         folder.listFiles()?.forEach { file ->
+            if (file.canonicalFile == zipFile.canonicalFile) {
+                return@forEach
+            }
             val zipEntryName = if (parentPath.isEmpty()) file.name else "$parentPath/${file.name}"
             if (file.isDirectory) {
-                zipFolderContents(file, zipEntryName, zipOut)
+                zipFolderContents(file, zipEntryName, zipFile, zipOut)
             } else {
                 FileInputStream(file).use { fis ->
                     val zipEntry = ZipEntry(zipEntryName)
@@ -203,13 +213,13 @@ class FileListActivity : BaseActivity(), IRecycleViewClickListener<File> {
         }
     }
 
-    private fun zipFolder(folder: File, zipFilePath: String) {
+    private fun zipFolder(folder: File, zipFile: File) {
         if (!folder.exists() || !folder.isDirectory) {
             throw IllegalArgumentException("The folder path is invalid or not a directory.")
         }
 
-        ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFilePath))).use { zipOut ->
-            zipFolderContents(folder, folder.name, zipOut)
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { zipOut ->
+            zipFolderContents(folder, folder.name, zipFile, zipOut)
         }
     }
 
