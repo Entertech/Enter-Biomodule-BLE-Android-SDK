@@ -968,7 +968,7 @@ abstract class BaseDeviceActivity : BaseActivity(), IBleFunctionClick {
                 (bluetoothDeviceManager as? IBatteryFunction<*>)?.notifyBattery({
                     markNotifyFunctionActive(bleFunctionFlag)
                     showMsg(
-                        "电池数据 $it"
+                        "电池数据 ${it.contentToString()} "
                     )
                     meditateDataHelper?.saveData("Battery", it)
                 }, { error ->
