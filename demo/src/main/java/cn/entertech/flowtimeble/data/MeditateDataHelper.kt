@@ -1,7 +1,6 @@
 package cn.entertech.flowtimeble.data
 
 
-import android.os.Looper
 import cn.android.file.FileHelper
 import cn.entertech.base.util.getValueWithInit
 import cn.entertech.flowtimeble.App
@@ -22,12 +21,19 @@ class MeditateDataHelper(private val parentFileName: String) {
         val targetFile = App.getInstance()
             .getExternalFilesDir("${parentFileName}/${getFileDirName(dataFileName)}")
         helper.setFilePath(
-            "$targetFile", "${dataFileName.lowercase()}-${
-                getFormatTime(
-                    current, "yyyy-MM-dd-HH-mm-ss"
-                )
-            }"
+            "$targetFile", getFileName(dataFileName, current)
         )
+        helper
+    })
+
+    private fun getFileHelper(
+        dataFileName: String,
+        fileDirName: String,
+        fileName: String
+    ) = dataHelperMap.getValueWithInit(dataFileName, {
+        val helper = FileHelper()
+        val targetFile = App.getInstance().getExternalFilesDir("${parentFileName}/$fileDirName")
+        helper.setFilePath("$targetFile", fileName)
         helper
     })
 
@@ -36,8 +42,17 @@ class MeditateDataHelper(private val parentFileName: String) {
         getFileHelper(dataFileName)?.writeData(data)
     }
 
-    private fun saveStringData(dataFileName: String, data: String) {
+    fun saveStringData(dataFileName: String, data: String) {
         getFileHelper(dataFileName)?.writeData(data)
+    }
+
+    fun saveStringData(
+        dataFileName: String,
+        fileDirName: String,
+        fileName: String,
+        data: String
+    ) {
+        getFileHelper(dataFileName, fileDirName, fileName)?.writeData(data)
     }
 
     fun saveStringDataWithTime(dataFileName: String, data: String) {
@@ -55,20 +70,35 @@ class MeditateDataHelper(private val parentFileName: String) {
         dataHelperMap.clear()
     }
 
+    fun closeData(dataFileName: String) {
+        dataHelperMap.remove(dataFileName)?.close()
+    }
+
     private fun getFileDirName(fileSuffixName: String): String {
         return "${
             getFormatTime(
                 System.currentTimeMillis(), "yyyy-MM-dd-HH-mm-ss"
             )
-        }-$fileSuffixName"
+        }-${getFilePrefixName(fileSuffixName)}"
     }
 
-    private fun getFileName(filePrefixName: String, fileSuffixName: String): String {
-        return "$filePrefixName-${
-            getFormatTime(
-                System.currentTimeMillis(), "yyyy-MM-dd-HH-mm-ss"
-            )
-        }-$fileSuffixName.txt"
+    private fun getFileName(dataFileName: String, current: Long): String {
+        val formattedTime = getFormatTime(current, "yyyy-MM-dd-HH-mm-ss")
+        val extensionIndex = dataFileName.lastIndexOf('.')
+        if (extensionIndex <= 0 || extensionIndex == dataFileName.lastIndex) {
+            return "${dataFileName.lowercase()}-$formattedTime"
+        }
+        val prefix = dataFileName.substring(0, extensionIndex).lowercase()
+        val extension = dataFileName.substring(extensionIndex)
+        return "$prefix-$formattedTime$extension"
+    }
+
+    private fun getFilePrefixName(dataFileName: String): String {
+        val extensionIndex = dataFileName.lastIndexOf('.')
+        if (extensionIndex <= 0) {
+            return dataFileName
+        }
+        return dataFileName.substring(0, extensionIndex)
     }
 
     private fun getFormatTime(time: Long, pattern: String?): String? {
